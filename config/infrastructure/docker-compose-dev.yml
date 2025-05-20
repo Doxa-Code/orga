@@ -1,0 +1,85 @@
+name: budget-infrastructure
+
+services:
+  mongo1:
+    image: mongo
+    command: mongod --replSet rs0
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongo1:/data/db
+    networks:
+      - dependences
+  mongo2:
+    image: mongo
+    command: mongod --replSet rs0
+    ports:
+      - 27018:27017
+    volumes:
+      - ./data/mongo2:/data/db
+    networks:
+      - dependences
+  mongo3:
+    image: mongo
+    command: mongod --replSet rs0
+    ports:
+      - 27019:27017
+    volumes:
+      - ./data/mongo3:/data/db
+    networks:
+      - dependences
+  mongo-setup:
+    image: mongo
+    depends_on:
+      - mongo1
+    entrypoint: ["/bin/bash", "/mongo-scripts/init-replica-set.sh"]
+    volumes:
+      - ./mongo-scripts/init-replica-set.sh:/mongo-scripts/init-replica-set.sh
+    networks:
+      - dependences
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - dependences
+    environment:
+      - REDIS_PASSWORD=123456
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+  localstack:
+    image: localstack/localstack:3.2
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    networks:
+      - dependences
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - SERVICES=s3
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+  typesense:
+    image: typesense/typesense:27.0
+    restart: on-failure
+    ports:
+      - "8108:8108"
+    volumes:
+      - ./typesense-db:/data
+    command: '--data-dir /data --api-key=xyz --enable-cors'
+
+networks:
+  dependences:
+    driver: bridge
+
+volumes:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:
+  mongo1_config:
+  mongo2_config:
+  mongo3_config:

@@ -1,0 +1,276 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model User {
+  id         String       @id @map("_id")
+  name       String
+  email      String
+  active     Boolean?     @default(true)
+  createdAt  DateTime?    @default(now())
+  membership Membership[]
+  plan       Plan?
+
+  @@map("users")
+}
+
+model Membership {
+  id String @id @map("_id")
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  isOwner Boolean @default(false)
+
+  @@map("memberships")
+}
+
+enum Plan {
+  TRIAL
+  BASIC
+  PREMIUM
+  ENTERPRISE
+}
+
+type Address {
+  street       String @default("")
+  neighborhood String @default("")
+  number       String @default("")
+  city         String @default("")
+  state        String @default("")
+  zipCode      String @default("")
+  country      String @default("")
+  note         String @default("")
+}
+
+model Workspace {
+  id          String        @id @map("_id")
+  name        String?
+  cnpj        String?       @unique
+  address     Address?
+  phone       String?       @unique
+  email       String?       @unique
+  membership  Membership[]
+  accountPlan AccountPlan[]
+  costCenter  CostCenter[]
+  partner     Partner[]
+  transaction Transaction[]
+  wallet      Wallet[]
+
+  @@map("workspaces")
+}
+
+model Bank {
+  code      String @id @map("_id")
+  name      String @unique
+  thumbnail String
+  color     String
+
+  @@map("banks")
+}
+
+model AccountPlan {
+  id          String                @id @default(uuid()) @map("_id")
+  name        String                @unique
+  sequence    Int                   @unique
+  type        AccountPlanType
+  operation   AccountPlanOperation
+  categories  AccountPlanCategory[]
+  workspace   Workspace             @relation(fields: [workspaceId], references: [id])
+  workspaceId String                @unique
+
+  @@map("account_plans")
+}
+
+type AccountPlanCategory {
+  sequence String
+  name     String
+  amount   Int
+}
+
+enum AccountPlanType {
+  OPERATIONAL_REVENUE
+  NON_OPERATIONAL_REVENUE
+  OTHER_REVENUE
+  FINANCIAL_REVENUE
+  PARTNERSHIP_REVENUE
+  MISCELLANEOUS_REVENUE
+  FIXED_EXPENSE
+  VARIABLE_EXPENSE
+  COST
+  DEBT
+}
+
+enum AccountPlanOperation {
+  REVENUE
+  EXPENSE
+}
+
+model CostCenter {
+  id          String    @id @map("_id")
+  code        String
+  name        String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  @@map("cost_centers")
+}
+
+model Partner {
+  id          String        @id @map("_id")
+  type        PartnerType
+  roles       PartnerRole[]
+  name        String
+  taxId       String
+  email       String
+  phone       String
+  address     Address
+  status      PartnerStatus
+  createdAt   DateTime
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  @@map("partners")
+}
+
+enum PartnerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PartnerType {
+  INDIVIDUAL
+  COMPANY
+}
+
+enum PartnerRole {
+  CUSTOMER
+  SUPPLIER
+}
+
+model Transaction {
+  id          String                @id @map("_id")
+  description String
+  amount      Float
+  dueDate     DateTime
+  type        TransactionType
+  status      TransactionStatus
+  costCenter  TransactionCostCenter
+  category    TransactionCategory
+  payments    Payment[]
+  note        String
+  partner     String?
+  workspace   Workspace             @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  @@map("transactions")
+}
+
+type TransactionCategory {
+  sequence String
+  name     String
+}
+
+type TransactionCostCenter {
+  id   String
+  name String
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum TransactionStatus {
+  PAID
+  NO_PAID
+  OVERDUE
+  PAID_TODAY
+}
+
+type Payment {
+  id            String
+  dueDate       DateTime
+  amount        Float
+  percentage    Float
+  paymentMethod PaymentMethod
+  walletId      String
+  description   String
+  fees          Float
+  fine          Float
+  createdAt     DateTime
+  status        PaymentStatus
+  paidedDate    DateTime?
+  amountPaided  Float
+}
+
+enum PaymentStatus {
+  PAID
+  NO_PAID
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+  BANK_TRANSFER
+  CASH
+  BANK_CHECK
+  BANK_SLIP
+  OTHERS
+}
+
+model WalletTransaction {
+  id          String          @id @default(uuid()) @map("_id")
+  amount      Float
+  type        TransactionType
+  description String
+  date        DateTime
+  wallet      Wallet          @relation(fields: [walletId], references: [id])
+  walletId    String
+
+  @@map("wallet_transactions")
+}
+
+model Wallet {
+  id           String              @id @map("_id")
+  bank         WalletBank
+  name         String
+  balance      Float
+  type         WalletType
+  number       String
+  agency       String
+  transactions WalletTransaction[]
+  workspace    Workspace           @relation(fields: [workspaceId], references: [id])
+  workspaceId  String
+
+  @@map("wallets")
+}
+
+enum WalletType {
+  CHECKING_ACCOUNT
+  BANK_CASH_BOX
+  SAVINGS_ACCOUNT
+  INVESTMENT_ACCOUNT
+  OTHERS
+}
+
+type WalletBank {
+  code      String
+  name      String
+  thumbnail String
+}

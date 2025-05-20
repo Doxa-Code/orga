@@ -1,0 +1,42 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts"],
+      "env": [
+        "!NEXT_PUBLIC_*",
+        "MONGODB_URI",
+        "MONGODB_DATABASE",
+        "REDIS_URI",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_DEFAULT_REGION",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_ENDPOINT",
+        "AWS_BUCKET_NAME",
+        "MAILSENDER_API_KEY"
+      ]
+    },
+    "start": {},
+    "test": {
+      "env": [
+        "MONGODB_URI",
+        "MONGODB_DATABASE",
+        "REDIS_URI",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_DEFAULT_REGION",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_ENDPOINT",
+        "AWS_BUCKET_NAME",
+        "MAILSENDER_API_KEY"
+      ],
+      "persistent": true,
+      "cache": false,
+      "interactive": true
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    }
+  }
+}

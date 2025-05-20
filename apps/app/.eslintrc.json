@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "react/display-name": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        "args": "none",
+        "ignoreRestSiblings": true,
+        "varsIgnorePattern": "^[A-Z][A-Z0-9_]*$"
+      }
+    ]
+  }
+}

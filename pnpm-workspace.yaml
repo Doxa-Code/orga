@@ -1,0 +1,14 @@
+packages:
+  - apps/*
+  - packages/*
+  - config/*
+onlyBuiltDependencies:
+  - '@biomejs/biome'
+  - '@prisma/client'
+  - core-js
+  - cypress
+  - es5-ext
+  - esbuild
+  - fsevents
+  - uglifyjs-webpack-plugin
+  - unrs-resolver

@@ -1,0 +1,9 @@
+{
+  "name": "@orga/migrate",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "dependencies": {
+    "@orga/core": "workspace:*"
+  }
+}

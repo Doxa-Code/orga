@@ -1,0 +1,60 @@
+{
+  "name": "@orga/ui",
+  "version": "1.0.0",
+  "private": true,
+  "sideEffects": false,
+  "files": [
+    "tailwind.config.ts",
+    "postcss.config.js",
+    "globals.css"
+  ],
+  "exports": {
+    "./utils": "./src/lib/utils.ts",
+    "./lotties": "./src/lotties/index.ts",
+    "./globals": "./src/globals.css",
+    "./postcss": "./postcss.config.mjs",
+    "./tailwind": "./tailwind.config.ts",
+    "./alert-dialog": "./src/components/alert-dialog.tsx",
+    "./alert": "./src/components/alert.tsx",
+    "./aspect-ratio": "./src/components/aspect-ratio.tsx",
+    "./accordion": "./src/components/accordion.tsx",
+    "./avatar": "./src/components/avatar.tsx",
+    "./breadcrumb": "./src/components/breadcrumb.tsx",
+    "./button": "./src/components/button.tsx",
+    "./calendar": "./src/components/calendar.tsx",
+    "./card": "./src/components/card.tsx",
+    "./checkbox": "./src/components/checkbox.tsx",
+    "./command": "./src/components/command.tsx",
+    "./dialog": "./src/components/dialog.tsx",
+    "./drawer": "./src/components/drawer.tsx",
+    "./dropdown-menu": "./src/components/dropdown.tsx",
+    "./form": "./src/components/form.tsx",
+    "./input-otp": "./src/components/input-otp.tsx",
+    "./input": "./src/components/input.tsx",
+    "./label": "./src/components/label.tsx",
+    "./popover": "./src/components/popover.tsx",
+    "./progress": "./src/components/progress.tsx",
+    "./resizable": "./src/components/resizable.tsx",
+    "./select": "./src/components/select.tsx",
+    "./skeleton": "./src/components/skeleton.tsx",
+    "./scroll-area": "./src/components/scroll-area.tsx",
+    "./sonner": "./src/components/sonner.tsx",
+    "./table": "./src/components/table.tsx",
+    "./tabs": "./src/components/tabs.tsx",
+    "./textarea": "./src/components/textarea.tsx",
+    "./toast": "./src/components/toast.tsx",
+    "./toaster": "./src/components/toaster.tsx",
+    "./tooltip": "./src/components/tooltip.tsx"
+  },
+  "devDependencies": {
+    "@orga/tsconfig": "workspace:*"
+  },
+  "dependencies": {
+    "@orga/utils": "workspace:*",
+    "@radix-ui/react-accordion": "^1.2.0",
+    "@radix-ui/react-aspect-ratio": "^1.1.0",
+    "@radix-ui/react-checkbox": "^1.1.1",
+    "@radix-ui/react-progress": "^1.1.0",
+    "@radix-ui/react-scroll-area": "^1.1.0"
+  }
+}
