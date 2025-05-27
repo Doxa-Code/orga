@@ -54,6 +54,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { REGISTER_PARTNER_MODAL_NAME } from "@/constants";
+import type { Partner } from "@/core/domain/entities/partner";
+import { useModais } from "@/hooks/use-modais";
 import { cn } from "@/lib/utils";
 import {
   type ColumnDef,
@@ -88,17 +91,8 @@ import {
 } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
-type Item = {
-  id: string;
-  name: string;
-  email: string;
-  location: string;
-  flag: string;
-  status: "Active" | "Inactive" | "Pending";
-  balance: number;
-};
+type Item = Partner.Props;
 
-// Custom filter function for multi-column searching
 const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
   const searchableRowContent =
     `${row.original.name} ${row.original.email}`.toLowerCase();
@@ -141,29 +135,27 @@ const columns: ColumnDef<Item>[] = [
     enableHiding: false,
   },
   {
-    header: "Name",
+    header: "Nome",
     accessorKey: "name",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("name")}</div>
-    ),
     size: 180,
     filterFn: multiColumnFilterFn,
     enableHiding: false,
   },
   {
-    header: "Email",
-    accessorKey: "email",
+    header: "Documento",
+    accessorKey: "taxId",
     size: 220,
   },
   {
-    header: "Location",
-    accessorKey: "location",
-    cell: ({ row }) => (
-      <div>
-        <span className="text-lg leading-none">{row.original.flag}</span>{" "}
-        {row.getValue("location")}
-      </div>
-    ),
+    header: "Email",
+    accessorKey: "email",
+    size: 180,
+    filterFn: multiColumnFilterFn,
+    enableHiding: false,
+  },
+  {
+    header: "Telefone",
+    accessorKey: "phone",
     size: 180,
   },
   {
@@ -172,32 +164,27 @@ const columns: ColumnDef<Item>[] = [
     cell: ({ row }) => (
       <Badge
         className={cn(
-          row.getValue("status") === "Inactive" &&
+          row.getValue("status") === "INACTIVE" &&
             "bg-muted-foreground/60 text-primary-foreground",
         )}
       >
-        {row.getValue("status")}
+        {row.getValue("status") === "ACTIVE" ? "Ativo" : "Inativo"}
       </Badge>
     ),
     size: 100,
     filterFn: statusFilterFn,
   },
   {
-    header: "Performance",
-    accessorKey: "performance",
-  },
-  {
-    header: "Balance",
-    accessorKey: "balance",
-    cell: ({ row }) => {
-      const amount = Number.parseFloat(row.getValue("balance"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-      return formatted;
-    },
-    size: 120,
+    header: "Tipo",
+    accessorKey: "roles",
+    cell: ({ row }) =>
+      row.original?.roles?.map((role) => (
+        <Badge key={role}>
+          {role === "CUSTOMER" ? "Cliente" : "Fornecedor"}
+        </Badge>
+      )),
+    size: 100,
+    filterFn: statusFilterFn,
   },
   {
     id: "actions",
@@ -208,8 +195,13 @@ const columns: ColumnDef<Item>[] = [
   },
 ];
 
-export default function TableClients() {
+type Props = {
+  clients: Partner.Props[];
+};
+
+export default function TableClients(props: Props) {
   const id = useId();
+  const { openModal } = useModais();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [pagination, setPagination] = useState<PaginationState>({
@@ -225,17 +217,7 @@ export default function TableClients() {
     },
   ]);
 
-  const [data, setData] = useState<Item[]>([]);
-  useEffect(() => {
-    async function fetchPosts() {
-      const res = await fetch(
-        "https://res.cloudinary.com/dlzlfasou/raw/upload/users-01_fertyx.json",
-      );
-      const data = await res.json();
-      setData(data);
-    }
-    fetchPosts();
-  }, []);
+  const [data, setData] = useState<Item[]>(props.clients ?? []);
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows;
@@ -404,14 +386,14 @@ export default function TableClients() {
           {table.getSelectedRowModel().rows.length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button className="ml-auto" variant="outline">
+                <Button className="ml-auto" variant="destructive">
                   <Trash
                     className="-ms-1 me-2 opacity-60"
                     size={16}
                     strokeWidth={2}
                     aria-hidden="true"
                   />
-                  Delete
+                  Remover
                   <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
                     {table.getSelectedRowModel().rows.length}
                   </span>
@@ -430,37 +412,40 @@ export default function TableClients() {
                     />
                   </div>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
+                    <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete{" "}
-                      {table.getSelectedRowModel().rows.length} selected{" "}
-                      {table.getSelectedRowModel().rows.length === 1
-                        ? "row"
-                        : "rows"}
-                      .
+                      Essa ação não pode ser revertida. Isso removerá{" "}
+                      {table.getSelectedRowModel().rows.length} linhas
+                      selecionadas permanentemente dos nossos servidores.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                 </div>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteRows}>
-                    Delete
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-red-600 hover:bg-red-500"
+                    onClick={handleDeleteRows}
+                  >
+                    Remover
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
           )}
           {/* Add user button */}
-          <Button className="ml-auto" variant="outline">
+          <Button
+            onClick={() => {
+              openModal(REGISTER_PARTNER_MODAL_NAME);
+            }}
+            className="ml-auto bg-green-700 hover:bg-green-500"
+          >
             <Plus
               className="-ms-1 me-2 opacity-60"
               size={16}
               strokeWidth={2}
               aria-hidden="true"
             />
-            Add user
+            Novo cliente
           </Button>
         </div>
       </div>
@@ -555,7 +540,7 @@ export default function TableClients() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Nenhum resultado.
                 </TableCell>
               </TableRow>
             )}
@@ -698,41 +683,12 @@ function RowActions({ row }: { row: Row<Item> }) {
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <span>Edit</span>
-            <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+            <span>Editar</span>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span>Duplicate</span>
-            <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Archive</span>
-            <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem>Move to project</DropdownMenuItem>
-                <DropdownMenuItem>Move to folder</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Advanced options</DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>Share</DropdownMenuItem>
-          <DropdownMenuItem>Add to favorites</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-destructive focus:text-destructive">
-          <span>Delete</span>
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+          <span>Remover</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -1,5 +1,6 @@
 "use client";
 
+import { ModalRegisterPartner } from "@/components/modais/partners/modal-register-partner";
 import { Toaster } from "@/components/ui/sonner";
 // import dynamic from "next/dynamic";
 import type { FC, ReactNode } from "react";
@@ -54,8 +55,8 @@ export const Globals: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <>
       {children}
-      {/* <ModalRegisterTransaction />
       <ModalRegisterPartner />
+      {/* <ModalRegisterTransaction />
       <ModalPaymentTransaction />
       <ModalRegisterWallet />
       <ModalSearchTransaction /> */}
