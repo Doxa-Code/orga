@@ -2,7 +2,13 @@
 import { cn } from "@/lib/utils";
 import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
 import type { Table } from "@tanstack/react-table";
-import { ChevronDown, CircleX, Search } from "lucide-react";
+import {
+  ChevronDown,
+  CircleX,
+  Container,
+  Search,
+  UserRound,
+} from "lucide-react";
 import type React from "react";
 import { useId, useRef } from "react";
 import { Button } from "./ui/button";
@@ -103,9 +109,23 @@ export const Filters: React.FC<Props> = ({ table, ...props }) => {
               {[
                 { label: "Ativo", value: "ACTIVE", key: "status" },
                 { label: "Inativo", value: "INACTIVE", key: "status" },
-                { label: "Clientes", value: "CUSTOMER", key: "roles" },
                 {
-                  label: "Fornecedores",
+                  label: (
+                    <div className="flex gap-2 items-center">
+                      <UserRound size={14} />
+                      <span>Clientes</span>
+                    </div>
+                  ),
+                  value: "CUSTOMER",
+                  key: "roles",
+                },
+                {
+                  label: (
+                    <div className="flex gap-2 items-center">
+                      <Container size={14} />
+                      <span>Fornecedores</span>
+                    </div>
+                  ),
                   value: "SUPPLIER",
                   key: "roles",
                 },

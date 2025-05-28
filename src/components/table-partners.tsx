@@ -1,6 +1,8 @@
 "use client";
 
+import { toggleStatusPartner } from "@/app/(private)/partners/actions";
 import type { partnerSchema } from "@/app/(private)/partners/schemas";
+import { useServerActionMutation } from "@/app/actions/query-key-factory";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,6 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { REGISTER_PARTNER_MODAL_NAME } from "@/constants";
+import { useModais } from "@/hooks/use-modais";
+import { usePartner } from "@/hooks/use-partner";
 import { cn } from "@/lib/utils";
 import {
   type ColumnDef,
@@ -33,7 +38,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Container, UserRound } from "lucide-react";
 import { useState } from "react";
 import type { z } from "zod";
 import { Filters } from "./filters";
@@ -49,8 +54,12 @@ const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
   return searchableRowContent.includes(searchTerm);
 };
 
-const arrayFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
+const filterByRoles: FilterFn<Item> = (row, columnId, filterValue) => {
   return row.original.roles.some((r) => filterValue.includes(r));
+};
+
+const filterByStatus: FilterFn<Item> = (row, columnId, filterValue) => {
+  return filterValue.includes(row.original.status);
 };
 
 const columns: ColumnDef<Item>[] = [
@@ -83,6 +92,9 @@ const columns: ColumnDef<Item>[] = [
     size: 400,
     filterFn: multiColumnFilterFn,
     enableHiding: false,
+    cell({ row }) {
+      return <p className="truncate">{row.original.name}</p>;
+    },
   },
   {
     header: "Documento",
@@ -115,18 +127,26 @@ const columns: ColumnDef<Item>[] = [
       </Badge>
     ),
     size: 100,
+    filterFn: filterByStatus,
   },
   {
     header: "Tipo",
     accessorKey: "roles",
-    cell: ({ row }) =>
-      row.original?.roles?.map((role) => (
-        <Badge key={role}>
-          {role === "CUSTOMER" ? "Cliente" : "Fornecedor"}
-        </Badge>
-      )),
+    cell: ({ row }) => (
+      <div className="flex gap-2 flex-wrap">
+        {row.original?.roles?.map((role) => (
+          <Badge
+            title={role === "CUSTOMER" ? "Cliente" : "Fornecedor"}
+            variant="outline"
+            key={role}
+          >
+            {role === "CUSTOMER" ? <UserRound /> : <Container />}
+          </Badge>
+        ))}
+      </div>
+    ),
     size: 100,
-    filterFn: arrayFilterFn,
+    filterFn: filterByRoles,
   },
   {
     id: "actions",
@@ -257,7 +277,7 @@ export default function TablePartners(props: Props) {
                   className="text-sm font-light"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="last:py-0 truncate">
+                    <TableCell key={cell.id} className="last:py-0">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -286,6 +306,10 @@ export default function TablePartners(props: Props) {
 }
 
 function RowActions({ row }: { row: Row<Item> }) {
+  const { openModal } = useModais();
+  const { set } = usePartner();
+  const toggleStatusPartnerAction =
+    useServerActionMutation(toggleStatusPartner);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -306,11 +330,28 @@ function RowActions({ row }: { row: Row<Item> }) {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem className="px-4">
+        <DropdownMenuItem
+          onClick={() => {
+            set({
+              partnerId: row.original.id,
+            });
+            openModal(REGISTER_PARTNER_MODAL_NAME);
+          }}
+          className="px-4"
+        >
           <span className="font-light">Editar</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className="px-4">
-          <span className="font-light">Inativar</span>
+        <DropdownMenuItem
+          onClick={() => {
+            toggleStatusPartnerAction.mutate({
+              partnerId: row.original.id,
+            });
+          }}
+          className="px-4"
+        >
+          <span className="font-light">
+            {row.original.status === "ACTIVE" ? "Inativar" : "Ativar"}
+          </span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -6,6 +6,7 @@ import {
 
 export const QueryKeyFactory = createServerActionsKeyFactory({
   searchTransaction: () => ["searchTransactions"],
+  retrievePartner: () => ["retrievePartner"],
   retrieveTransaction: () => ["retrieveTransaction"],
   listFinanceEntities: () => ["listFinanceEntities"],
   listWalletsLikeOption: () => ["listWalletsLikeOption"],

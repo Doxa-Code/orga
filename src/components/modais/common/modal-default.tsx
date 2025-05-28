@@ -1,6 +1,5 @@
 "use client";
 
-import { FormFooter } from "@/components/form-footer";
 import { Heading } from "@/components/typograph";
 import { Drawer, DrawerContent, DrawerHeader } from "@/components/ui/drawer";
 import { useModais } from "@/hooks/use-modais";

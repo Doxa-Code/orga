@@ -133,7 +133,7 @@ model Partner {
   addressId   String
   address     Address       @relation(fields: [addressId], references: [id])
   status      PartnerStatus
-  createdAt   DateTime
+  createdAt   DateTime      @default(now())
   workspace   Workspace     @relation(fields: [workspaceId], references: [id])
   workspaceId String
 

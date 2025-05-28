@@ -5,16 +5,23 @@ import { PartnerFactory } from "@/core/infra/factories/partner-factory";
 import { RetrievePartnerByTaxIdDAOFactory } from "@/core/infra/factories/retrieve-partner-by-tax-id-dao-factory";
 import { ListPartnerLikeOptionPresentation } from "@/core/presenters/list-partner-like-option-presentation";
 import { PrismaClient } from "@/generated/prisma";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import {
   listPartnersLikeOptionInputSchema,
   listPartnersOptionOutputSchema,
   listPartnersOutputSchema,
+  partnerSchema,
   registerPartnerFormSchema,
   retrievePartnerByTaxIdInputSchema,
   retrievePartnerByTaxIdOutputSchema,
+  retrievePartnerInputSchema,
 } from "./schemas";
 
 // 56.134.651/0001-29
+
+const prisma = new PrismaClient();
+
 export const listPartnersLikeOption = securityProcedure
   .input(listPartnersLikeOptionInputSchema)
   .output(listPartnersOptionOutputSchema)
@@ -27,9 +34,9 @@ export const listPartnersLikeOption = securityProcedure
 export const registerPartner = securityProcedure
   .input(registerPartnerFormSchema)
   .handler(async ({ input, ctx: { workspace } }) => {
-    const createPartner = PartnerFactory.create();
-    await createPartner
-      .execute({
+    if (!input.id) {
+      const createPartner = PartnerFactory.create();
+      await createPartner.execute({
         name: input.name,
         roles: input.roles,
         type: input.type,
@@ -38,8 +45,30 @@ export const registerPartner = securityProcedure
         email: input.email,
         phone: input.phone,
         taxId: input.taxId,
-      })
-      .catch((err) => console.log(err));
+      });
+      return revalidatePath("/partners", "page");
+    }
+    await prisma.partner.update({
+      data: {
+        address: {
+          upsert: {
+            create: input.address,
+            update: input.address,
+            where: input.address,
+          },
+        },
+        email: input.email,
+        name: input.name,
+        phone: input.phone,
+        roles: input.roles,
+        taxId: input.taxId,
+        type: input.type,
+      },
+      where: {
+        id: input.id,
+      },
+    });
+    return revalidatePath("/partners", "page");
   });
 
 export const retrievePartnerByTaxId = securityProcedure
@@ -57,10 +86,32 @@ export const retrievePartnerByTaxId = securityProcedure
     return response;
   });
 
+export const retrievePartner = securityProcedure
+  .input(retrievePartnerInputSchema)
+  .output(partnerSchema.nullish())
+  .handler(async ({ input, ctx: { workspace } }) => {
+    const partner = await prisma.partner.findFirst({
+      where: {
+        AND: [
+          {
+            workspaceId: workspace.id,
+          },
+          {
+            id: input.id,
+          },
+        ],
+      },
+      include: {
+        address: true,
+      },
+    });
+    if (!partner) return null;
+    return partner;
+  });
+
 export const listPartners = securityProcedure
   .output(listPartnersOutputSchema)
   .handler(async ({ ctx: { workspace } }) => {
-    const prisma = new PrismaClient();
     const response = await prisma.partner.findMany({
       where: {
         workspaceId: workspace.id,
@@ -70,4 +121,32 @@ export const listPartners = securityProcedure
       },
     });
     return response;
+  });
+
+export const toggleStatusPartner = securityProcedure
+  .input(z.object({ partnerId: z.string() }))
+  .handler(async ({ ctx: { workspace }, input: { partnerId } }) => {
+    const partner = await prisma.partner.findFirst({
+      where: {
+        AND: [
+          {
+            workspaceId: workspace.id,
+          },
+          {
+            id: partnerId,
+          },
+        ],
+      },
+    });
+    if (!partner) return;
+
+    await prisma.partner.update({
+      data: {
+        status: partner.status === "ACTIVE" ? "INACTIVE" : "ACTIVE",
+      },
+      where: {
+        id: partnerId,
+      },
+    });
+    revalidatePath("/partners", "page");
   });

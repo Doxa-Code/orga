@@ -16,6 +16,10 @@ interface PartnerRepository {
 export class PartnerRepositoryDatabase implements PartnerRepository {
   private readonly databaseConnection = new PrismaClient();
 
+  static instance() {
+    return new PartnerRepositoryDatabase();
+  }
+
   async retrieve(id: string): Promise<Partner | null> {
     const partner = await this.databaseConnection.partner.findUnique({
       where: { id },

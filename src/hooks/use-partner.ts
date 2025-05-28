@@ -1,4 +1,4 @@
-import type { Partner } from "@orga/core/domain";
+import type { Partner } from "@/core/domain/entities/partner";
 import { create } from "zustand";
 
 type Store = {

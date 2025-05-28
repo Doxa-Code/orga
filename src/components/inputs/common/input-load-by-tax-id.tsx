@@ -13,7 +13,10 @@ type Props = {
   onRetrievedPartnerByTaxId(partner?: PartnerRetrievedOutputDTO | null): void;
 };
 
-export const InputLoadByTaxId: React.FC<Props> = (props) => {
+export const InputLoadByTaxId: React.FC<Props> = ({
+  onRetrievedPartnerByTaxId,
+  ...props
+}) => {
   const retrievePartnerByTaxIdAction = useServerAction(retrievePartnerByTaxId);
 
   const onRetrievePartnerByTaxId = async () => {
@@ -26,7 +29,7 @@ export const InputLoadByTaxId: React.FC<Props> = (props) => {
       taxId,
     });
 
-    props.onRetrievedPartnerByTaxId(partner as PartnerRetrievedOutputDTO);
+    onRetrievedPartnerByTaxId(partner as PartnerRetrievedOutputDTO);
   };
 
   return (

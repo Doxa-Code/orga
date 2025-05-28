@@ -1,7 +1,14 @@
 "use client";
 
-import { registerPartner } from "@/app/(private)/partners/actions";
-import { useServerActionMutation } from "@/app/actions/query-key-factory";
+import {
+  registerPartner,
+  retrievePartner,
+} from "@/app/(private)/partners/actions";
+import {
+  QueryKeyFactory,
+  useServerActionMutation,
+  useServerActionQuery,
+} from "@/app/actions/query-key-factory";
 import { AccordionAddressSession } from "@/components/accordion/common/accordion-address-session";
 import { AccordionBase } from "@/components/accordion/common/accordion-base";
 import { CheckboxPartnerRoleInputForm } from "@/components/checkboxes/partners/checkbox-partner-role-input-form";
@@ -23,10 +30,11 @@ import { useModais } from "@/hooks/use-modais";
 import { usePartner } from "@/hooks/use-partner";
 import { useToast } from "@/hooks/use-toast";
 import { formatPhone, formatTaxId } from "@/lib/utils";
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { z } from "zod";
 
 export const registerPartnerFormSchema = z.object({
+  id: z.string().optional(),
   type: z.enum(["COMPANY", "INDIVIDUAL"]),
   roles: z.array(z.enum(["CUSTOMER", "SUPPLIER"])).min(1, {
     message: "Preecha pelo menos 1 tipo",
@@ -36,14 +44,14 @@ export const registerPartnerFormSchema = z.object({
   email: z.string().optional(),
   phone: z.string().optional(),
   address: z.object({
-    street: z.string().optional(),
-    number: z.string().optional(),
-    neighborhood: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    zipCode: z.string().optional(),
-    country: z.string().optional(),
-    note: z.string().optional(),
+    street: z.string().optional().nullish(),
+    number: z.string().optional().nullish(),
+    neighborhood: z.string().optional().nullish(),
+    city: z.string().optional().nullish(),
+    state: z.string().optional().nullish(),
+    zipCode: z.string().optional().nullish(),
+    country: z.string().optional().nullish(),
+    note: z.string().optional().nullish(),
   }),
 });
 
@@ -55,7 +63,6 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
   (props, ref) => {
     const [type, setType] = useState<Partner.Type>("COMPANY");
     const { partnerId, roleToCreate } = usePartner();
-    const isPending = false;
     const { toast } = useToast();
     const { closeModal } = useModais();
     const registerPartnerAction = useServerActionMutation(registerPartner, {
@@ -71,6 +78,19 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
         });
       },
     });
+    const retrievePartnerAction = useServerActionQuery(retrievePartner, {
+      input: {
+        id: partnerId ?? "",
+      },
+      queryKey: QueryKeyFactory.retrievePartner(),
+      enabled: !!partnerId,
+    });
+
+    useEffect(() => {
+      if (retrievePartnerAction.data) {
+        form.reset(retrievePartnerAction.data);
+      }
+    }, [retrievePartnerAction.data]);
 
     const form = useFormSchema({
       schema: registerPartnerFormSchema,
@@ -92,10 +112,10 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
       },
     });
 
-    form.watch(async (values) => {
+    form.watch((values) => {
       setType(values.type ?? "COMPANY");
-      if (!values.roles?.length) {
-        form.setValue("roles", [roleToCreate].filter(Boolean));
+      if (!values.roles?.length && roleToCreate) {
+        form.setValue("roles", [roleToCreate]);
       }
     });
 
@@ -161,7 +181,7 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
       });
     };
 
-    if (isPending && partnerId) {
+    if (retrievePartnerAction.isPending && partnerId) {
       return <FormRegisterPartnerSkeleton />;
     }
 
@@ -170,7 +190,10 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
         ref={ref as any}
         form={form}
         onSubmit={form.handleSubmit((values) =>
-          registerPartnerAction.mutate(values),
+          registerPartnerAction.mutate({
+            ...values,
+            id: partnerId,
+          }),
         )}
         id={REGISTER_PARTNER_MODAL_NAME}
       >

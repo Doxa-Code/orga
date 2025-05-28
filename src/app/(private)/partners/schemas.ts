@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const registerPartnerFormSchema = z.object({
+  id: z.string().nullish(),
   type: z.enum(["COMPANY", "INDIVIDUAL"]),
   roles: z.array(z.enum(["CUSTOMER", "SUPPLIER"])).min(1, {
     message: "Preecha pelo menos 1 tipo",
@@ -10,19 +11,55 @@ export const registerPartnerFormSchema = z.object({
   email: z.string().optional(),
   phone: z.string().optional(),
   address: z.object({
-    street: z.string().optional(),
-    number: z.string().optional(),
-    neighborhood: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    zipCode: z.string().optional(),
-    country: z.string().optional(),
-    note: z.string().optional(),
+    street: z
+      .string()
+      .optional()
+      .nullish()
+      .transform((value) => value ?? ""),
+    number: z
+      .string()
+      .optional()
+      .nullish()
+      .transform((value) => value ?? ""),
+    neighborhood: z
+      .string()
+      .optional()
+      .nullish()
+      .transform((value) => value ?? ""),
+    city: z
+      .string()
+      .optional()
+      .nullish()
+      .transform((value) => value ?? ""),
+    state: z
+      .string()
+      .optional()
+      .nullish()
+      .transform((value) => value ?? ""),
+    zipCode: z
+      .string()
+      .optional()
+      .nullish()
+      .transform((value) => value ?? ""),
+    country: z
+      .string()
+      .optional()
+      .nullish()
+      .transform((value) => value ?? ""),
+    note: z
+      .string()
+      .optional()
+      .nullish()
+      .transform((value) => value ?? ""),
   }),
 });
 
 export const retrievePartnerByTaxIdInputSchema = z.object({
   taxId: z.string(),
+});
+
+export const retrievePartnerInputSchema = z.object({
+  id: z.string(),
 });
 
 export const retrievePartnerByTaxIdOutputSchema = z
@@ -58,8 +95,8 @@ export const listPartnersLikeOptionInputSchema = z.object({
 
 export const partnerSchema = z.object({
   id: z.string(),
-  type: z.string(),
-  roles: z.array(z.string()),
+  type: z.enum(["COMPANY", "INDIVIDUAL"]),
+  roles: z.array(z.enum(["CUSTOMER", "SUPPLIER"])),
   name: z.string(),
   taxId: z.string(),
   email: z.string(),
