@@ -52,7 +52,9 @@ export const ModalDelete: React.FC<Props> = (props) => {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => props.onContinue?.()}
+            onClick={() => {
+              props.onContinue?.();
+            }}
             className="bg-red-600 hover:bg-red-500"
           >
             Excluir

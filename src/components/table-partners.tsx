@@ -1,6 +1,9 @@
 "use client";
 
-import { toggleStatusPartner } from "@/app/(private)/partners/actions";
+import {
+  removePartner,
+  toggleStatusPartner,
+} from "@/app/(private)/partners/actions";
 import type { partnerSchema } from "@/app/(private)/partners/schemas";
 import { useServerActionMutation } from "@/app/actions/query-key-factory";
 import { Badge } from "@/components/ui/badge";
@@ -190,6 +193,12 @@ export default function TablePartners(props: Props) {
     },
   });
 
+  const removePartnerAction = useServerActionMutation(removePartner, {
+    onSuccess() {
+      table.resetRowSelection();
+    },
+  });
+
   return (
     <div className="space-y-4 bg-white p-4 rounded shadow">
       <Filters table={table} />
@@ -202,7 +211,15 @@ export default function TablePartners(props: Props) {
           <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center bg-background px-1 font-[inherit] text-[0.625rem] font-light">
             {table.getSelectedRowModel().rows.length} registro(s) selecionado(s)
           </span>
-          <ModalDelete onContinue={async () => {}} />
+          <ModalDelete
+            onContinue={async () => {
+              removePartnerAction.mutate({
+                partnerIds: table
+                  .getSelectedRowModel()
+                  .rows.map((r) => r.original.id),
+              });
+            }}
+          />
         </header>
         <Table className="table-fixed">
           <TableHeader className="bg-[#F1F4F9]">

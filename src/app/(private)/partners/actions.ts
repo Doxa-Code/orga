@@ -150,3 +150,23 @@ export const toggleStatusPartner = securityProcedure
     });
     revalidatePath("/partners", "page");
   });
+
+export const removePartner = securityProcedure
+  .input(z.object({ partnerIds: z.array(z.string()) }))
+  .handler(async ({ input: { partnerIds }, ctx: { workspace } }) => {
+    await prisma.partner.deleteMany({
+      where: {
+        AND: [
+          {
+            workspaceId: workspace.id,
+          },
+          {
+            id: {
+              in: partnerIds,
+            },
+          },
+        ],
+      },
+    });
+    revalidatePath("/partners", "page");
+  });
