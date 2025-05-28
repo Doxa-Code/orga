@@ -1,6 +1,6 @@
 "use client";
 
-import { registerPartner } from "@/app/actions/partners";
+import { registerPartner } from "@/app/(private)/partners/actions";
 import { useServerActionMutation } from "@/app/actions/query-key-factory";
 import { AccordionAddressSession } from "@/components/accordion/common/accordion-address-session";
 import { AccordionBase } from "@/components/accordion/common/accordion-base";
@@ -19,7 +19,7 @@ import type { Partner } from "@/core/domain/entities/partner";
 import type { Address } from "@/core/domain/valueobjects/address";
 import type { FormHandlesRef } from "@/hooks/use-form-ref";
 import { useFormSchema } from "@/hooks/use-form-schema";
-import { useModais } from "@/hooks/use-modais copy";
+import { useModais } from "@/hooks/use-modais";
 import { usePartner } from "@/hooks/use-partner";
 import { useToast } from "@/hooks/use-toast";
 import { formatPhone, formatTaxId } from "@/lib/utils";
@@ -170,9 +170,7 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
         ref={ref as any}
         form={form}
         onSubmit={form.handleSubmit((values) =>
-          registerPartnerAction.mutate({
-            ...values,
-          }),
+          registerPartnerAction.mutate(values),
         )}
         id={REGISTER_PARTNER_MODAL_NAME}
       >

@@ -10,5 +10,5 @@ export default async function PrivatePage() {
     redirect("/login");
   }
 
-  redirect("/clients");
+  redirect("/partners");
 }

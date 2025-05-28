@@ -55,3 +55,28 @@ export const listPartnersOptionOutputSchema = z.array(
 export const listPartnersLikeOptionInputSchema = z.object({
   type: z.enum(["CREDIT", "DEBIT"]),
 });
+
+export const partnerSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  roles: z.array(z.string()),
+  name: z.string(),
+  taxId: z.string(),
+  email: z.string(),
+  phone: z.string(),
+  address: z.object({
+    street: z.string().nullish(),
+    number: z.string().nullish(),
+    neighborhood: z.string().nullish(),
+    city: z.string().nullish(),
+    state: z.string().nullish(),
+    zipCode: z.string().nullish(),
+    country: z.string().nullish(),
+    note: z.string().nullish(),
+  }),
+  status: z.string(),
+  createdAt: z.date(),
+  workspaceId: z.string(),
+});
+
+export const listPartnersOutputSchema = z.array(partnerSchema);

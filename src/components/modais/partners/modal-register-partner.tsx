@@ -12,28 +12,28 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 
 export function ModalRegisterPartner() {
-	const { partnerId } = usePartner();
-	const { closeModal } = useModais();
-	const formRef = React.useRef<FormHandlesRef>(null);
-	const router = useRouter();
-	const queryClient = useQueryClient();
+  const { partnerId } = usePartner();
+  const { closeModal } = useModais();
+  const formRef = React.useRef<FormHandlesRef>(null);
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
-	return (
-		<ModalDefault
-			modalName={REGISTER_PARTNER_MODAL_NAME}
-			title={partnerId ? "Editar cadastro" : "Novo cadastro"}
-		>
-			<FormRegisterPartner
-				ref={formRef}
-				onFinish={() => {
-					queryClient.invalidateQueries({
-						exact: true,
-						queryKey: QueryKeyFactory.listPartnersLikeOption(),
-					});
-					closeModal(REGISTER_PARTNER_MODAL_NAME);
-					router.refresh();
-				}}
-			/>
-		</ModalDefault>
-	);
+  return (
+    <ModalDefault
+      modalName={REGISTER_PARTNER_MODAL_NAME}
+      title={partnerId ? "Editar cadastro" : "Novo cadastro"}
+    >
+      <FormRegisterPartner
+        ref={formRef}
+        onFinish={() => {
+          queryClient.invalidateQueries({
+            exact: true,
+            queryKey: QueryKeyFactory.listPartnersLikeOption(),
+          });
+          closeModal(REGISTER_PARTNER_MODAL_NAME);
+          router.refresh();
+        }}
+      />
+    </ModalDefault>
+  );
 }

@@ -92,7 +92,7 @@ export const modules: Module[] = [
 export function Sidebar() {
   return (
     <ScrollArea>
-      <div className="px-4 sticky bg-white top-0 py-8">
+      <div className="px-4 sticky top-0 py-8">
         <Logo className="text-2xl text-primary">Orga</Logo>
         <Logo className="text-2xl text-secondary">Saas</Logo>
       </div>

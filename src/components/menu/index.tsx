@@ -24,11 +24,14 @@ export function Menu(props: MenuProps) {
       <ResizablePanel
         defaultSize={5}
         data-open={open}
-        className="absolute z-40 flex w-[250px] -translate-x-full select-none flex-col gap-0 bg-white shadow duration-150 data-[open=true]:translate-x-0 md:static bg-muted md:max-w-[250px] md:data-[open=false]:translate-x-0"
+        className="absolute bg-muted z-40 flex w-[250px] -translate-x-full select-none flex-col gap-0 shadow duration-150 data-[open=true]:translate-x-0 md:static md:max-w-[250px] md:data-[open=false]:translate-x-0"
       >
         <Sidebar />
       </ResizablePanel>
-      <ResizablePanel defaultSize={5} className="overflow-hidden flex flex-col">
+      <ResizablePanel
+        defaultSize={5}
+        className="overflow-hidden shadow flex flex-col"
+      >
         <ResizablePanel
           defaultSize={5}
           className="z-50 w-full max-h-[60px] flex items-center justify-end bg-primary"

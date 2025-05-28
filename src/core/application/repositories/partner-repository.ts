@@ -123,7 +123,7 @@ export class PartnerRepositoryDatabase implements PartnerRepository {
         roles: partner.roles,
         workspace: {
           connect: {
-            id: partner.id,
+            id: partner.workspaceId,
           },
         },
       },

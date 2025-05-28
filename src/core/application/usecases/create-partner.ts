@@ -1,10 +1,9 @@
 import { Partner } from "../../domain/entities/partner";
 import { FieldAlreadyExists } from "../../domain/errors/field-already-exists";
-import type { PartnerRaw } from "../mappers/partner-mapper";
 
 interface PartnerRepository {
   save(partner: Partner): Promise<void>;
-  retrieveByTaxId(taxId: string): Promise<PartnerRaw | null>;
+  retrieveByTaxId(taxId: string): Promise<Partner | null>;
 }
 
 export class CreatePartner {
