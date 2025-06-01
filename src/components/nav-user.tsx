@@ -3,10 +3,13 @@
 import {
   BadgeCheck,
   Bell,
+  ChevronDown,
+  ChevronRight,
   ChevronsUpDown,
   CreditCard,
   LogOut,
   Sparkles,
+  User,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -19,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useMemo } from "react";
 import { Button } from "./ui/button";
 
 export function NavUser({
@@ -30,24 +34,27 @@ export function NavUser({
     avatar: string;
   };
 }) {
+  const name = useMemo(() => user.name || "Usuário", [user.name]);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          size="lg"
-          className="data-[state=open]:bg-white/90 data-[state=open]:text-sidebar-accent-foreground"
+          variant="ghost"
+          className="rounded h-auto bg-transparent hover:bg-muted flex gap-4"
         >
-          <Avatar className="h-8 w-8 bg-transparent rounded">
+          <Avatar className="h-7 w-7 bg-gray-200 rounded-full">
             <AvatarImage src={user.avatar} alt={user.name} />
-            <AvatarFallback className="rounded-lg bg-transparent border">
-              CN
+            <AvatarFallback className="text-xs">
+              <User className="size-[16px]" />
             </AvatarFallback>
           </Avatar>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{user.name}</span>
-            <span className="truncate text-xs">{user.email}</span>
+          <div className="flex flex-col leading-4 items-start">
+            <span className="text-black/90">{name}</span>
+            <span className="text-muted-foreground font-light">
+              {user.email}
+            </span>
           </div>
-          <ChevronsUpDown className="ml-auto size-4" />
+          <ChevronDown className="text-black/80" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -56,28 +63,8 @@ export function NavUser({
         align="start"
         sideOffset={4}
       >
-        <DropdownMenuLabel className="p-0 font-normal">
-          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="rounded-lg">US</AvatarFallback>
-            </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{user.name}</span>
-              <span className="truncate text-xs">{user.email}</span>
-            </div>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck />
-            Meu perfil
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <LogOut />
+          <LogOut className="stroke-primary" />
           Sair
         </DropdownMenuItem>
       </DropdownMenuContent>

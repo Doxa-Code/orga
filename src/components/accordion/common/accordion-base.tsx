@@ -1,4 +1,4 @@
-import { Heading } from "@/components/typograph";
+import { Heading } from "@/components/common/typograph";
 import {
   Accordion,
   AccordionContent,

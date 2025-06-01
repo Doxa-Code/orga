@@ -1,5 +1,10 @@
+import { Paragraph } from "@/components/common/typograph";
 import * as AllIcons from "@/components/icons";
-import { Paragraph } from "@/components/typograph";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Module } from "./module";
@@ -10,25 +15,31 @@ export const SidebarItem = ({ module }: { module: Module }) => {
 
   if (module.href) {
     return (
-      <Link
-        data-active={module.isActive(pathname)}
-        href={module.href}
-        className="group flex h-12 items-center gap-3 px-6 hover:bg-background data-[active=true]:bg-primary/15"
-      >
-        <Icon className="w-5 text-gray-900 group-data-[active=true]:text-primary group-data-[active=true]:stroke-2" />
-        <Paragraph className="text-sm font-light text-gray-900 group-data-[active=true]:font-medium group-data-[active=true]:text-primary">
-          {module.title}
-        </Paragraph>
-      </Link>
+      <Tooltip>
+        <TooltipTrigger>
+          <Link
+            data-active={module.isActive(pathname)}
+            href={module.href}
+            className="group flex items-center justify-center gap-3 px-4 py-3 hover:bg-white/10 data-[active=true]:bg-white/10 rounded"
+          >
+            <Icon className="w-5 stroke-white fill-white/90 group-data-[active=true]:stroke-2" />
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <Paragraph className="text-white/90 font-normal group-data-[active=true]:text-white">
+            {module.title}
+          </Paragraph>
+        </TooltipContent>
+      </Tooltip>
     );
   }
 
   return (
-    <div className="group grid space-y-2 duration-300">
-      <Paragraph className="px-6 text-sm text-muted-foreground group-data-[active=true]:text-white">
+    <div className="group grid gap-2 pb-3 border-b-[0.1px] border-white/20  duration-300">
+      {/* <Paragraph className="px-4 text-xs text-white/60 uppercase group-data-[active=true]:text-white">
         {module.title}
-      </Paragraph>
-      <div className="grid gap-1">
+      </Paragraph> */}
+      <div className="grid gap-0">
         {module.submodules.map((submodule) => (
           <SidebarItem key={submodule.title} module={submodule} />
         ))}

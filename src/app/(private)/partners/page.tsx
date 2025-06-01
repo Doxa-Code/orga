@@ -1,6 +1,7 @@
+import { Breadcrumb } from "@/components/breadcrumb";
 import { HeaderPartners } from "@/components/header-partners";
 import TablePartners from "@/components/table-partners";
-import { Heading } from "@/components/typograph";
+import { Home } from "lucide-react";
 import { listPartners } from "./actions";
 
 export default async function ClientsPage() {
@@ -8,7 +9,7 @@ export default async function ClientsPage() {
 
   return (
     <main className="flex flex-col gap-4">
-      <Heading level={1}>Clientes</Heading>
+      <Breadcrumb routes={["Clientes"]} />
       <HeaderPartners />
       <TablePartners partners={partners ?? []} />
     </main>

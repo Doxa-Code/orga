@@ -1,5 +1,3 @@
-import { Logo } from "@/components/typograph";
-import { ScrollArea } from "../ui/scroll-area";
 import { Module } from "./module";
 import { SidebarItem } from "./sidebar-item";
 
@@ -92,17 +90,10 @@ export const modules: Module[] = [
 
 export function Sidebar() {
   return (
-    <ScrollArea>
-      <div className="px-4 sticky top-0 py-8">
-        <Logo className="text-2xl text-primary">Orga</Logo>
-        <Logo className="text-2xl text-secondary">Saas</Logo>
-      </div>
-
-      <aside className="flex flex-1 flex-col gap-4 pt-4 pb-10">
-        {modules.map((mod, index) => (
-          <SidebarItem module={mod} key={index!} />
-        ))}
-      </aside>
-    </ScrollArea>
+    <aside className="flex flex-1  max-w-[80px] py-5 pb-10 bg-sky-700 px-3 flex-col gap-4">
+      {modules.map((mod, index) => (
+        <SidebarItem module={mod} key={index!} />
+      ))}
+    </aside>
   );
 }

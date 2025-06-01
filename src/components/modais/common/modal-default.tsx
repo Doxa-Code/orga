@@ -1,6 +1,6 @@
 "use client";
 
-import { Heading } from "@/components/typograph";
+import { Heading } from "@/components/common/typograph";
 import { Drawer, DrawerContent, DrawerHeader } from "@/components/ui/drawer";
 import { useModais } from "@/hooks/use-modais";
 import { cn } from "@/lib/utils";

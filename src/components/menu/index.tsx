@@ -1,8 +1,10 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { Bell, Search } from "lucide-react";
+import type { ReactNode } from "react";
+import { Logo } from "../common/typograph";
 import { NavUser } from "../nav-user";
-import { ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
+import { Button } from "../ui/button";
 import { Sidebar } from "./sidebar";
 
 interface MenuProps {
@@ -15,36 +17,30 @@ interface MenuProps {
 }
 
 export function Menu(props: MenuProps) {
-  const [open, setOpen] = useState(false);
   return (
-    <ResizablePanelGroup
-      direction="horizontal"
-      className="min-h-screen max-h-screen overflow-hidden w-full flex-1 p-0"
-    >
-      <ResizablePanel
-        defaultSize={5}
-        data-open={open}
-        className="absolute bg-muted z-40 flex w-[200px] -translate-x-full select-none flex-col gap-0 shadow duration-150 data-[open=true]:translate-x-0 md:static md:max-w-[200px] md:data-[open=false]:translate-x-0"
-      >
-        <Sidebar />
-      </ResizablePanel>
-      <ResizablePanel
-        defaultSize={5}
-        className="overflow-hidden bg-muted shadow flex flex-col"
-      >
-        <ResizablePanel
-          defaultSize={5}
-          className="z-50 w-full max-h-[60px] flex items-center justify-end bg-primary"
-        >
+    <main className="overflow-hidden flex-1 w-full h-screen flex flex-col p-0">
+      <header className="w-full h-screen max-h-[60px] bg-white z-50 flex px-4  items-center justify-center shadow">
+        <div className="flex">
+          <Logo className="text-2xl !font-semibold text-primary">Orga</Logo>
+          <Logo className="text-2xl !font-semibold text-secondary">Saas</Logo>
+        </div>
+        <div className="w-full gap-2 flex justify-end items-center">
+          <Button variant="ghost" className="rounded-md hover:bg-white/10 h-10">
+            <Search className="stroke-white/90 size-[1.2rem]" />
+          </Button>
+          <Button variant="ghost" className="rounded-md hover:bg-white/10 h-10">
+            <Bell className="stroke-white/90 size-[1.2rem]" />
+          </Button>
           <NavUser user={props.user} />
-        </ResizablePanel>
-        <ResizablePanel
-          defaultSize={5}
-          className="overflow-hidden flex-1 flex flex-col p-6"
-        >
+        </div>
+      </header>
+
+      <section className="flex flex-1">
+        <Sidebar />
+        <main className="px-4 pt-6 flex-1 flex flex-col bg-[#F0F2F7] overflow-hidden w-full">
           {props.children}
-        </ResizablePanel>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        </main>
+      </section>
+    </main>
   );
 }

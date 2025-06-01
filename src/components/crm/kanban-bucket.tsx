@@ -8,7 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { MoreHorizontal, Plus, PlusCircle } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import type { Bucket, Card } from "./kanban";
@@ -56,11 +56,9 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
   if (isDragging) {
     return (
       <div
-        className="min-w-80 max-w-80 flex flex-col gap-4 p-4 flex-1"
+        className="min-w-96 max-w-96 flex flex-col gap-4 p-4 flex-1"
         ref={setNodeRef}
         style={style}
-        {...attributes}
-        {...listeners}
       >
         <header className="flex items-center pt-1 justify-between">
           <div className="flex gap-2 items-center justify-center">
@@ -79,11 +77,11 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
 
   return (
     <div
-      className="min-w-80 max-w-80 !select-none flex flex-col flex-1 bg-transparent p-4 gap-4 cursor-move"
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
+      className="min-w-96 max-w-96 !select-none flex flex-col flex-1 p-4 gap-4"
     >
       {/* Header */}
       <header className="border-b border-gray-100 flex items-center justify-between">
@@ -164,14 +162,14 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
         onClick={() => props.onCreateCard(props.bucket.id)}
         variant="outline"
         size="sm"
-        className="w-full justify-start border-none shadow rounded h-10 text-[#2A62B2] bg-white"
+        className="w-full justify-center items-center rounded h-10 text-[#2A62B2] bg-white border-none"
       >
-        <Plus className="w-4 h-4 mr-2" />
-        Adicionar Cliente
+        <Plus className="stroke-[#2A62B2] mr-2 size-[1rem]" />
+        Adicionar
       </Button>
 
       {/* Content */}
-      <div className="space-y-3 mt-4 flex-1">
+      <div className="space-y-3 rounded-md flex-1">
         <SortableContext items={props.cards.map((c) => c.id)}>
           {props.cards.map((card) => (
             <KanbanCard

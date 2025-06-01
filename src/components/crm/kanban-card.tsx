@@ -47,7 +47,6 @@ export const KanbanCard: React.FC<KanbanCard> = (props) => {
           }
         : null,
     ),
-    borderColor: props.color,
   };
 
   if (isDragging) {
@@ -55,7 +54,7 @@ export const KanbanCard: React.FC<KanbanCard> = (props) => {
       <div
         ref={setNodeRef}
         style={style}
-        className="shadow border-l-4 h-60 border-y-0 border-r-0 !z-[999] flex gap-4 rounded overflow-hidden p-4 border relative border-gray-200 hover:shadow-md cursor-pointer bg-white group"
+        className="h-52 w-full border-2 border-dashed border-rose-200 bg-rose-100 rounded-md"
       />
     );
   }
@@ -63,63 +62,55 @@ export const KanbanCard: React.FC<KanbanCard> = (props) => {
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{ ...style }}
       {...attributes}
       {...listeners}
-      className="shadow border-l-4 border-y-0 border-r-0 !z-[999] flex gap-4 rounded overflow-hidden p-4 border relative border-gray-200 hover:shadow-md cursor-pointer bg-white group"
+      className="flex flex-col gap-4 rounded-md overflow-hidden p-4 border relative border-gray-200 hover:shadow-md cursor-pointer bg-white group"
     >
-      <Checkbox className="rounded-full w-5 h-5" />
-      <section>
-        <div className="flex items-start justify-between mb-3">
-          <h4 className="font-semibold text-gray-900 transition-colors">
-            {props.card.name}
-          </h4>
-          <div className="text-right">
-            <p className="text-sm font-medium text-green-600">
-              R$ {props.card.value.toLocaleString("pt-BR")}
-            </p>
-          </div>
+      <div className="flex items-start justify-between mb-3">
+        <h4 className="font-semibold text-xl text-gray-900 transition-colors">
+          {props.card.name}
+        </h4>
+      </div>
+
+      <div className="space-y-2 text-sm text-gray-600">
+        <div className="flex items-center gap-2">
+          <Building2 className="w-4 h-4" />
+          <span className="truncate">{props.card.company}</span>
         </div>
 
-        <div className="space-y-2 text-sm text-gray-600">
-          <div className="flex items-center gap-2">
-            <Building2 className="w-4 h-4" />
-            <span className="truncate">{props.card.company}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Mail className="w-4 h-4" />
-            <span className="truncate">{props.card.email}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Phone className="w-4 h-4" />
-            <span>{props.card.phone}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4" />
-            <span
-              className={daysSinceContact > 7 ? "text-red-500 font-medium" : ""}
-            >
-              Último contato:{" "}
-              {daysSinceContact === 0 ? "Hoje" : `${daysSinceContact}d atrás`}
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          <Mail className="w-4 h-4" />
+          <span className="truncate">{props.card.email}</span>
         </div>
 
-        <div className="mt-3 pt-3 border-t border-gray-200">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-500">
-              {props.card.followUps.length} follow-up(s)
-            </span>
-            <span className="text-gray-500">
-              {props.card.appointments.filter((step) => !step.completed).length}{" "}
-              próximos passos
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          <Phone className="w-4 h-4" />
+          <span>{props.card.phone}</span>
         </div>
-      </section>
+
+        <div className="flex items-center gap-2">
+          <Calendar className="w-4 h-4" />
+          <span
+            className={daysSinceContact > 7 ? "text-red-500 font-medium" : ""}
+          >
+            Último contato:{" "}
+            {daysSinceContact === 0 ? "Hoje" : `${daysSinceContact}d atrás`}
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-3 pt-3 border-t border-gray-200">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-gray-500">
+            {props.card.followUps.length} follow-up(s)
+          </span>
+          <span className="text-gray-500">
+            {props.card.appointments.filter((step) => !step.completed).length}{" "}
+            próximos passos
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
