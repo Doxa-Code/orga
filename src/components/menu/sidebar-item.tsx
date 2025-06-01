@@ -16,13 +16,15 @@ export const SidebarItem = ({ module }: { module: Module }) => {
   if (module.href) {
     return (
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger disabled>
           <Link
             data-active={module.isActive(pathname)}
             href={module.href}
-            className="group flex items-center justify-center gap-3 px-4 py-3 hover:bg-white/10 data-[active=true]:bg-white/10 rounded"
+            className="group flex px-3 items-center border-l-4 border-transparent data-[active=true]:border-primary  justify-start gap-3"
           >
-            <Icon className="w-5 stroke-white fill-white/90 group-data-[active=true]:stroke-2" />
+            <div className="group-data-[active=true]:bg-primary/10 group-hover:bg-primary/10 p-4 rounded-md">
+              <Icon className="w-6 stroke-[#989AA4] group-hover:stroke-primary group-data-[active=true]:stroke-primary" />
+            </div>
           </Link>
         </TooltipTrigger>
         <TooltipContent side="right">
@@ -35,15 +37,10 @@ export const SidebarItem = ({ module }: { module: Module }) => {
   }
 
   return (
-    <div className="group grid gap-2 pb-3 border-b-[0.1px] border-white/20  duration-300">
-      {/* <Paragraph className="px-4 text-xs text-white/60 uppercase group-data-[active=true]:text-white">
-        {module.title}
-      </Paragraph> */}
-      <div className="grid gap-0">
-        {module.submodules.map((submodule) => (
-          <SidebarItem key={submodule.title} module={submodule} />
-        ))}
-      </div>
-    </div>
+    <>
+      {module.submodules.map((submodule) => (
+        <SidebarItem key={submodule.title} module={submodule} />
+      ))}
+    </>
   );
 };

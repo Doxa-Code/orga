@@ -15,7 +15,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Client, FollowUp, NextStep } from "@/types/kanban";
 import {
   Building2,
   Calendar,
@@ -28,16 +27,17 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+import type { Appointment, Card, FollowUp } from "./kanban";
 
 interface ClientModalProps {
-  client: Client;
+  card: Card;
   isOpen: boolean;
   onClose: () => void;
-  onUpdateClient: (updatedClient: Client) => void;
+  onUpdateClient: (updatedClient: Card) => void;
 }
 
 export const ModalFollowUp: React.FC<ClientModalProps> = ({
-  client,
+  card,
   isOpen,
   onClose,
   onUpdateClient,
@@ -67,12 +67,11 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
         date: new Date(),
         type: newFollowUp.type,
         notes: newFollowUp.notes,
-        outcome: newFollowUp.outcome,
       };
 
-      const updatedClient: Client = {
-        ...client,
-        followUps: [...client.followUps, followUp],
+      const updatedClient: Card = {
+        ...card,
+        followUps: [...card.followUps, followUp],
         lastContact: new Date(),
       };
 
@@ -88,24 +87,23 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
 
   const handleAddNextStep = () => {
     if (newNextStep.title.trim()) {
-      const nextStep: NextStep = {
+      const appointment: Appointment = {
         id: Date.now().toString(),
         title: newNextStep.title,
         description: newNextStep.description,
         dueDate: newNextStep.dueDate
           ? new Date(newNextStep.dueDate)
           : new Date(),
-        priority: newNextStep.priority,
         completed: false,
       };
 
-      const updatedClient: Client = {
-        ...client,
-        nextSteps: [...client.nextSteps, nextStep],
+      const updatedClient: Card = {
+        ...card,
+        appointments: [...card.appointments, appointment],
       };
 
       onUpdateClient(updatedClient);
-      console.log("Próximo passo adicionado:", nextStep);
+      console.log("Próximo passo adicionado:", appointment);
 
       setNewNextStep({
         title: "",
@@ -118,13 +116,15 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
   };
 
   const handleToggleNextStep = (stepId: string) => {
-    const updatedNextSteps = client.nextSteps.map((step) =>
-      step.id === stepId ? { ...step, completed: !step.completed } : step,
+    const updatedNextSteps = card.appointments.map((step) =>
+      step.id === stepId
+        ? ({ ...step, completed: !step.completed } as unknown as Appointment)
+        : step,
     );
 
-    const updatedClient: Client = {
-      ...client,
-      nextSteps: updatedNextSteps,
+    const updatedClient: Card = {
+      ...card,
+      appointments: updatedNextSteps,
     };
 
     onUpdateClient(updatedClient);
@@ -197,10 +197,10 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="max-w-6xl w-full max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-900">
-            {client.name}
+            {card.name}
           </DialogTitle>
         </DialogHeader>
 
@@ -217,7 +217,7 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
-                Follow-ups ({client.followUps.length})
+                Follow-ups ({card.followUps.length})
               </button>
               <button
                 onClick={() => setActiveTab("nextsteps")}
@@ -228,7 +228,7 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
                 }`}
               >
                 Próximos Passos (
-                {client.nextSteps.filter((step) => !step.completed).length})
+                {card.appointments?.filter((step) => !step.completed).length})
               </button>
             </div>
 
@@ -238,7 +238,7 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
                 <div className="flex flex-col h-full">
                   {/* Chat Messages Container */}
                   <div className="flex-1 overflow-y-auto space-y-4 pb-4">
-                    {client.followUps.map((followUp, index) => (
+                    {card.followUps.map((followUp, index) => (
                       <div key={followUp.id} className="flex items-start gap-3">
                         {/* Avatar/Icon */}
                         <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
@@ -505,7 +505,7 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
                   )}
 
                   <div className="space-y-3">
-                    {client.nextSteps.map((step) => (
+                    {card.appointments.map((step) => (
                       <div
                         key={step.id}
                         className={`border rounded-lg p-4 ${step.completed ? "bg-green-50 border-green-200" : "bg-white border-gray-200"}`}
@@ -570,17 +570,15 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <Mail className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-700">{client.email}</span>
+                  <span className="text-sm text-gray-700">{card.email}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Phone className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-700">{client.phone}</span>
+                  <span className="text-sm text-gray-700">{card.phone}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Building2 className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-700">
-                    {client.company}
-                  </span>
+                  <span className="text-sm text-gray-700">{card.company}</span>
                 </div>
               </div>
             </div>
@@ -595,26 +593,26 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
                     Valor do Negócio
                   </span>
                   <p className="text-xl font-bold text-green-600">
-                    R$ {client.value.toLocaleString("pt-BR")}
+                    R$ {card.value.toLocaleString("pt-BR")}
                   </p>
                 </div>
                 <div>
                   <span className="text-xs text-gray-500 uppercase tracking-wide">
                     Status
                   </span>
-                  <p className="text-sm font-medium">{client.status}</p>
+                  <p className="text-sm font-medium">{card.status}</p>
                 </div>
                 <div>
                   <span className="text-xs text-gray-500 uppercase tracking-wide">
                     Cliente desde
                   </span>
-                  <p className="text-sm">{formatDate(client.createdAt)}</p>
+                  <p className="text-sm">{formatDate(card.createdAt)}</p>
                 </div>
                 <div>
                   <span className="text-xs text-gray-500 uppercase tracking-wide">
                     Último contato
                   </span>
-                  <p className="text-sm">{formatDate(client.lastContact)}</p>
+                  <p className="text-sm">{formatDate(card.lastContact)}</p>
                 </div>
               </div>
             </div>
@@ -626,13 +624,13 @@ export const ModalFollowUp: React.FC<ClientModalProps> = ({
               <div className="grid grid-cols-2 gap-3 text-center">
                 <div className="bg-white rounded-lg p-3">
                   <p className="text-lg font-bold text-blue-600">
-                    {client.followUps.length}
+                    {card.followUps.length}
                   </p>
                   <p className="text-xs text-gray-500">Follow-ups</p>
                 </div>
                 <div className="bg-white rounded-lg p-3">
                   <p className="text-lg font-bold text-orange-600">
-                    {client.nextSteps.filter((step) => !step.completed).length}
+                    {card.appointments.filter((step) => !step.completed).length}
                   </p>
                   <p className="text-xs text-gray-500">Próximos Passos</p>
                 </div>

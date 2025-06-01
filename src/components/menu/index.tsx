@@ -18,9 +18,9 @@ interface MenuProps {
 
 export function Menu(props: MenuProps) {
   return (
-    <main className="overflow-hidden flex-1 w-full h-screen flex flex-col p-0">
-      <header className="w-full h-screen max-h-[60px] bg-white z-50 flex px-4  items-center justify-center shadow">
-        <div className="flex">
+    <main className="overflow-hidden flex-1 w-full flex-col h-screen flex p-0">
+      <header className="w-full h-screen bg-white max-h-[60px] z-50 flex px-4  items-center justify-center shadow">
+        <div className="flex px-4">
           <Logo className="text-2xl !font-semibold text-primary">Orga</Logo>
           <Logo className="text-2xl !font-semibold text-secondary">Saas</Logo>
         </div>
@@ -35,11 +35,11 @@ export function Menu(props: MenuProps) {
         </div>
       </header>
 
-      <section className="flex flex-1">
+      <section className="flex-1 flex bg-white shadow overflow-hidden w-full">
         <Sidebar />
-        <main className="px-4 pt-6 flex-1 flex flex-col bg-[#F0F2F7] overflow-hidden w-full">
+        <div className="w-full flex-1 overflow-hidden flex">
           {props.children}
-        </main>
+        </div>
       </section>
     </main>
   );

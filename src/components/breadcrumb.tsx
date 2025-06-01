@@ -1,52 +1,32 @@
 import {
   Breadcrumb as Base,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Home } from "lucide-react";
 import React from "react";
 
 type Props = {
-  routes: (
-    | {
-        url?: string;
-        label: string;
-      }
-    | string
-  )[];
+  routes: string[];
 };
 
 export const Breadcrumb: React.FC<Props> = (props) => {
   return (
     <Base>
       <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/">
-            <Home size={15} />
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        {props.routes?.map((route) => {
-          if (typeof route !== "string") {
-            return (
-              <React.Fragment key={route.label}>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink href={route.url || "#"}>
-                    <Home size={15} />
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </React.Fragment>
-            );
-          }
+        {props.routes?.map((route, i) => {
           return (
             <React.Fragment key={route}>
-              <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>{route}</BreadcrumbPage>
+                <BreadcrumbPage className="text-base text-[#020304]">
+                  {route}
+                </BreadcrumbPage>
               </BreadcrumbItem>
+              <BreadcrumbSeparator
+                className="text-[#020304]"
+                data-hidden={i === props.routes.length - 1}
+              />
             </React.Fragment>
           );
         })}

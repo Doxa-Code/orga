@@ -11,9 +11,11 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
+import { Search } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { Button } from "../ui/button";
 import { CreateRecordModal } from "./ClienteRecordModal";
 import { KanbanBucket } from "./kanban-bucket";
 import { KanbanCard } from "./kanban-card";
@@ -25,6 +27,20 @@ export type Bucket = {
   name: string;
   color: string;
 };
+
+export type FollowUp = {
+  id: string;
+  date: Date;
+  type: string;
+  notes: string;
+};
+export type Appointment = {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: Date;
+  completed: false;
+};
 export type Card = {
   id: string;
   order: number;
@@ -35,23 +51,8 @@ export type Card = {
   company: string;
   value: number;
   lastContact: Date;
-  followUps: [
-    {
-      id: string;
-      date: Date;
-      type: string;
-      notes: string;
-    },
-  ];
-  appointments: [
-    {
-      id: string;
-      title: string;
-      description: string;
-      dueDate: Date;
-      completed: false;
-    },
-  ];
+  followUps: FollowUp[];
+  appointments: Appointment[];
   createdAt: Date;
 };
 
@@ -65,7 +66,7 @@ const initialCards: Card[] = [
     phone: "(11) 99999-9999",
     company: "Tech Solutions",
     value: 15000,
-    lastContact: new Date("2024-01-20"),
+    lastContact: new Date(),
     followUps: [
       {
         id: "1",
@@ -108,7 +109,7 @@ const initialCards: Card[] = [
         id: "2",
         title: "Agendar demonstração",
         description: "Preparar demo personalizada",
-        dueDate: new Date("2024-01-28"),
+        dueDate: new Date("2025-05-30"),
         completed: false,
       },
     ],
@@ -220,6 +221,7 @@ export const Kanban: React.FC = () => {
     setBuckets((prev) => {
       const activeIndex = prev.findIndex((b) => b.id === activeId);
       const overIndex = prev.findIndex((b) => b.id === overId);
+
       const newBuckets = arrayMove(prev, activeIndex, overIndex);
       return newBuckets.map((b, i) => ({ ...b, order: i }));
     });
@@ -348,14 +350,32 @@ export const Kanban: React.FC = () => {
   }
 
   return (
-    <div className="w-full h-full flex Z-10 flex-1 mx-auto">
+    <div className="w-full h-full flex rounded-xl flex-col flex-1 mx-auto">
+      <header className="w-full py-2 px-4 gap-4 flex justify-between items-center bg-[#F9F9F9] border-y-2 border-[#efefef]">
+        <div className="flex w-full max-w-xl items-center border rounded-md bg-white">
+          <div className="pl-4">
+            <Search className="stroke-muted-foreground" size={20} />
+          </div>
+          <Input
+            placeholder="Pesquisar..."
+            className="border-none shadow-none text-lg"
+          />
+        </div>
+        <Button
+          onClick={() => {
+            handleCreateRecord(buckets.at(0)?.id!);
+          }}
+        >
+          Nova proposta
+        </Button>
+      </header>
       <DndContext
         onDragOver={onDragOver}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         sensors={sensors}
       >
-        <div className="flex flex-1 gap-4 overflow-x-auto pb-6">
+        <div className="flex flex-1 gap-4 py-4 overflow-x-auto pl-4 pr-10 w-full">
           <SortableContext items={buckets.map((b) => b.id)}>
             {[...buckets]
               .sort((a, b) => a.order - b.order)
@@ -448,7 +468,7 @@ export const Kanban: React.FC = () => {
       {/* Modals */}
       {selectedCard && (
         <ModalFollowUp
-          client={selectedCard}
+          card={selectedCard}
           isOpen={isClientModalOpen}
           onClose={() => setIsClientModalOpen(false)}
           onUpdateClient={handleUpdateClient}

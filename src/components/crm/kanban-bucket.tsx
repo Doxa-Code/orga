@@ -8,7 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { MoreHorizontal, Plus, PlusCircle } from "lucide-react";
+import { MoreHorizontal, MoreVertical, Plus, PlusCircle } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import type { Bucket, Card } from "./kanban";
@@ -56,22 +56,10 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
   if (isDragging) {
     return (
       <div
-        className="min-w-96 max-w-96 flex flex-col gap-4 p-4 flex-1"
+        className="min-w-96 max-w-96 bg-[#F9F9F9] opacity-70 rounded-md border border-dashed border-[#efefef] flex flex-col gap-4 p-4 flex-1"
         ref={setNodeRef}
         style={style}
-      >
-        <header className="flex items-center pt-1 justify-between">
-          <div className="flex gap-2 items-center justify-center">
-            <div className="w-5 h-5 rounded-full bg-zinc-200" />
-            <div className="w-32 bg-zinc-200 h-6" />
-          </div>
-          <div className="w-6 bg-zinc-200 h-3" />
-        </header>
-        <div className="w-full bg-zinc-200 h-10 mb-4" />
-        {props.cards.map((card) => (
-          <div key={card.id} className="w-full bg-zinc-200 h-[200px]" />
-        ))}
-      </div>
+      />
     );
   }
 
@@ -81,10 +69,10 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
       style={style}
       {...attributes}
       {...listeners}
-      className="min-w-96 max-w-96 !select-none flex flex-col flex-1 p-4 gap-4"
+      className="min-w-96 max-w-96 h-full bg-[#F9F9F9] rounded-md border border-[#EFEFEF] !select-none flex flex-col flex-1 py-3 px-2 gap-4"
     >
       {/* Header */}
-      <header className="border-b border-gray-100 flex items-center justify-between">
+      <header className="flex items-center justify-between">
         {isEditing ? (
           <Input
             value={editName}
@@ -108,65 +96,63 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
             onDoubleClick={() => setIsEditing(true)}
             className="flex items-center justify-between w-full gap-2 flex-1"
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-2 py-1 rounded-md">
               <div
-                className="w-4 h-4 rounded-full"
+                className="w-3 h-3 rounded-full"
                 style={{
                   backgroundColor: props.bucket.color,
                 }}
               />
-              <h3 className="font-semibold text-gray-900">
+              <h3 className="font-normal text-[#0A0A0A]">
                 {props.bucket.name}
               </h3>
-              <span className="rounded-full font-light text-sm text-muted-foreground">
-                {props.cards.length}
-              </span>
+              <span className="text-[#858587]">{props.cards.length}</span>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <div className="flex justify-end">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="!py-0 !px-2 h-7 rounded"
+            <div className="flex">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="flex justify-end">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="!py-0 !px-2 h-7 hover:bg-white/10 rounded"
+                    >
+                      <MoreVertical className="h-4 w-4 stroke-[#69696B]" />
+                    </Button>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setEditName(props.bucket.name);
+                      setIsEditing(true);
+                    }}
+                    className="px-4"
                   >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => {
-                    setEditName(props.bucket.name);
-                    setIsEditing(true);
-                  }}
-                  className="px-4"
-                >
-                  <span className="font-light">Renomear</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    props.onDelete(props.bucket.id);
-                  }}
-                  className="px-4"
-                >
-                  <span className="font-light">Excluir</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    <span className="font-light">Renomear</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      props.onDelete(props.bucket.id);
+                    }}
+                    className="px-4"
+                  >
+                    <span className="font-light">Excluir</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button
+                onClick={() => props.onCreateCard(props.bucket.id)}
+                size="sm"
+                variant="ghost"
+                className="!py-0 !px-2 h-7 hover:bg-white/10 rounded"
+              >
+                <Plus className="h-4 w-4 stroke-[#69696B]" />
+              </Button>
+            </div>
           </div>
         )}
       </header>
-
-      <Button
-        onClick={() => props.onCreateCard(props.bucket.id)}
-        variant="outline"
-        size="sm"
-        className="w-full justify-center items-center rounded h-10 text-[#2A62B2] bg-white border-none"
-      >
-        <Plus className="stroke-[#2A62B2] mr-2 size-[1rem]" />
-        Adicionar
-      </Button>
 
       {/* Content */}
       <div className="space-y-3 rounded-md flex-1">
