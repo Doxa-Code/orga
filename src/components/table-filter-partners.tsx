@@ -21,7 +21,7 @@ type Props = {
   table: Table<any>;
 };
 
-export const Filters: React.FC<Props> = ({ table, ...props }) => {
+export const TableFilterPartners: React.FC<Props> = ({ table, ...props }) => {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 

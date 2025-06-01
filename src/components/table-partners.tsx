@@ -44,9 +44,9 @@ import {
 import { ChevronDown, ChevronUp, Container, UserRound } from "lucide-react";
 import { useState } from "react";
 import type { z } from "zod";
-import { Filters } from "./filters";
 import { ModalDelete } from "./modais/common/modal-delete";
 import { FooterPagination } from "./pagination";
+import { TableFilterPartners } from "./table-filter-partners";
 
 type Item = z.infer<typeof partnerSchema>;
 
@@ -201,7 +201,7 @@ export default function TablePartners(props: Props) {
 
   return (
     <div className="space-y-4 bg-white p-4 rounded shadow">
-      <Filters table={table} />
+      <TableFilterPartners table={table} />
       {/* Table */}
       <div className="overflow-hidden border-y border-border">
         <header

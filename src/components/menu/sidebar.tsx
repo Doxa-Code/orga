@@ -11,6 +11,7 @@ export const modules: Module[] = [
       "/dashboard",
       "Visão do resumo geral da saúde financeira",
     ),
+    Module.create("CRM", "Clients", "/crm", "Relacionamento com o cliente"),
   ),
   Module.create("Financeiro", "Finance").addSubModule(
     // Module.create(
@@ -59,8 +60,8 @@ export const modules: Module[] = [
     Module.create(
       "Clientes",
       "Clients",
-      "/clients",
-      "Criar, excluir, alterar, visualizar todos os clientes",
+      "/partners",
+      "Criar, excluir, alterar, visualizar todos os clientes e fornecedores",
     ),
     //   Module.create(
     //     "Fornecedores",
