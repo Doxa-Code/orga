@@ -67,7 +67,7 @@ test("not workspace informated", async () => {
         userId: user.id,
         defaultInstallmentDueDate: new Date(),
         defaultInstallmentWalletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new FieldMissing("workspace ID"));
 });
 
@@ -85,7 +85,7 @@ test("workspace not found", async () => {
         userId: user.id,
         defaultInstallmentDueDate: new Date(),
         defaultInstallmentWalletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new EntityNotFound("workspace"));
 });
 
@@ -103,7 +103,7 @@ test("not type informated", async () => {
         userId: user.id,
         defaultInstallmentDueDate: new Date(),
         defaultInstallmentWalletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new FieldMissing("type"));
 });
 
@@ -121,7 +121,7 @@ test("type invalid", async () => {
         userId: user.id,
         defaultInstallmentDueDate: new Date(),
         defaultInstallmentWalletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new FieldInvalid("type"));
 });
 
@@ -139,7 +139,7 @@ test("category invalid", async () => {
         userId: user.id,
         defaultInstallmentDueDate: new Date(),
         defaultInstallmentWalletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new FieldInvalid("category"));
 });
 
@@ -157,7 +157,7 @@ test("category not found", async () => {
         userId: user.id,
         defaultInstallmentDueDate: new Date(),
         defaultInstallmentWalletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new EntityNotFound("category"));
   expect(
     async () =>
@@ -172,7 +172,7 @@ test("category not found", async () => {
         userId: user.id,
         defaultInstallmentDueDate: new Date(),
         defaultInstallmentWalletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new EntityNotFound("category"));
 });
 
@@ -190,7 +190,7 @@ test("cost center not found", async () => {
         userId: user.id,
         defaultInstallmentDueDate: new Date(),
         defaultInstallmentWalletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new EntityNotFound("cost center"));
 });
 
@@ -208,7 +208,7 @@ test("invalid user", async () => {
         userId: userInvalid.id,
         defaultInstallmentDueDate: new Date(),
         defaultInstallmentWalletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new NotPermission());
   expect(
     async () =>
@@ -223,7 +223,7 @@ test("invalid user", async () => {
         userId: "any",
         defaultInstallmentDueDate: new Date(),
         defaultInstallmentWalletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new NotPermission());
 });
 

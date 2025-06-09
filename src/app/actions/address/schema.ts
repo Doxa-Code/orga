@@ -1,13 +1,15 @@
 import { z } from "zod";
 
 export const listStateAddressOutputSchema = z.array(
-  z.object({ acronym: z.string(), name: z.string() }),
+  z.object({ acronym: z.string(), name: z.string() })
 );
 
-export const listCitiesAddressInputSchema = z.object({ acronym: z.string() });
+export const listCitiesAddressInputSchema = z.object({
+  acronym: z.string().optional(),
+});
 
 export const listCitiesAddressOutputSchema = z.array(
-  z.object({ name: z.string() }),
+  z.object({ name: z.string() })
 );
 
 export const loadCEPInputSchema = z.object({

@@ -33,7 +33,7 @@ beforeAll(async () => {
   });
 
   const [walletCreated] = await walletRepository.list(
-    user.workspaces.map((wk) => wk.id)
+    user.workspaces.map((wk) => wk.id),
   );
   wallet = walletCreated;
 });
@@ -50,7 +50,7 @@ test("user not permission", () => {
       await deleteWallet.execute({
         userId: userInvalid.id,
         walletId: wallet.id,
-      })
+      }),
   ).rejects.toThrowError(new NotPermission());
 });
 
@@ -60,7 +60,7 @@ test("Delete wallet", async () => {
     walletId: wallet?.id,
   });
   const wallets = await walletRepository.list(
-    user.workspaces.map((wk) => wk.id)
+    user.workspaces.map((wk) => wk.id),
   );
   expect(wallets.length).toBe(1);
 });

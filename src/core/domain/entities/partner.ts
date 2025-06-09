@@ -24,6 +24,29 @@ export namespace Partner {
     createdAt: Date;
     workspaceId: string;
   }
+
+  export interface Raw {
+    id: string;
+    type: Type;
+    roles: Role[];
+    name: string;
+    taxId: string;
+    email: string;
+    phone: string;
+    address: {
+      street: string;
+      neighborhood: string;
+      number: string;
+      city: string;
+      state: string;
+      zipCode: string;
+      country: string;
+      note: string;
+    };
+    status: Status;
+    createdAt: string;
+    workspaceId: string;
+  }
 }
 
 type CreatePartnerInputDTO = {
@@ -71,6 +94,38 @@ export class Partner {
     this.status = props.status;
     this.createdAt = props.createdAt;
     this.workspaceId = props.workspaceId;
+  }
+
+  raw(): Partner.Raw {
+    return {
+      id: this.id,
+      name: this.name,
+      taxId: this.taxId.value,
+      type: this.type,
+      roles: this.roles,
+      email: this.email.value,
+      phone: this.phone.value,
+      address: this.address.raw(),
+      status: this.status,
+      createdAt: this.createdAt.toISOString(),
+      workspaceId: this.workspaceId,
+    };
+  }
+
+  static fromRaw(props: Partner.Raw) {
+    return new Partner({
+      address: Address.create(props.address),
+      taxId: TaxId.create(props.taxId),
+      createdAt: new Date(props.createdAt),
+      email: Email.create(props.email),
+      id: props.id,
+      name: props.name,
+      phone: Phone.create(props.phone),
+      roles: props.roles,
+      status: props.status,
+      type: props.type,
+      workspaceId: props.workspaceId,
+    });
   }
 
   static instance(props: Partner.Props) {

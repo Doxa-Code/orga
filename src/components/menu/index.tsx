@@ -19,10 +19,10 @@ interface MenuProps {
 export function Menu(props: MenuProps) {
   return (
     <main className="overflow-hidden flex-1 w-full flex-col h-screen flex p-0">
-      <header className="w-full h-screen bg-white max-h-[60px] z-50 flex px-4  items-center justify-center shadow">
+      <header className="w-full h-screen bg-primary max-h-[60px] z-50 flex px-4  items-center justify-center shadow">
         <div className="flex px-4">
-          <Logo className="text-2xl !font-semibold text-primary">Orga</Logo>
-          <Logo className="text-2xl !font-semibold text-secondary">Saas</Logo>
+          <Logo className="text-2xl !font-bold text-white">Orga</Logo>
+          <Logo className="text-2xl !font-bold text-white">Saas</Logo>
         </div>
         <div className="w-full gap-2 flex justify-end items-center">
           <Button variant="ghost" className="rounded-md hover:bg-white/10 h-10">
@@ -35,7 +35,7 @@ export function Menu(props: MenuProps) {
         </div>
       </header>
 
-      <section className="flex-1 flex bg-white shadow overflow-hidden w-full">
+      <section className="flex-1 flex bg-background shadow overflow-hidden w-full">
         <Sidebar />
         <div className="w-full flex-1 overflow-hidden flex">
           {props.children}

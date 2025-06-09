@@ -20,10 +20,10 @@ export const SidebarItem = ({ module }: { module: Module }) => {
           <Link
             data-active={module.isActive(pathname)}
             href={module.href}
-            className="group flex px-3 items-center border-l-4 border-transparent data-[active=true]:border-primary  justify-start gap-3"
+            className="group flex px-3 items-center border-l-4 border-transparent data-[active=true]:border-[#2687E9]  justify-start gap-3"
           >
-            <div className="group-data-[active=true]:bg-primary/10 group-hover:bg-primary/10 p-4 rounded-md">
-              <Icon className="w-6 stroke-[#989AA4] group-hover:stroke-primary group-data-[active=true]:stroke-primary" />
+            <div className="group-data-[active=true]:bg-[#2687E9]/10 group-hover:bg-[#2687E9]/10 p-4 rounded-md">
+              <Icon className="w-5 stroke-[#989AA4] group-hover:stroke-[#2687E9] group-data-[active=true]:stroke-[#2687E9]" />
             </div>
           </Link>
         </TooltipTrigger>

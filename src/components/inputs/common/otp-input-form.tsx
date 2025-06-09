@@ -7,11 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@orga/ui/form";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@orga/ui/input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@orga/ui/input-otp";
 import { cn } from "@orga/utils";
 import { forwardRef } from "react";
 

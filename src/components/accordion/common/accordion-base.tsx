@@ -17,7 +17,7 @@ export function AccordionBase(props: Props) {
   return (
     <Accordion
       type="single"
-      className="w-full px-4 border rounded border-gray-300"
+      className="w-full px-4 bg-white border rounded border-gray-300"
       collapsible
     >
       <AccordionItem value={props.id} className="!border-b-0">

@@ -78,6 +78,7 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
         });
       },
     });
+
     const retrievePartnerAction = useServerActionQuery(retrievePartner, {
       input: {
         id: partnerId ?? "",
@@ -153,7 +154,7 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
     };
 
     const onRetrievedPartnerByTaxId = (
-      partner?: PartnerRetrievedOutputDTO | null,
+      partner?: PartnerRetrievedOutputDTO | null
     ) => {
       if (!partner) {
         form.reset({
@@ -193,13 +194,17 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
           registerPartnerAction.mutate({
             ...values,
             id: partnerId,
-          }),
+          })
         )}
         id={REGISTER_PARTNER_MODAL_NAME}
       >
         <SectionModal title="Dados gerais">
           <div className="flex w-full gap-6">
-            <SelectPartnerTypeInputForm name="type" label="Tipo de pessoa" />
+            <SelectPartnerTypeInputForm
+              name="type"
+              label="Tipo de pessoa"
+              form={form}
+            />
             <TaxIdLoaderInputForm
               name="taxId"
               onRetrievedPartnerByTaxId={onRetrievedPartnerByTaxId}
@@ -215,19 +220,21 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
             />
           </div>
           <CheckboxPartnerRoleInputForm name="roles" label="Tipo de papel" />
-          <AccordionBase
-            title="Informações adicionais"
-            id="information-additional"
-          >
-            <div className="flex w-full gap-4">
-              <TextInputForm label="Email" name="email" className="w-full" />
-              <PhoneInputForm name="phone" label="Telefone/Celular" />
-            </div>
-          </AccordionBase>
-          <AccordionAddressSession
-            onRetrievedAddressByZipCode={onRetrievedAddressByZipCode}
-          />
         </SectionModal>
+
+        <AccordionBase
+          title="Informações adicionais"
+          id="information-additional"
+        >
+          <div className="flex w-full gap-4">
+            <TextInputForm label="Email" name="email" className="w-full" />
+            <PhoneInputForm name="phone" label="Telefone/Celular" />
+          </div>
+        </AccordionBase>
+        <AccordionAddressSession
+          onRetrievedAddressByZipCode={onRetrievedAddressByZipCode}
+          form={form}
+        />
         <FormFooter
           onCancel={() => {
             closeModal(REGISTER_PARTNER_MODAL_NAME);
@@ -235,5 +242,5 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
         />
       </FormDefault>
     );
-  },
+  }
 );

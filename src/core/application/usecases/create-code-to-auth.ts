@@ -18,12 +18,12 @@ export class CreateCodeToAuthenticate {
   constructor(
     private readonly usersRepository: UserRepository,
     private readonly sendMailService: SendMailService,
-    private readonly createCodeService: CreateCodeService
+    private readonly createCodeService: CreateCodeService,
   ) {}
 
   async execute(email: string) {
     const user = await this.usersRepository.retrieveByEmail(
-      Email.create(email)
+      Email.create(email),
     );
 
     if (!user) {
@@ -53,7 +53,7 @@ export class CreateCodeToAuthenticate {
                   <p style="font-size: 14px; color: #888888; font-family: Arial;">Este é um email automático. Por favor, não responda.</p>
               </td>
           </tr>
-      </table>`
+      </table>`,
     );
   }
 }

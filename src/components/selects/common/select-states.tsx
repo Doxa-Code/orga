@@ -22,8 +22,11 @@ export const SelectStates: React.FC<Props> = (props) => {
       label="name"
       value="acronym"
       noAddButton
-      setSelected={(value) => props.onChange(value)}
-      selected={props.value}
+      onSelect={(value) => props.onChange(value?.acronym ?? "")}
+      selected={
+        listStatesAction.data.find((state) => state.acronym === props.value) ??
+        null
+      }
     />
   );
 };

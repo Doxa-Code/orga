@@ -26,12 +26,12 @@ export function ModalDefault(props: ModalDefaultProps) {
       fixed
       modal
     >
-      <DrawerContent className="flex h-screen bg-muted w-full items-center !p-0 outline-none">
+      <DrawerContent className="flex z-[1000] h-screen bg-background w-full items-center !p-0 outline-none">
         <DrawerHeader
           data-hidden={!props.title}
           className={cn(
             "w-full border-b text-left bg-primary data-[hidden=true]:hidden",
-            props.headerClassName,
+            props.headerClassName
           )}
         >
           <div className="container mx-auto px-0">
@@ -40,7 +40,7 @@ export function ModalDefault(props: ModalDefaultProps) {
             </Heading>
           </div>
         </DrawerHeader>
-        <div className="container flex-1 px-0 bg-muted overflow-auto py-3">
+        <div className="container flex-1 px-0 overflow-y-auto pt-3 pb-44">
           {props.children}
         </div>
       </DrawerContent>

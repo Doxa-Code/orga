@@ -61,22 +61,26 @@ export class DragDropManager<T = unknown> {
   }
 
   private init() {
-    const items = document.querySelectorAll<HTMLElement>(this.opts.draggableSelector);
-    items.forEach(item => this.bindDraggable(item));
+    const items = document.querySelectorAll<HTMLElement>(
+      this.opts.draggableSelector,
+    );
+    items.forEach((item) => this.bindDraggable(item));
 
-    const zones = document.querySelectorAll<HTMLElement>(this.opts.dropzoneSelector);
-    zones.forEach(zone => this.bindDropzone(zone));
+    const zones = document.querySelectorAll<HTMLElement>(
+      this.opts.dropzoneSelector,
+    );
+    zones.forEach((zone) => this.bindDropzone(zone));
   }
 
   private bindDraggable(item: HTMLElement) {
-    item.setAttribute('draggable', 'true');
-    item.addEventListener('dragstart', this.handleDragStart);
-    item.addEventListener('dragend', this.handleDragEnd);
+    item.setAttribute("draggable", "true");
+    item.addEventListener("dragstart", this.handleDragStart);
+    item.addEventListener("dragend", this.handleDragEnd);
   }
 
   private bindDropzone(zone: HTMLElement) {
-    zone.addEventListener('dragover', this.handleDragOver);
-    zone.addEventListener('drop', this.handleDrop);
+    zone.addEventListener("dragover", this.handleDragOver);
+    zone.addEventListener("drop", this.handleDrop);
   }
 
   private handleDragStart = (event: DragEvent) => {
@@ -86,8 +90,11 @@ export class DragDropManager<T = unknown> {
     if (this.sourceContainer) {
       this.oldIndex = Array.from(this.sourceContainer.children).indexOf(el);
     }
-    event.dataTransfer?.setData('text/plain', this.opts.getItemId(el).toString());
-    event.dataTransfer?.effectAllowed = 'move';
+    event.dataTransfer?.setData(
+      "text/plain",
+      this.opts.getItemId(el).toString(),
+    );
+    event.dataTransfer?.effectAllowed = "move";
     this.opts.onDragStart?.(event, el);
     this.opts.styleCallbacks?.onDragStart?.(el);
   };
@@ -95,7 +102,7 @@ export class DragDropManager<T = unknown> {
   private handleDragOver = (event: DragEvent) => {
     event.preventDefault();
     const zone = event.currentTarget as HTMLElement;
-    event.dataTransfer!.dropEffect = 'move';
+    event.dataTransfer!.dropEffect = "move";
     this.opts.onDragOver?.(event, zone);
     this.opts.styleCallbacks?.onDragOver?.(zone, event);
   };

@@ -1,6 +1,6 @@
 import { FieldMissing } from "../errors/field-missing";
 import { Email } from "../valueobjects/email";
-import type { Membership } from "./membership";
+import { Membership } from "./membership";
 
 export namespace User {
   export type Plan = "TRIAL" | "BASIC" | "PREMIUM" | "ENTERPRISE";
@@ -12,6 +12,15 @@ export namespace User {
     createdAt: Date;
     plan: Plan;
     membership: Membership[];
+  }
+  export interface Raw {
+    id: string;
+    name: string;
+    email: string;
+    active: boolean;
+    createdAt: string;
+    plan: Plan;
+    membership: Membership.Raw[];
   }
 }
 
@@ -32,6 +41,30 @@ export class User {
     this.createdAt = props.createdAt;
     this.plan = props.plan;
     this.membership = props.membership;
+  }
+
+  raw(): User.Raw {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email.value,
+      active: this.active,
+      createdAt: this.createdAt.toISOString(),
+      plan: this.plan,
+      membership: this.membership.map((m) => m.raw()),
+    };
+  }
+
+  static fromRaw(props: User.Raw) {
+    return new User({
+      email: Email.create(props.email),
+      createdAt: new Date(props.createdAt),
+      id: props.id,
+      name: props.name,
+      active: props.active,
+      plan: props.plan,
+      membership: props.membership.map(Membership.instance),
+    });
   }
 
   turnMember(member: Membership) {

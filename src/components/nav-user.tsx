@@ -1,27 +1,13 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronDown,
-  ChevronRight,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-  User,
-} from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ChevronDown, LogOut, User } from "lucide-react";
 import { useMemo } from "react";
 import { Button } from "./ui/button";
 
@@ -40,7 +26,7 @@ export function NavUser({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="rounded h-auto bg-transparent hover:bg-muted flex gap-4"
+          className="rounded h-auto bg-transparent hover:bg-[#F1F4F9]/10 flex gap-4"
         >
           <Avatar className="h-7 w-7 bg-gray-200 rounded-full">
             <AvatarImage src={user.avatar} alt={user.name} />
@@ -49,12 +35,10 @@ export function NavUser({
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col leading-4 items-start">
-            <span className="text-black/90">{name}</span>
-            <span className="text-muted-foreground font-light">
-              {user.email}
-            </span>
+            <span className="text-[#F1F4F9]">{name}</span>
+            <span className="text-[#F1F4F9] font-light">{user.email}</span>
           </div>
-          <ChevronDown className="text-black/80" />
+          <ChevronDown className="text-[#F1F4F9]" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

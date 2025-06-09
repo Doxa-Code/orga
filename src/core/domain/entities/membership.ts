@@ -7,6 +7,13 @@ export namespace Membership {
     userId: string;
     workspaceId: string;
   }
+
+  export interface Raw {
+    id: string;
+    isOwner: boolean;
+    userId: string;
+    workspaceId: string;
+  }
 }
 
 export class Membership {
@@ -19,6 +26,15 @@ export class Membership {
     this.isOwner = props.isOwner;
     this.userId = props.userId;
     this.workspaceId = props.workspaceId;
+  }
+
+  raw(): Membership.Raw {
+    return {
+      id: this.id,
+      isOwner: this.isOwner,
+      userId: this.userId,
+      workspaceId: this.workspaceId,
+    };
   }
 
   static instance(props: Membership.Props) {

@@ -31,7 +31,7 @@ export const modules: Module[] = [
 
 export function Sidebar() {
   return (
-    <aside className="flex flex-1 flex-col pt-6 border-r max-w-[90px] border-[#EAEDEE] bg-white w-full gap-4">
+    <aside className="flex flex-1 flex-col pt-5 border-r max-w-[80px] border-[#EAEDEE] bg-white w-full gap-4">
       {modules.map((mod, index) => (
         <SidebarItem module={mod} key={index!} />
       ))}

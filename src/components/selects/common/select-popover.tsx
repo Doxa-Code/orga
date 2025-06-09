@@ -2,11 +2,7 @@
 import { Paragraph } from "@/components/common/typograph";
 import { Button } from "@orga/ui/button";
 import { cn } from "@orga/utils";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@orgapover";
+import { Popover, PopoverContent, PopoverTrigger } from "@orgapover";
 import { ChevronDown, X } from "lucide-react";
 import React from "react";
 

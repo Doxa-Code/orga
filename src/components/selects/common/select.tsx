@@ -1,7 +1,7 @@
 "use client";
 
-import * as Icons from "@/components/common/icons";
 import { Paragraph } from "@/components/common/typograph";
+import { ChevronDown } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -11,37 +11,38 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
 import {
-  Select as SelectContainer,
-  SelectContent,
-  SelectTrigger,
-} from "@/components/ui/select";
-import { cn, compareStrings } from "@/lib/utils";
-import { ChevronDown, X } from "lucide-react";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Loader2, Plus, SearchIcon, X } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
-interface SelectProps<T> {
+interface SelectProps<T = string> {
   options?: T[];
-  selected?: T[keyof T] | null | number;
-  label: keyof T;
-  value: keyof T;
-  setSelected(option: string | null): void;
+  selected?: T | null;
+  label?: keyof T;
+  value?: keyof T;
   render?: (option: T) => ReactNode;
-  noAddButton?: boolean;
-  noSearchInput?: boolean;
   onAdd?: () => void;
   disabled?: boolean;
   className?: string;
+  noAddButton?: boolean;
+  noSearchInput?: boolean;
   noClearButton?: boolean;
+  onSearch?: (search: string) => void;
+  isSearching?: boolean;
+  name?: string;
+  onSelect?: (value: T | null) => void;
 }
 
 export function Select<T>(props: SelectProps<T>) {
+  const [value, setValue] = useState(props.selected || null);
   const [open, setOpen] = useState(false);
   const inputSearchRef = useRef<HTMLInputElement>(null);
-
-  const selected = (props.options || []).find(
-    (option) => String(option[props.value]) === String(props.selected),
-  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -53,117 +54,145 @@ export function Select<T>(props: SelectProps<T>) {
     return () => clearTimeout(timer);
   }, [open]);
 
+  useEffect(() => {
+    props.onSelect?.(value);
+  }, [value]);
+
   return (
-    <SelectContainer open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen}>
       <div
         className={cn(
-          "h-10 !grow overflow-hidden flex rounded border border-gray-300 !text-sm text-gray-800 hover:bg-transparent",
-          props.className,
+          "h-10 w-full flex items-center justify-between rounded relative overflow-hidden border border-border !text-sm text-gray-800 hover:bg-transparent",
+          props.className
         )}
       >
-        <SelectTrigger
-          className="h-10 px-0 rounded border-none shadow-none"
-          asChild
-        >
+        <PopoverTrigger className="h-10 px-0 rounded border-none shadow-none cursor-pointer w-full">
+          <input
+            type="hidden"
+            name={props.name}
+            value={
+              value && props.value && typeof value === "object"
+                ? (value as any)[props.value]
+                : value && typeof value !== "object"
+                  ? value
+                  : ""
+            }
+          />
+          <div className="flex px-2 overflow-hidden w-full font-light justify-start items-start hover:bg-transparent">
+            {value &&
+              (props.render
+                ? props.render(value)
+                : typeof value === "string"
+                  ? value
+                  : props.label && String(value[props.label]))}
+          </div>
+        </PopoverTrigger>
+        <div className="flex absolute right-0 items-center gap-2 pr-3">
+          <Button
+            data-hidden={!value || props.noClearButton}
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="p-0 block w-min hover:bg-transparent"
+            onClick={() => {
+              setValue(null);
+              setOpen(false);
+            }}
+          >
+            <X className="w-4 h-4" />
+          </Button>
           <Button
             type="button"
             disabled={props.disabled}
             variant="ghost"
+            size="icon"
             onClick={() => setOpen(true)}
-            className="px-2 grow justify-start hover:bg-transparent"
+            className="p-0 w-min hover:bg-transparent"
           >
-            <div className="flex-1 max-w-44 py-1 truncate text-left text-sm font-light text-slate-800">
-              {selected &&
-                (props.render
-                  ? props.render(selected)
-                  : String(selected[props.label]))}
-            </div>
+            <ChevronDown className="w-4 h-4" />
           </Button>
-        </SelectTrigger>
-        <Button
-          data-hidden={!selected || props.noClearButton}
-          type="button"
-          variant="ghost"
-          className="p-0 w-7 hover:bg-transparent"
-          onClick={() => {
-            props.setSelected("");
-            setOpen(false);
-          }}
-        >
-          <X size={14} className="stroke-sky-900/80 stroke-2" />
-        </Button>
-        <Button
-          type="button"
-          disabled={props.disabled}
-          variant="ghost"
-          onClick={() => setOpen(true)}
-          className="p-0 w-10 hover:bg-transparent"
-        >
-          <ChevronDown size={20} className="stroke-sky-900 stroke-2" />
-        </Button>
+        </div>
       </div>
-
-      <SelectContent position="popper" align="start" className="w-[282px] p-0">
-        <Command
-          className="p-0"
-          filter={(value, text) => {
-            const currentOption = (props.options || []).find(
-              (option) => option[props.value] === value,
-            );
-
-            if (!currentOption) {
-              return 0;
-            }
-
-            return compareStrings(currentOption[props.label]! as string, text)
-              ? 1
-              : 0;
-          }}
-        >
-          {props.noSearchInput ? null : (
-            <div className="bg-gray-50 px-2 py-2 border-b">
+      <PopoverContent align="start" className="!p-0 z-[9999] rounded">
+        <Command className="!p-0 z-[9999]">
+          <div
+            data-hidden={props.noSearchInput}
+            className="bg-background overflow-hidden grid p-2 border-b border-border"
+          >
+            {props.onSearch ? (
+              <div className="flex rounded bg-white border pl-2 border-border items-center gap-0">
+                <SearchIcon className="size-4 stroke-[#88ACC5]" />
+                <Input
+                  onChange={(e) => props.onSearch?.(e.target.value)}
+                  className="border-none shadow-none font-light"
+                />
+              </div>
+            ) : (
               <CommandInput
                 ref={inputSearchRef}
-                className="rounded border border-gray-300 font-light text-slate-800"
+                className="rounded border border-border font-light"
               />
+            )}
+          </div>
+          {props.isSearching && (
+            <div className="flex items-center justify-center p-2 gap-2">
+              <Loader2 className="size-4 animate-spin" />
+              <Paragraph className="text-sm">Buscando...</Paragraph>
             </div>
           )}
-          <CommandList>
-            <CommandEmpty className="px-2 pb-2 pt-4">
+
+          <CommandList className="!p-0">
+            <CommandEmpty
+              data-hidden={props.isSearching}
+              className="px-2 pb-2 pt-2"
+            >
               <Paragraph className="text-sm">Nada encontrado...</Paragraph>
             </CommandEmpty>
-            <CommandGroup className="w-auto overflow-auto">
-              {props?.options?.map((option) => (
-                <CommandItem
-                  key={String(option[props.value]) || ""}
-                  value={String(option[props.value]) || ""}
-                  disabled={false}
-                  onSelect={(currentValue) => {
-                    props.setSelected(currentValue);
-                    setOpen(false);
-                  }}
-                  className="rounded-none py-3 !text-sm font-light text-slate-800"
-                >
-                  {props.render ? (
-                    props.render(option)
-                  ) : (
-                    <>{option[props.label]}</>
-                  )}
-                </CommandItem>
-              ))}
+            <CommandGroup data-hidden={props.isSearching} className="p-0">
+              {props.options?.map((option) => {
+                const value =
+                  typeof option === "string"
+                    ? option
+                    : props.value && String(option[props.value]);
+                return (
+                  <CommandItem
+                    key={value}
+                    value={value}
+                    onSelect={(currentValue) => {
+                      const selected = props.options?.find((option) => {
+                        if (typeof option === "string") {
+                          return option === currentValue;
+                        }
+                        return (
+                          props.value && option[props.value] === currentValue
+                        );
+                      });
+
+                      setValue(selected ?? null);
+                      setOpen(false);
+                    }}
+                    className="rounded-none p-3 !text-sm font-light text-slate-800"
+                  >
+                    {props.render
+                      ? props.render(option)
+                      : typeof option === "string"
+                        ? option
+                        : props.label && String(option[props.label])}
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
-            {!props.noAddButton && (
-              <Button
-                type="button"
-                onClick={props.onAdd}
-                className="sticky bottom-0 z-[999] flex w-full select-none items-center justify-start gap-2 border-t bg-white px-3 py-2 text-sm !font-medium !text-primary shadow hover:!bg-primary hover:!text-white"
-              >
-                <Icons.Plus className="size-4" /> Novo
-              </Button>
-            )}
+            <Button
+              data-hidden={props.noAddButton}
+              type="button"
+              onClick={props.onAdd}
+              className="sticky bottom-0 z-[999] flex w-full select-none rounded-none items-center justify-start gap-2 border-t bg-white px-3 py-2 text-sm !font-medium !text-primary shadow hover:!bg-primary hover:!text-white"
+            >
+              <Plus className="size-4" /> Novo
+            </Button>
           </CommandList>
         </Command>
-      </SelectContent>
-    </SelectContainer>
+      </PopoverContent>
+    </Popover>
   );
 }

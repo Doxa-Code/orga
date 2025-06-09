@@ -26,7 +26,7 @@ export class TestFactory {
     walletId: string,
     workspaceId: string,
     paided?: boolean,
-    type?: "CREDIT" | "DEBIT"
+    type?: "CREDIT" | "DEBIT",
   ) {
     return await createTransaction.execute({
       description: "any description",
@@ -92,7 +92,7 @@ export class TestFactory {
       thumbnail: "banks/orga.webp",
       color: "#FFFFFF",
       thumbnailBuffer: fs.createReadStream(
-        path.resolve(__dirname, "../../../resources/orga.webp")
+        path.resolve(__dirname, "../../../resources/orga.webp"),
       ),
     });
   }
@@ -100,7 +100,7 @@ export class TestFactory {
   static async createUser() {
     const userEmail = `any${crypto.randomUUID().toString()}@any.com.br`;
     const alreadyExistsUser = await userRepository.retrieveByEmail(
-      Email.create(userEmail)
+      Email.create(userEmail),
     );
 
     if (alreadyExistsUser) {
@@ -123,7 +123,7 @@ export class TestFactory {
       .toString()}@invalid.com.br`;
 
     const alreadyExistsUserInvalid = await userRepository.retrieveByEmail(
-      Email.create(userInvalidEmail)
+      Email.create(userInvalidEmail),
     );
 
     if (alreadyExistsUserInvalid) {

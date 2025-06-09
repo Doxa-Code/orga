@@ -33,14 +33,14 @@ export class CreateUser {
     private readonly userRepository: UserRepository,
     private readonly createWorkspace: CreateWorkspace,
     private readonly populateAccountPlanService: PopulateAccountPlanService,
-    private readonly createWallet: CreateWallet
+    private readonly createWallet: CreateWallet,
   ) {}
 
   async execute(input: CreateUserInputDTO) {
     const user = User.create(input.name, input.email);
 
     const emailAlreadyExists = await this.userRepository.retrieveByEmail(
-      user.email
+      user.email,
     );
 
     if (emailAlreadyExists) {

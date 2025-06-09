@@ -19,7 +19,7 @@ export class RegisterTransactionOnWallet {
 
   async reversalPayment(
     payment: Payment,
-    type: Transaction.Type
+    type: Transaction.Type,
   ): Promise<void> {
     const wallet = await this.walletRepository.retrieve(payment.walletId);
     if (!wallet) {
@@ -30,7 +30,7 @@ export class RegisterTransactionOnWallet {
       type === "DEBIT" ? "CREDIT" : "DEBIT",
       payment.amountPaided,
       wallet.id,
-      `Estorno ${payment.description}`
+      `Estorno ${payment.description}`,
     );
 
     wallet.registerTransaction(walletTransaction);
@@ -55,7 +55,7 @@ export class RegisterTransactionOnWallet {
         transaction.type,
         payment.amountPaided,
         wallet.id,
-        payment.description
+        payment.description,
       );
 
       wallet.registerTransaction(walletTransaction);
@@ -80,7 +80,7 @@ export class RegisterTransactionOnWallet {
         transaction.type === "CREDIT" ? "DEBIT" : "CREDIT",
         payment.amount,
         wallet.id,
-        `Estorno ${payment.description}`
+        `Estorno ${payment.description}`,
       );
 
       wallet.registerTransaction(walletTransaction);

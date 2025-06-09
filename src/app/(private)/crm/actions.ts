@@ -18,8 +18,6 @@ import {
   retrievePartnerInputSchema,
 } from "./schemas";
 
-// 56.134.651/0001-29
-
 const prisma = new PrismaClient();
 
 export const listPartnersLikeOption = securityProcedure
@@ -76,7 +74,7 @@ export const retrievePartnerByTaxId = securityProcedure
   .output(retrievePartnerByTaxIdOutputSchema)
   .handler(async ({ input }) => {
     const response = await RetrievePartnerByTaxIdDAOFactory.create().retrieve(
-      input.taxId,
+      input.taxId
     );
 
     if (!response) {
@@ -119,6 +117,29 @@ export const listPartners = securityProcedure
       include: {
         address: true,
       },
+    });
+    return response;
+  });
+
+export const searchPartners = securityProcedure
+  .input(z.object({ search: z.string() }))
+  .output(listPartnersOutputSchema)
+  .handler(async ({ input, ctx: { workspace } }) => {
+    const search = input.search.trim();
+    if (search.length < 3) return [];
+
+    const response = await prisma.partner.findMany({
+      where: {
+        workspaceId: workspace.id,
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      include: {
+        address: true,
+      },
+      take: 10,
     });
     return response;
   });

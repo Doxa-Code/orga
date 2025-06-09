@@ -17,7 +17,7 @@ const sessionDatabaseDriver = new RedisCacheDriver();
 const createCodeToAuthenticate = new CreateCodeToAuthenticate(
   new UserRepositoryDatabase(),
   new SendMailService(new MailHugMailDriver()),
-  new CreateCodeService(sessionDatabaseDriver)
+  new CreateCodeService(sessionDatabaseDriver),
 );
 const authenticateUser = UserFactory.authenticateUser();
 

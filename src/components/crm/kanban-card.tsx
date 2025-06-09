@@ -1,23 +1,32 @@
 "use client";
+import type { Proposal } from "@/core/domain/entities/proposal";
 import { cn } from "@/lib/utils";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { format, formatDistance } from "date-fns";
-import { pt } from "date-fns/locale/pt";
-import { Building, Calendar, MessageCircleMore, User } from "lucide-react";
+import { Calendar, MessageCircleMore, User, User2 } from "lucide-react";
 import type React from "react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Badge } from "../ui/badge";
-import type { Card } from "./kanban";
 
 interface KanbanCard {
-  card: Card;
+  example?: false;
+  card: Proposal;
   onClick: () => void;
   color: string;
   bucketId: string;
 }
 
-export const KanbanCard: React.FC<KanbanCard> = (props) => {
+type Props =
+  | KanbanCard
+  | {
+      example: true;
+      card: Proposal;
+      onClick?: () => void;
+      color?: string;
+      bucketId?: string;
+    };
+
+export const KanbanCard: React.FC<Props> = (props) => {
   const {
     attributes,
     listeners,
@@ -33,13 +42,6 @@ export const KanbanCard: React.FC<KanbanCard> = (props) => {
     },
   });
 
-  const daysSinceContact = props.card.lastContact
-    ? Math.floor(
-        (Date.now() - props.card.lastContact?.getTime()) /
-          (1000 * 60 * 60 * 24),
-      )
-    : 0;
-
   const style = {
     transition,
     transform: CSS.Transform.toString(
@@ -49,90 +51,66 @@ export const KanbanCard: React.FC<KanbanCard> = (props) => {
             scaleX: 1,
             scaleY: 1,
           }
-        : null,
+        : null
     ),
   };
 
-  if (isDragging) {
+  if (isDragging || props.example) {
     return (
       <div
         ref={setNodeRef}
         style={style}
-        className="h-[184px] w-full border-2 border-dashed border-[#E2E2E2] bg-[#F2F2F2] rounded-md"
+        className="h-[170px] w-full border-2 border-dashed border-[#E2E2E2] bg-[#F2F2F2] rounded-md"
       />
     );
   }
 
-  const lastAppointment = props?.card?.appointments
-    ?.sort((a, b) => (a.dueDate > b.dueDate ? 1 : -1))
-    ?.find((a) => !a.completed)?.dueDate;
-
   return (
     <div
-      onClick={() => props.onClick()}
+      onClick={() => props.onClick?.()}
       ref={setNodeRef}
       style={{ ...style }}
       {...attributes}
       {...listeners}
       className={cn(
-        "flex flex-col gap-3 rounded-md overflow-hidden p-4 shadow relative border border-[#E2E2E2] hover:shadow-md cursor-pointer bg-white group",
-        isDragging && "bg-red-500",
+        "flex flex-col rounded-md overflow-hidden pt-5 pb-3 px-4 shadow relative border border-[#E2E2E2] hover:shadow-md cursor-pointer bg-white group",
+        isDragging && "bg-red-500"
       )}
     >
-      <Badge
-        className={cn(
-          "flex items-center gap-2",
-          daysSinceContact > 7 ? "bg-[#FAFAFA]" : "bg-primary/10",
-        )}
-      >
-        <Calendar
-          className={cn(
-            "w-4 h-4",
-            daysSinceContact > 7 ? "stroke-rose-500" : "text-primary",
-          )}
-        />
-        <span
-          className={cn(
-            daysSinceContact > 7 ? "text-rose-500 font-medium" : "text-primary",
-          )}
-        >
-          {props.card.lastContact.toLocaleDateString("pt-BR")}
-        </span>
-      </Badge>
-      <div className="flex flex-col gap-2">
-        <h4 className="font-semibold text-lg text-[#212121] transition-colors">
-          {props.card.name}
+      <div className="flex gap-2">
+        {props.card.tags.map((tag) => (
+          <Badge key={tag.value} className={cn("bg-muted", tag.color)}>
+            {tag.value}
+          </Badge>
+        ))}
+      </div>
+      <div className="flex flex-col py-3 flex-1 gap-2">
+        <h4 className="font-semibold text-[#323232] transition-colors">
+          {props.card.title}
         </h4>
         <div className="flex items-center gap-2">
-          <Building size={14} />
-          <p className="font-normal text-xs text-muted-foreground">
-            {props.card.company}
+          <User2 className="stroke-[0.9px]" size={14} />
+          <p className="font-light text-sm text-muted-foreground">
+            {props.card.partner.name}
           </p>
         </div>
       </div>
 
       <hr />
-      <div className="flex items-center justify-between border-gray-200">
+      <div className="flex items-center pt-2 justify-between border-muted-foreground">
         <Avatar className="p-1 bg-muted">
           <AvatarFallback>
-            <User size={16} className="stroke-gray-500 size-[20px]" />
+            <User
+              size={16}
+              className="stroke-muted-foreground size-[20px] stroke-1"
+            />
           </AvatarFallback>
         </Avatar>
         <div className="flex items-center justify-end gap-4 text-xs">
           <div className="flex gap-2 items-center border-r pr-4">
-            <MessageCircleMore size={16} className="stroke-gray-400" />
-            <span className="text-gray-500 text-sm">
+            <MessageCircleMore size={16} className="stroke-muted-foreground" />
+            <span className="text-muted-foreground font-light text-sm">
               {props.card.followUps.length}
-            </span>
-          </div>
-          <div className="flex gap-2 items-center">
-            <Calendar size={16} className="stroke-gray-400" />
-            <span className="text-gray-500 text-sm">
-              {lastAppointment &&
-                formatDistance(lastAppointment, new Date(), {
-                  addSuffix: true,
-                  locale: pt,
-                })}
             </span>
           </div>
         </div>

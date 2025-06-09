@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import localFont from "next/font/local";
 import { Providers } from "./providers";
 
@@ -85,7 +85,7 @@ const budkamber = localFont({
   ],
 });
 
-const poppins = Poppins({
+const inter = Inter({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
 });

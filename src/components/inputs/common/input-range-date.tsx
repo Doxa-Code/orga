@@ -2,11 +2,7 @@ import { Paragraph } from "@/components/common/typograph";
 import { Button } from "@orga/ui/button";
 import { cn } from "@orga/utils";
 import { Calendar } from "@orgalendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@orgapover";
+import { Popover, PopoverContent, PopoverTrigger } from "@orgapover";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale/pt";

@@ -1,7 +1,7 @@
 "use client";
-import { Input } from "@orga/ui/input";
-import { cn } from "@orga/utils";
-import { Label } from "@orgabel";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { type HTMLAttributes, forwardRef } from "react";
 
 export const InputMoney = forwardRef<
@@ -10,12 +10,17 @@ export const InputMoney = forwardRef<
     value?: string | number;
     onChange?: (amount: number) => void;
     disabled?: boolean;
+    classNameContainer?: string;
+    name?: string;
   }
->((props, ref) => {
+>(({ classNameContainer, ...props }, ref) => {
   return (
     <div
       ref={ref}
-      className="flex min-w-[140px] mb-1 h-10 overflow-hidden rounded border border-gray-300"
+      className={cn(
+        "flex min-w-[140px] mb-1 h-10 overflow-hidden rounded border border-gray-300",
+        classNameContainer
+      )}
     >
       <div className="flex flex-1 items-center justify-center border-r bg-background px-2">
         <Label className="mb-0 font-medium text-sky-800">R$</Label>
@@ -23,8 +28,8 @@ export const InputMoney = forwardRef<
       <Input
         {...props}
         className={cn(
-          "rounded-none !border-none pl-2 text-left",
-          props.className,
+          "rounded-none !border-none font-light pl-2 text-left",
+          props.className
         )}
         defaultValue={props.defaultValue || "0,00"}
         onFocus={(e) => {

@@ -15,7 +15,7 @@ export class JWTTokenCreatorDriver<T> implements TokenCreatorDriver<T> {
 
     return jwt.sign(
       { ...payload, registeredAt: registeredDate.getTime() },
-      this.secret
+      this.secret,
     );
   }
 

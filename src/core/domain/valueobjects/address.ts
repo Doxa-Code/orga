@@ -9,6 +9,18 @@ type AddressProps = {
   country: string | null;
   note: string | null;
 };
+
+type AddressRaw = {
+  street: string;
+  number: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  note: string;
+};
+
 export class Address {
   private constructor(
     readonly street: string,
@@ -18,7 +30,7 @@ export class Address {
     readonly state: string,
     readonly zipCode: string,
     readonly country: string,
-    readonly note: string,
+    readonly note: string
   ) {
     if (
       !this.isValidAddress(
@@ -28,7 +40,7 @@ export class Address {
         city,
         state,
         zipCode,
-        country,
+        country
       )
     ) {
       throw new FieldInvalid("Address");
@@ -44,7 +56,7 @@ export class Address {
       props?.state || "",
       props?.zipCode || "",
       props?.country || "",
-      props?.note || "",
+      props?.note || ""
     );
   }
 
@@ -55,7 +67,7 @@ export class Address {
     city: string,
     state: string,
     zipCode: string,
-    country: string,
+    country: string
   ): boolean {
     return (
       street.length >= 0 &&
@@ -66,6 +78,19 @@ export class Address {
       zipCode.length >= 0 &&
       (country.length > 1 || country.length === 0)
     );
+  }
+
+  raw(): AddressRaw {
+    return {
+      street: this.street,
+      number: this.number,
+      neighborhood: this.neighborhood,
+      city: this.city,
+      state: this.state,
+      zipCode: this.zipCode,
+      country: this.country,
+      note: this.note,
+    };
   }
 
   public getFullAddress(): string {

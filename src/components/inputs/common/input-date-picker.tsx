@@ -2,11 +2,7 @@ import { Paragraph } from "@/components/common/typograph";
 import { Button } from "@orga/ui/button";
 import { cn } from "@orga/utils";
 import { Calendar } from "@orgalendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@orgapover";
+import { Popover, PopoverContent, PopoverTrigger } from "@orgapover";
 import { format, isValid } from "date-fns";
 import { pt } from "date-fns/locale/pt";
 import { LucideCalendar } from "lucide-react";

@@ -10,10 +10,11 @@ import {
 import { cn } from "@/lib/utils";
 import { SelectCities } from "./select-cities";
 
-export const SelectCitiesInputForm: React.FC<InputFormDefaultProps> = ({
-  form,
-  ...props
-}) => {
+export const SelectCitiesInputForm: React.FC<
+  InputFormDefaultProps & {
+    acronym?: string;
+  }
+> = ({ form, acronym, ...props }) => {
   return (
     <FormField
       control={form?.control}
@@ -24,10 +25,7 @@ export const SelectCitiesInputForm: React.FC<InputFormDefaultProps> = ({
             Cidade
           </FormLabel>
           <FormControl>
-            <SelectCities
-              {...field}
-              acronym={form?.getValues()?.address?.state}
-            />
+            <SelectCities {...field} acronym={acronym} />
           </FormControl>
           <FormMessage />
           <FormDescription>{props.description}</FormDescription>

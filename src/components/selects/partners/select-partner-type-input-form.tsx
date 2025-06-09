@@ -10,10 +10,10 @@ import {
 import { cn } from "@/lib/utils";
 import { SelectPartnerType } from "./select-partner-type";
 
-export const SelectPartnerTypeInputForm: React.FC<InputFormDefaultProps> = ({
-  form,
-  ...props
-}) => {
+export const SelectPartnerTypeInputForm: React.FC<InputFormDefaultProps> = (
+  input
+) => {
+  const { form, ...props } = input;
   return (
     <FormField
       control={form?.control}

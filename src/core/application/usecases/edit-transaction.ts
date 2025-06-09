@@ -34,12 +34,12 @@ export class EditTransaction {
     private readonly costCenterRepository: CostCenterRepository,
     private readonly accountPlanRepository: AccountPlanRepository,
     private readonly registerTransactionOnWalletService: RegisterTransactionOnWalletService,
-    private readonly walletRepository: WalletRepository
+    private readonly walletRepository: WalletRepository,
   ) {}
 
   async execute(input: InputDTO) {
     const transaction = await this.transactionRepository.retrieve(
-      input.transactionId
+      input.transactionId,
     );
 
     if (!transaction) {
@@ -48,7 +48,7 @@ export class EditTransaction {
 
     if (input.costCenterId) {
       const costCenter = await this.costCenterRepository.retrieve(
-        input.costCenterId
+        input.costCenterId,
       );
 
       if (!costCenter) {
@@ -65,16 +65,15 @@ export class EditTransaction {
         throw new FieldInvalid("category");
       }
 
-      const accountPlan = await this.accountPlanRepository.retrieveBySequence(
-        sequence
-      );
+      const accountPlan =
+        await this.accountPlanRepository.retrieveBySequence(sequence);
 
       if (!accountPlan) {
         throw new EntityNotFound("category");
       }
 
       const category = accountPlan.categories.find(
-        (category) => category.sequence === input.categorySequence
+        (category) => category.sequence === input.categorySequence,
       );
 
       if (!category) {
@@ -107,9 +106,9 @@ export class EditTransaction {
               status: input.paided ? "PAID" : "NO_PAID",
               paymentMethod:
                 payment.paymentMethod || input.defaultInstallmentPaymentMethod,
-            })
+            }),
           );
-        })
+        }),
       );
     } else {
       transaction.addPayment(
@@ -121,7 +120,7 @@ export class EditTransaction {
           description: `${transaction.description} 1/1`,
           status: input.paided ? "PAID" : "NO_PAID",
           paymentMethod: input.defaultInstallmentPaymentMethod,
-        })
+        }),
       );
     }
 

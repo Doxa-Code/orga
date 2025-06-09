@@ -6,26 +6,38 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import type { Bucket } from "@/core/domain/entities/bucket";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { MoreHorizontal, MoreVertical, Plus, PlusCircle } from "lucide-react";
+import { MoreVertical, Plus } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
-import type { Bucket, Card } from "./kanban";
-import { KanbanCard } from "./kanban-card";
+import { type ReactNode, useState } from "react";
 
 interface KanbanBucketProps {
+  example?: false;
   bucket: Bucket;
-  cards: Card[];
-  onClickCard: (card: Card) => void;
+  children?: ReactNode;
+  ids?: string[];
   onCreateCard: (bucketId: string) => void;
   onDelete: (bucketId: string) => void;
   onRename: (newName: string) => void;
 }
 
-export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
+type Props =
+  | KanbanBucketProps
+  | {
+      example: true;
+      bucket?: Bucket;
+      children?: ReactNode;
+      ids?: string[];
+      onCreateCard?: (bucketId: string) => void;
+      onDelete?: (bucketId: string) => void;
+      onRename?: (newName: string) => void;
+    };
+
+export const KanbanBucket: React.FC<Props> = (props) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(props.bucket.name);
+  const [editName, setEditName] = useState(props.bucket?.name ?? "");
   const {
     attributes,
     listeners,
@@ -34,16 +46,16 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
     transition,
     isDragging,
   } = useSortable({
-    id: props.bucket.id,
+    id: props.bucket?.id ?? "",
     data: {
       type: "Bucket",
-      bucket: props.bucket,
+      bucket: props.bucket ?? null,
     },
   });
 
   const handleRename = () => {
-    if (editName.trim() && editName !== props.bucket.name) {
-      props.onRename(editName);
+    if (editName.trim() && editName !== props.bucket?.name) {
+      props.onRename?.(editName);
     }
     setIsEditing(false);
   };
@@ -53,10 +65,10 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
     transition,
   };
 
-  if (isDragging) {
+  if (isDragging || props.example) {
     return (
       <div
-        className="min-w-96 max-w-96 bg-[#F9F9F9] opacity-70 rounded-md border border-dashed border-[#efefef] flex flex-col gap-4 p-4 flex-1"
+        className="min-w-96 max-w-96 bg-background opacity-70 rounded-md border border-dashed border-[#efefef] flex flex-col gap-4 p-4 flex-1"
         ref={setNodeRef}
         style={style}
       />
@@ -69,7 +81,7 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
       style={style}
       {...attributes}
       {...listeners}
-      className="min-w-96 max-w-96 h-full bg-[#F9F9F9] rounded-md border border-[#EFEFEF] !select-none flex flex-col flex-1 py-3 px-2 gap-4"
+      className="min-w-96 max-w-96 h-full !select-none flex flex-col flex-1 py-3 px-2 gap-4"
     >
       {/* Header */}
       <header className="flex items-center justify-between">
@@ -94,19 +106,21 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
         ) : (
           <div
             onDoubleClick={() => setIsEditing(true)}
-            className="flex items-center justify-between w-full gap-2 flex-1"
+            className="flex items-center text-xs font-light justify-between w-full gap-2 flex-1"
           >
             <div className="flex items-center gap-2 px-2 py-1 rounded-md">
               <div
                 className="w-3 h-3 rounded-full"
                 style={{
-                  backgroundColor: props.bucket.color,
+                  backgroundColor: props.bucket?.color ?? "",
                 }}
               />
-              <h3 className="font-normal text-[#0A0A0A]">
-                {props.bucket.name}
+              <h3 className="font-normal text-[#323232]">
+                {props.bucket?.name ?? "Exemplo"}
               </h3>
-              <span className="text-[#858587]">{props.cards.length}</span>
+              <span className="text-muted-foreground font-light">
+                ({props.ids?.length})
+              </span>
             </div>
             <div className="flex">
               <DropdownMenu>
@@ -124,7 +138,7 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
                     onClick={() => {
-                      setEditName(props.bucket.name);
+                      setEditName(props.bucket?.name ?? "");
                       setIsEditing(true);
                     }}
                     className="px-4"
@@ -133,7 +147,7 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
-                      props.onDelete(props.bucket.id);
+                      props.onDelete?.(props.bucket?.id ?? "");
                     }}
                     className="px-4"
                   >
@@ -141,31 +155,15 @@ export const KanbanBucket: React.FC<KanbanBucketProps> = (props) => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button
-                onClick={() => props.onCreateCard(props.bucket.id)}
-                size="sm"
-                variant="ghost"
-                className="!py-0 !px-2 h-7 hover:bg-white/10 rounded"
-              >
-                <Plus className="h-4 w-4 stroke-[#69696B]" />
-              </Button>
             </div>
           </div>
         )}
       </header>
 
       {/* Content */}
-      <div className="space-y-3 rounded-md flex-1">
-        <SortableContext items={props.cards.map((c) => c.id)}>
-          {props.cards.map((card) => (
-            <KanbanCard
-              key={card.id}
-              card={card}
-              onClick={() => props.onClickCard(card)}
-              color={props.bucket.color}
-              bucketId={props.bucket.id}
-            />
-          ))}
+      <div className="space-y-3 bg-background p-4 rounded-md flex-1">
+        <SortableContext items={props.ids ?? []}>
+          {props.children}
         </SortableContext>
       </div>
     </div>
