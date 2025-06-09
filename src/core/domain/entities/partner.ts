@@ -34,17 +34,17 @@ export namespace Partner {
     email: string;
     phone: string;
     address: {
-      street: string;
-      neighborhood: string;
-      number: string;
-      city: string;
-      state: string;
-      zipCode: string;
-      country: string;
-      note: string;
+      street?: string | null;
+      neighborhood?: string | null;
+      number?: string | null;
+      city?: string | null;
+      state?: string | null;
+      zipCode?: string | null;
+      country?: string | null;
+      note?: string | null;
     };
     status: Status;
-    createdAt: string;
+    createdAt: Date;
     workspaceId: string;
   }
 }
@@ -107,14 +107,23 @@ export class Partner {
       phone: this.phone.value,
       address: this.address.raw(),
       status: this.status,
-      createdAt: this.createdAt.toISOString(),
+      createdAt: this.createdAt,
       workspaceId: this.workspaceId,
     };
   }
 
   static fromRaw(props: Partner.Raw) {
     return new Partner({
-      address: Address.create(props.address),
+      address: Address.create({
+        street: props.address.street ?? null,
+        neighborhood: props.address.neighborhood ?? null,
+        number: props.address.number ?? null,
+        city: props.address.city ?? null,
+        state: props.address.state ?? null,
+        zipCode: props.address.zipCode ?? null,
+        country: props.address.country ?? null,
+        note: props.address.note ?? null,
+      }),
       taxId: TaxId.create(props.taxId),
       createdAt: new Date(props.createdAt),
       email: Email.create(props.email),

@@ -16,7 +16,7 @@ export namespace FollowUp {
   export interface Raw {
     id: string;
     content: string;
-    createdAt: string;
+    createdAt: Date;
     createdBy: string;
     type: Type;
   }
@@ -50,7 +50,7 @@ export class FollowUp {
     return {
       id: this.id,
       content: this.content,
-      createdAt: this.createdAt.toISOString(),
+      createdAt: this.createdAt,
       createdBy: this.createdBy,
       type: this.type,
     };

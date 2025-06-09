@@ -16,6 +16,7 @@ import {
   retrievePartnerByTaxIdInputSchema,
   retrievePartnerByTaxIdOutputSchema,
   retrievePartnerInputSchema,
+  searchPartnersInputSchema,
 } from "./schemas";
 
 // 56.134.651/0001-29
@@ -76,7 +77,7 @@ export const retrievePartnerByTaxId = securityProcedure
   .output(retrievePartnerByTaxIdOutputSchema)
   .handler(async ({ input }) => {
     const response = await RetrievePartnerByTaxIdDAOFactory.create().retrieve(
-      input.taxId,
+      input.taxId
     );
 
     if (!response) {
@@ -169,4 +170,27 @@ export const removePartner = securityProcedure
       },
     });
     revalidatePath("/partners", "page");
+  });
+
+export const searchPartners = securityProcedure
+  .input(searchPartnersInputSchema)
+  .output(listPartnersOutputSchema)
+  .handler(async ({ input, ctx: { workspace } }) => {
+    const search = input.search.trim();
+    if (search.length < 3) return [];
+
+    const response = await prisma.partner.findMany({
+      where: {
+        workspaceId: workspace.id,
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      include: {
+        address: true,
+      },
+      take: 10,
+    });
+    return response;
   });

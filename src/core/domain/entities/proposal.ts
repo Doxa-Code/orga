@@ -1,9 +1,7 @@
 import { FieldMissing } from "../errors/field-missing";
 import { Tag, TagRaw } from "../valueobjects/tag";
-import type { Appointment } from "./appointment";
 import { FollowUp } from "./follow-up";
 import { Partner } from "./partner";
-import { User } from "./user";
 
 export namespace Proposal {
   export type Source = "referral" | "organic" | "ads" | "outbound" | "other";
@@ -13,7 +11,7 @@ export namespace Proposal {
     title: string;
     description: string;
     partner: Partner;
-    owner: User | null;
+    owner: string;
     amount: number;
     position: number;
     stage: string;
@@ -32,16 +30,16 @@ export namespace Proposal {
     title: string;
     description: string;
     partner: Partner.Raw;
-    owner: User.Raw | null;
+    owner: string;
     amount: number;
     position: number;
     stage: string;
     source: Source;
     segment: string;
     tags: TagRaw[];
-    createdAt: string;
-    updatedAt: string;
-    closedAt: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    closedAt: Date | null;
     workspaceId: string;
     followUps: FollowUp.Raw[];
   }
@@ -49,7 +47,7 @@ export namespace Proposal {
   export interface CreateProps {
     title: string;
     partner: Partner;
-    owner?: User;
+    owner?: string;
     amount: number;
     workspaceId?: string;
     segment?: string;
@@ -65,7 +63,7 @@ export class Proposal {
   public title: string;
   public description: string;
   public partner: Partner;
-  public owner: User | null;
+  public owner: string;
   public amount: number;
   public position: number;
   public stage: string;
@@ -144,11 +142,11 @@ export class Proposal {
     return {
       id: this.id,
       amount: this.amount,
-      closedAt: this.closedAt?.toISOString() ?? null,
-      createdAt: this.createdAt.toISOString(),
+      closedAt: this.closedAt ?? null,
+      createdAt: this.createdAt,
       description: this.description,
       partner: this.partner.raw(),
-      owner: this.owner?.raw() ?? null,
+      owner: this.owner,
       position: this.position,
       followUps: this.followUps.map((f) => f.raw()),
       segment: this.segment,
@@ -156,7 +154,7 @@ export class Proposal {
       stage: this.stage,
       tags: this.tags.map((t) => t.raw()),
       title: this.title,
-      updatedAt: this.updatedAt.toISOString(),
+      updatedAt: this.updatedAt,
       workspaceId: this.workspaceId,
     };
   }
@@ -168,7 +166,7 @@ export class Proposal {
   static fromRaw(props: Proposal.Raw) {
     return new Proposal({
       partner: Partner.fromRaw(props.partner),
-      owner: props.owner ? User.fromRaw(props.owner) : null,
+      owner: props.owner,
       tags: props.tags.map((t) => Tag.create(t.value, t.color)),
       followUps: props.followUps.map(FollowUp.instance),
       createdAt: new Date(props.createdAt),
@@ -197,7 +195,7 @@ export class Proposal {
       title: props.title,
       description: props.description ?? "",
       partner: props.partner,
-      owner: props.owner ?? null,
+      owner: props.owner ?? "",
       amount: props.amount ?? 0,
       stage: props.stage ?? "Novos Leads",
       source: props.source ?? "other",

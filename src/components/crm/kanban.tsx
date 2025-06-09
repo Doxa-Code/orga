@@ -23,13 +23,27 @@ import { KanbanBucket } from "./kanban-bucket";
 import { KanbanCard } from "./kanban-card";
 import { ModalCreateProposal } from "./modal-create-proposal";
 import { ModalProposalFollowUp } from "./modal-proposal-follow-up";
+import { useServerActionMutation } from "@/app/actions/query-key-factory";
+import { deleteBucket, upsertBucket } from "@/app/actions/crm";
+import { Toast } from "../toast";
 
 type Props = {
   initialBuckets: Bucket.Props[];
   initialCards: Proposal.Raw[];
 };
 
-export const Kanban: React.FC<Props> = ({ initialBuckets, initialCards }) => {
+export const CRMKanban: React.FC<Props> = (props) => {
+  const { initialBuckets, initialCards } = props;
+  const deleteBucketAction = useServerActionMutation(deleteBucket, {
+    onError(error) {
+      Toast.error("Erro ao deletar bucket", error.message);
+    },
+  });
+  const upsertBucketAction = useServerActionMutation(upsertBucket, {
+    onError(error) {
+      Toast.error("Erro ao atualizar bucket", error.message);
+    },
+  });
   const [buckets, setBuckets] = useState<Bucket[]>([]);
   const [cards, setCards] = useState<Map<string, Proposal[]>>(new Map());
   const [selectedCard, setSelectedCard] = useState<Proposal | null>(null);
@@ -106,6 +120,7 @@ export const Kanban: React.FC<Props> = ({ initialBuckets, initialCards }) => {
   const handleDeleteBucket = (bucketId: string) => {
     const bucket = buckets.find((bucket) => bucket.id === bucketId);
     if (!bucket) return;
+    deleteBucketAction.mutate({ id: bucketId });
     setBuckets((buckets) => buckets.filter((bucket) => bucket.id !== bucketId));
     setCards((cards) => {
       const newCards = new Map(cards);
@@ -124,12 +139,24 @@ export const Kanban: React.FC<Props> = ({ initialBuckets, initialCards }) => {
     setCards(newCards);
     bucket.setName(newName);
     setBuckets(buckets.map((b) => (b.id === bucketId ? bucket : b)));
+    upsertBucketAction.mutate({
+      id: bucket.id,
+      name: newName,
+      color: bucket.color,
+      position: bucket.position,
+    });
   };
 
   const handleAddBucket = (bucketName: string) => {
     if (bucketName.trim()) {
       const newBucket = Bucket.create(bucketName);
       setBuckets((buckets) => [...buckets, newBucket]);
+      upsertBucketAction.mutate({
+        id: newBucket.id,
+        name: newBucket.name,
+        color: newBucket.color,
+        position: newBucket.position,
+      });
       setIsAddingBucket(false);
     }
   };
@@ -226,7 +253,7 @@ export const Kanban: React.FC<Props> = ({ initialBuckets, initialCards }) => {
   }, 100);
 
   const onDragEnd = useCallback(
-    (event: DragEndEvent) => {
+    async (event: DragEndEvent) => {
       setActiveBucket(null);
       setActiveCard(null);
 
@@ -237,13 +264,35 @@ export const Kanban: React.FC<Props> = ({ initialBuckets, initialCards }) => {
 
       if (!activeBucket || !overBucket || activeBucket.id === overBucket.id)
         return;
-      setBuckets((buckets) => {
-        const activeIndex = buckets.findIndex((b) => b.id === activeBucket.id);
-        const overIndex = buckets.findIndex((b) => b.id === overBucket.id);
 
-        return arrayMove(buckets, activeIndex, overIndex).map((b, i) =>
-          b.setPosition(i)
-        );
+      const activeIndex = buckets.findIndex((b) => b.id === activeBucket.id);
+      const overIndex = buckets.findIndex((b) => b.id === overBucket.id);
+
+      const bucketActive = buckets[activeIndex];
+      const diff = overIndex - activeIndex;
+
+      const newBuckets = arrayMove(buckets, activeIndex, overIndex).map(
+        (bucket) => {
+          if (bucket.id === bucketActive.id) {
+            bucket.setPosition(
+              diff > 0 ? overBucket.position + 500 : overBucket.position - 500
+            );
+          }
+          return bucket;
+        }
+      );
+
+      const bucketToUpdate = newBuckets.find(
+        (b) => b.id === bucketActive.id
+      ) as Bucket;
+
+      setBuckets(newBuckets);
+
+      upsertBucketAction.mutate({
+        id: bucketToUpdate.id,
+        name: bucketToUpdate.name,
+        color: bucketToUpdate.color,
+        position: bucketToUpdate.position,
       });
     },
     [buckets]

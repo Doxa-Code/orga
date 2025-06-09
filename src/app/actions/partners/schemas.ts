@@ -86,7 +86,7 @@ export const listPartnersOptionOutputSchema = z.array(
   z.object({
     partnerId: z.string(),
     name: z.string(),
-  }),
+  })
 );
 
 export const listPartnersLikeOptionInputSchema = z.object({
@@ -111,9 +111,13 @@ export const partnerSchema = z.object({
     country: z.string().nullish(),
     note: z.string().nullish(),
   }),
-  status: z.string(),
+  status: z.enum(["ACTIVE", "INACTIVE"]),
   createdAt: z.date(),
   workspaceId: z.string(),
 });
 
 export const listPartnersOutputSchema = z.array(partnerSchema);
+
+export const searchPartnersInputSchema = z.object({
+  search: z.string(),
+});

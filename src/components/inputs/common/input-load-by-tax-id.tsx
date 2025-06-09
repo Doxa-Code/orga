@@ -1,10 +1,10 @@
-import { retrievePartnerByTaxId } from "@/app/(private)/partners/actions";
 import { ButtonLoading } from "@/components/buttons/common/button-loading";
 import type { PartnerRetrievedOutputDTO } from "@/core/application/DAO/retrieve-partner-by-tax-id";
 import type { Partner } from "@/core/domain/entities/partner";
 import type React from "react";
 import { useServerAction } from "zsa-react";
 import { InputTaxId } from "./input-taxid";
+import { retrievePartnerByTaxId } from "@/app/actions/partners";
 
 type Props = {
   type: Partner.Type;

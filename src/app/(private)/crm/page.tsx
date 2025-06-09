@@ -1,16 +1,18 @@
-import { Kanban } from "@/components/crm/kanban";
-import { listPartners } from "./actions";
-import { Proposal } from "@/core/domain/entities/proposal";
-import { User } from "@/core/domain/entities/user";
-import { Partner } from "@/core/domain/entities/partner";
-import { Tag } from "@/core/domain/valueobjects/tag";
+import {
+  createBucketDefault,
+  listBuckets,
+  listProposals,
+} from "@/app/actions/crm";
+import { CRMKanban } from "@/components/crm/kanban";
 import { FollowUp } from "@/core/domain/entities/follow-up";
-import { Bucket } from "@/core/domain/entities/bucket";
+import { Partner } from "@/core/domain/entities/partner";
+import { Proposal } from "@/core/domain/entities/proposal";
+import { Tag } from "@/core/domain/valueobjects/tag";
 
 const initialCards: Proposal[] = [
   Proposal.create({
     amount: 15000,
-    owner: User.create("User", "user@orgasaas.com.br"),
+    owner: "user",
     partner: Partner.create({
       name: "Cliente",
       roles: ["CUSTOMER"],
@@ -26,7 +28,7 @@ const initialCards: Proposal[] = [
   }),
   Proposal.create({
     amount: 12000,
-    owner: User.create("User", "user@orgasaas.com.br"),
+    owner: "user",
     partner: Partner.create({
       name: "Cliente",
       roles: ["CUSTOMER"],
@@ -42,7 +44,7 @@ const initialCards: Proposal[] = [
   }),
   Proposal.create({
     amount: 12000,
-    owner: User.create("User", "user@orgasaas.com.br"),
+    owner: "user",
     partner: Partner.create({
       name: "Cliente",
       roles: ["CUSTOMER"],
@@ -92,20 +94,19 @@ initialCards.at(0)?.addFollowUp(
   })
 );
 
-const initialBuckets: Bucket[] = [
-  Bucket.create("Novos Leads", "#D3D3D3"),
-  Bucket.create("Qualificados", "#3B82F6"),
-  Bucket.create("Proposta Enviada", "#8B5CF6"),
-  Bucket.create("Negociação", "#10B981"),
-  Bucket.create("Fechado", "#EF4444"),
-];
-
 export default async function CRMPage() {
+  const [proposals] = await listProposals();
+  let [buckets] = await listBuckets();
+
+  if (!buckets?.length) {
+    [buckets] = await createBucketDefault();
+  }
+
   return (
     <main className="flex flex-col flex-1 overflow-hidden">
-      <Kanban
-        initialBuckets={initialBuckets.map((bucket) => bucket.raw())}
-        initialCards={initialCards.map((card) => card.raw())}
+      <CRMKanban
+        initialBuckets={buckets ?? []}
+        initialCards={proposals ?? []}
       />
     </main>
   );

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  registerPartner,
-  retrievePartner,
-} from "@/app/(private)/partners/actions";
+import { registerPartner, retrievePartner } from "@/app/actions/partners";
 import {
   QueryKeyFactory,
   useServerActionMutation,

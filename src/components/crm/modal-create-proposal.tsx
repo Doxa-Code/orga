@@ -1,5 +1,3 @@
-import { searchPartners } from "@/app/(private)/crm/actions";
-import { listPartnersOutputSchema } from "@/app/(private)/partners/schemas";
 import { useServerActionMutation } from "@/app/actions/query-key-factory";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +23,8 @@ import { z } from "zod";
 import { InputMoney } from "../inputs/common/input-money";
 import { Select } from "../selects/common/select";
 import { Textarea } from "../ui/textarea";
+import { listPartnersOutputSchema } from "@/app/actions/partners/schemas";
+import { searchPartners } from "@/app/actions/partners";
 
 interface Props {
   isOpen: boolean;
