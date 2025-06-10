@@ -31,6 +31,8 @@ import { KanbanBucket } from "./kanban-bucket";
 import { KanbanCard } from "./kanban-card";
 import { ModalCreateProposal } from "./modal-create-proposal";
 import { ModalProposalFollowUp } from "./modal-proposal-follow-up";
+import { Loader2 } from "lucide-react";
+import { Skeleton } from "../ui/skeleton";
 
 type Props = {
   initialBuckets: Bucket.Props[];
@@ -67,7 +69,7 @@ export const CRMKanban: React.FC<Props> = (props) => {
       Toast.error("Erro ao deletar proposta", error.message);
     },
   });
-
+  const [loading, setLoading] = useState(true);
   const [buckets, setBuckets] = useState<Bucket[]>([]);
   const [cards, setCards] = useState<Map<string, Proposal[]>>(new Map());
   const [selectedCard, setSelectedCard] = useState<Proposal | null>(null);
@@ -86,6 +88,7 @@ export const CRMKanban: React.FC<Props> = (props) => {
   );
 
   useLayoutEffect(() => {
+    setLoading(true);
     const result = new Map<string, Proposal[]>();
 
     initialCards.map((card) => {
@@ -95,8 +98,8 @@ export const CRMKanban: React.FC<Props> = (props) => {
     });
 
     setCards(result);
-
     setBuckets(initialBuckets.map((bucket) => Bucket.instance(bucket)));
+    setLoading(false);
   }, []);
 
   const filteredCards = useMemo(() => {
@@ -359,13 +362,30 @@ export const CRMKanban: React.FC<Props> = (props) => {
         <div className="px-6 w-full">
           <InputSearch onSearch={setFilter} />
         </div>
+
+        <div
+          data-hidden={!loading}
+          className="flex flex-1 justify-center pl-4 overflow-x-auto pr-10 py-4 gap-4 items-center"
+        >
+          <Skeleton className="w-screen max-w-96 h-screen flex-1 bg-background" />
+          <Skeleton className="w-screen max-w-96 h-screen flex-1 bg-background" />
+          <Skeleton className="w-screen max-w-96 h-screen flex-1 bg-background" />
+          <Skeleton className="w-screen max-w-96 h-screen flex-1 bg-background" />
+          <Skeleton className="w-screen max-w-96 h-screen flex-1 bg-background" />
+          <Skeleton className="w-screen max-w-96 h-screen flex-1 bg-background" />
+          <Skeleton className="w-screen max-w-96 h-screen flex-1 bg-background" />
+        </div>
+
         <DndContext
           onDragOver={onDragOver}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
           sensors={sensors}
         >
-          <div className="flex flex-1 gap-4 py-4 overflow-x-auto pl-4 pr-10 w-full">
+          <div
+            data-hidden={loading}
+            className="flex flex-1 gap-4 py-4 overflow-x-auto pl-4 pr-10 w-full"
+          >
             <SortableContext items={buckets.map((b) => b.id)}>
               {buckets
                 .sort((a, b) => a.position - b.position)
