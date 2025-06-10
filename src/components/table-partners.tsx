@@ -1,5 +1,7 @@
 "use client";
 
+import { removePartner, toggleStatusPartner } from "@/app/actions/partners";
+import { partnerSchema } from "@/app/actions/partners/schemas";
 import { useServerActionMutation } from "@/app/actions/query-key-factory";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,11 +41,9 @@ import {
 import { ChevronDown, ChevronUp, Container, UserRound } from "lucide-react";
 import { useState } from "react";
 import type { z } from "zod";
-import { ModalDelete } from "./modais/common/modal-delete";
+import { ModalConfirm } from "./modais/common/modal-confirm";
 import { FooterPagination } from "./pagination";
 import { TableFilterPartners } from "./table-filter-partners";
-import { partnerSchema } from "@/app/actions/partners/schemas";
-import { removePartner, toggleStatusPartner } from "@/app/actions/partners";
 
 type Item = z.infer<typeof partnerSchema>;
 
@@ -208,7 +208,7 @@ export default function TablePartners(props: Props) {
           <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center bg-background px-1 font-[inherit] text-[0.625rem] font-light">
             {table.getSelectedRowModel().rows.length} registro(s) selecionado(s)
           </span>
-          <ModalDelete
+          <ModalConfirm
             onContinue={async () => {
               removePartnerAction.mutate({
                 partnerIds: table
@@ -216,9 +216,17 @@ export default function TablePartners(props: Props) {
                   .rows.map((r) => r.original.id),
               });
             }}
-          />
+          >
+            <Button
+              size="sm"
+              className="rounded text-primary h-7 shadow-none border !text-sm"
+              variant="outline"
+            >
+              Excluir
+            </Button>
+          </ModalConfirm>
         </header>
-        <Table className="table-fixed">
+        <Table className="table-fixed !z-0">
           <TableHeader className="bg-[#F1F4F9]">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">

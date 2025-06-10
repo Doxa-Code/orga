@@ -57,7 +57,7 @@ export const TableFilterPartners: React.FC<Props> = ({ table, ...props }) => {
             />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="max-w-44 p-3" align="start">
+        <PopoverContent className="max-w-44 z-50 p-3" align="start">
           <div className="space-y-3">
             <div className="text-xs font-medium text-muted-foreground">
               Filtros
