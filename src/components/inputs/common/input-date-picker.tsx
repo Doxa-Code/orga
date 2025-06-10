@@ -1,8 +1,12 @@
 import { Paragraph } from "@/components/common/typograph";
-import { Button } from "@orga/ui/button";
-import { cn } from "@orga/utils";
-import { Calendar } from "@orgalendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@orgapover";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { format, isValid } from "date-fns";
 import { pt } from "date-fns/locale/pt";
 import { LucideCalendar } from "lucide-react";
@@ -19,7 +23,7 @@ export function InputDatePicker(props: InputDatePickerProps) {
         <Button
           variant="ghost"
           className={cn(
-            "h-10 w-[200px] justify-between overflow-hidden rounded border border-gray-300 bg-transparent p-0 text-left font-normal hover:bg-transparent",
+            "h-10 w-[200px] justify-between overflow-hidden rounded border border-gray-300 bg-transparent p-0 text-left font-normal hover:bg-transparent"
           )}
         >
           <Paragraph className="pl-2 text-gray-700">
@@ -36,7 +40,7 @@ export function InputDatePicker(props: InputDatePickerProps) {
           mode="single"
           selected={props.date}
           onSelect={props.onSelectDate}
-          initialFocus
+          autoFocus
           locale={pt}
         />
       </PopoverContent>

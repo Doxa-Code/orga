@@ -18,11 +18,7 @@ export function ModalRegisterWallet() {
   return (
     <ModalDefault
       modalName={REGISTER_WALLET_MODAL_NAME}
-      maxWidth={600}
       title={walletId ? "Editar conta financeira" : "Novo conta financeira"}
-      disabledDoneAction={formRef.current?.progressStatus}
-      onDoneFormRef={REGISTER_WALLET_MODAL_NAME}
-      textDoneAction={walletId ? "Alterar" : "Cadastrar"}
     >
       <FormRegisterWallet
         ref={formRef}

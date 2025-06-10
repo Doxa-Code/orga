@@ -1,25 +1,25 @@
-import type { Transaction } from "../../domain";
-import type { AccountPlanRaw } from "../mappers/account-plan-mapper";
-import type { CostCenterRaw } from "../mappers/cost-center-mapper";
-import type { WorkspaceRaw } from "../mappers/workspace-mapper";
+import { CostCenter } from "@/core/domain/entities/cost-center";
+import { AccountPlan } from "@/core/domain/entities/account-plan";
+import { Workspace } from "@/core/domain/entities/workspace";
+import { Transaction } from "@/core/domain/entities/transaction";
 
 interface CostCenterRepository {
-  list(workspaces: string[]): Promise<CostCenterRaw[]>;
+  list(workspaces: string[]): Promise<CostCenter[]>;
 }
 
 interface AccountPlanRepository {
-  list(workspaces: string[]): Promise<AccountPlanRaw[]>;
+  list(workspaces: string[]): Promise<AccountPlan[]>;
 }
 
 interface WorkspaceRepository {
-  retrieveByOwner(ownerId: string): Promise<WorkspaceRaw[]>;
+  retrieveByOwner(ownerId: string): Promise<Workspace[]>;
 }
 
 export class ListFinanceEntities {
   constructor(
     private readonly costCenterRepository: CostCenterRepository,
     private readonly accountPlanRepository: AccountPlanRepository,
-    private readonly workspaceRepository: WorkspaceRepository,
+    private readonly workspaceRepository: WorkspaceRepository
   ) {}
   async execute(userId: string): Promise<ListFinanceEntitiesOutputDTO> {
     const workspaces = await this.workspaceRepository.retrieveByOwner(userId);
@@ -37,7 +37,7 @@ export class ListFinanceEntities {
             type: account.operation === "REVENUE" ? "CREDIT" : "DEBIT",
             sequence: category.sequence,
             name: `${category.sequence}. ${category.name}`,
-          })),
+          }))
         );
       }, []),
     };
@@ -51,6 +51,6 @@ type Category = {
 };
 
 export type ListFinanceEntitiesOutputDTO = {
-  costCenters: CostCenterRaw[];
+  costCenters: CostCenter[];
   categories: Category[];
 };

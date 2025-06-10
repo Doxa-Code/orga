@@ -1,4 +1,4 @@
-import type { Transaction } from "@orga/core/domain";
+import { Transaction } from "@/core/domain/entities/transaction";
 import { create } from "zustand";
 
 export type TransactionToReconcile = {
@@ -62,7 +62,7 @@ export const useTransaction = create<TransactionStore>((set, get) => ({
                 transactionFromOFX: transactions.transactionFromOFX,
                 transactionToReconcile: null,
               }
-            : transactions,
+            : transactions
       ),
     });
   },
@@ -77,7 +77,7 @@ export const useTransaction = create<TransactionStore>((set, get) => ({
                 transactionFromOFX: transactions.transactionFromOFX,
                 transactionToReconcile,
               }
-            : transactions,
+            : transactions
       ),
     });
   },

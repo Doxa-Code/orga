@@ -1,6 +1,6 @@
 import { FormField } from "@/components/common/form-field";
 import type { InputFormDefaultProps } from "@/components/type";
-import { Input } from "@orga/ui/input";
+import { Input } from "@/components/ui/input";
 
 export const NumberInputForm: React.FC<InputFormDefaultProps> = ({
   form,

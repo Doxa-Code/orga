@@ -18,11 +18,7 @@ export function ModalPaymentTransaction() {
   return (
     <ModalDefault
       modalName={PAYMENT_TRANSACTION_MODAL_NAME}
-      maxWidth={600}
-      onDoneFormRef={PAYMENT_TRANSACTION_MODAL_NAME}
       title="Registrar pagamento"
-      disabledDoneAction={!!formRef.current?.progressStatus}
-      textDoneAction="Registrar"
     >
       <FormPaymentTransaction
         onFinish={() => {

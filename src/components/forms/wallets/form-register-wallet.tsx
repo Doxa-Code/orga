@@ -10,12 +10,11 @@ import { TextInputForm } from "@/components/inputs/common/text-input.form";
 import { SectionModal } from "@/components/modais/common/section-modal";
 import { SelectBankInputForm } from "@/components/selects/common/select-bank-input-form";
 import { FormRegisterPartnerSkeleton } from "@/components/skeletons/partners/form-register-partner-skeleton";
+import { Toast } from "@/components/toast";
 import { REGISTER_WALLET_MODAL_NAME } from "@/constants";
 import { type FormHandlesRef, useFormHandlesRef } from "@/hooks/use-form-ref";
 import { useFormSchema } from "@/hooks/use-form-schema";
-import { useToast } from "@/hooks/use-toast";
 import { useWallet } from "@/hooks/use-wallet";
-import { WalletMapper } from "@orga/core/application";
 import { forwardRef, useEffect, useRef } from "react";
 
 type Props = {
@@ -27,18 +26,13 @@ export const FormRegisterWallet = forwardRef<FormHandlesRef, Props>(
     const formRef = useRef<HTMLFormElement>(null);
     const { typeToCreate, walletId, wallet } = useWallet();
     const isPending = false;
-    const { toast } = useToast();
     const registerWalletAction = useServerActionMutation(registerWallet, {
       mutationKey: ["register-wallet"],
       onSuccess() {
         props.onFinish();
       },
       onError(error) {
-        toast({
-          description: error.name,
-          title: error.message,
-          variant: "destructive",
-        });
+        Toast.error("Erro ao registrar conta bancária", error.message);
       },
     });
 
@@ -56,7 +50,7 @@ export const FormRegisterWallet = forwardRef<FormHandlesRef, Props>(
 
     useEffect(() => {
       if (wallet) {
-        form.reset(WalletMapper.toForm(wallet));
+        // form.reset(WalletMapper.toForm(wallet));
       }
     }, [wallet]);
 
@@ -77,7 +71,7 @@ export const FormRegisterWallet = forwardRef<FormHandlesRef, Props>(
           registerWalletAction.mutate({
             ...values,
             walletId,
-          }),
+          })
         )}
         id={REGISTER_WALLET_MODAL_NAME}
       >
@@ -98,5 +92,5 @@ export const FormRegisterWallet = forwardRef<FormHandlesRef, Props>(
         </SectionModal>
       </FormDefault>
     );
-  },
+  }
 );

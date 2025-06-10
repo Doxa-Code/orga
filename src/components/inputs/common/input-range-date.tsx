@@ -1,11 +1,15 @@
 import { Paragraph } from "@/components/common/typograph";
-import { Button } from "@orga/ui/button";
-import { cn } from "@orga/utils";
-import { Calendar } from "@orgalendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@orgapover";
-import { CalendarIcon } from "@radix-ui/react-icons";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale/pt";
+import { CalendarIcon } from "lucide-react";
 import type * as React from "react";
 
 type Value = {
@@ -32,7 +36,7 @@ export function InputRangeDate({
             variant={"outline"}
             className={cn(
               "justify-start text-left font-normal",
-              !value && "text-muted-foreground",
+              !value && "text-muted-foreground"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -56,13 +60,13 @@ export function InputRangeDate({
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            initialFocus
+            autoFocus
             mode="range"
             defaultMonth={value?.start}
             selected={value ? { from: value.start, to: value.end } : undefined}
             onSelect={(selected) =>
               onChange(
-                selected ? { start: selected.from!, end: selected.to! } : null,
+                selected ? { start: selected.from!, end: selected.to! } : null
               )
             }
             numberOfMonths={2}

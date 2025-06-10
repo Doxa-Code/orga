@@ -1,4 +1,4 @@
-import type { Payment } from "../../domain";
+import { Payment } from "@/core/domain/entities/payment";
 import type { Transaction } from "../../domain/entities/transaction";
 
 interface TransactionRepository {
@@ -19,11 +19,11 @@ export class MakePaymentOnTransaction {
   constructor(
     private readonly transactionRepository: TransactionRepository,
     private readonly verifyPermissionService: VerifyPermissionService,
-    private readonly registerTransactionOnWalletService: RegisterTransactionOnWalletService,
+    private readonly registerTransactionOnWalletService: RegisterTransactionOnWalletService
   ) {}
   async execute(input: InputDTO) {
     const transaction = await this.transactionRepository.retrieve(
-      input.transactionId,
+      input.transactionId
     );
 
     if (!transaction) {
@@ -32,7 +32,7 @@ export class MakePaymentOnTransaction {
 
     await this.verifyPermissionService.execute(
       input.userId,
-      transaction.workspaceId,
+      transaction.workspaceId
     );
 
     const payment = transaction.getPayment(input.paymentId);
@@ -43,7 +43,7 @@ export class MakePaymentOnTransaction {
 
     await this.registerTransactionOnWalletService.reversalPayment(
       payment,
-      transaction.type,
+      transaction.type
     );
 
     payment.pay(input.amountPaided, input.paymentMethod, input.paymentDate);

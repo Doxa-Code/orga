@@ -4,9 +4,9 @@ import { useServerActionQuery } from "@/app/actions/query-key-factory";
 import { listWalletsLikeOption } from "@/app/actions/wallets";
 import { Paragraph } from "@/components/common/typograph";
 import type { InputDefaultProps } from "@/components/type";
-import type { ListWalletLikeOptionOutputDTO } from "@orga/core/presenters";
 import Image from "next/image";
 import { Select } from "../common/select";
+import { ListWalletLikeOptionOutputDTO } from "@/core/presenters/list-wallets-presentation";
 
 type Props = {
   noClearButton?: boolean;
@@ -21,7 +21,7 @@ export const SelectWallets: React.FC<Props> = ({ wallets = [], ...props }) => {
       queryKey: ["listWalletsLikeOption"],
       initialData: wallets,
       gcTime: 1,
-    },
+    }
   );
 
   return (
@@ -49,8 +49,8 @@ export const SelectWallets: React.FC<Props> = ({ wallets = [], ...props }) => {
       options={listWalletsLikeOptionAction.data}
       label="name"
       value="id"
-      selected={props.value}
-      setSelected={(walletId) => {
+      selected={props.value as any}
+      onSelect={(walletId) => {
         props.onChange(walletId);
       }}
       noAddButton

@@ -29,6 +29,7 @@ interface StyleCallbacks {
 }
 
 interface DragDropOptions<T> {
+  onDrag(event: DragEvent, dragItem: HTMLElement): unknown;
   /** CSS selector for draggable items */
   draggableSelector: string;
   /** CSS selector for drop zones/containers */
@@ -62,12 +63,12 @@ export class DragDropManager<T = unknown> {
 
   private init() {
     const items = document.querySelectorAll<HTMLElement>(
-      this.opts.draggableSelector,
+      this.opts.draggableSelector
     );
     items.forEach((item) => this.bindDraggable(item));
 
     const zones = document.querySelectorAll<HTMLElement>(
-      this.opts.dropzoneSelector,
+      this.opts.dropzoneSelector
     );
     zones.forEach((zone) => this.bindDropzone(zone));
   }
@@ -92,9 +93,9 @@ export class DragDropManager<T = unknown> {
     }
     event.dataTransfer?.setData(
       "text/plain",
-      this.opts.getItemId(el).toString(),
+      this.opts.getItemId(el).toString()
     );
-    event.dataTransfer?.effectAllowed = "move";
+    event.dataTransfer!.effectAllowed = "move";
     this.opts.onDragStart?.(event, el);
     this.opts.styleCallbacks?.onDragStart?.(el);
   };

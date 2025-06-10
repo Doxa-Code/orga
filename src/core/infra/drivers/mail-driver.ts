@@ -1,5 +1,4 @@
 import { EmailParams, MailerSend, Recipient, Sender } from "mailersend";
-import nodemailer from "nodemailer";
 import config from "../config";
 
 interface MailDriver {
@@ -25,29 +24,5 @@ export class MailerSendMailDriver implements MailDriver {
       .setSubject(subject)
       .setHtml(message);
     this.mailersend.email.send(this.params);
-  }
-}
-
-export class MailHugMailDriver implements MailDriver {
-  static from: string;
-  private readonly transporter = nodemailer.createTransport({
-    host: "localhost",
-    port: "1025",
-    auth: null,
-  } as any);
-
-  setFrom(from: string, name: string): void {
-    MailHugMailDriver.from = `${name} <${from}>`;
-  }
-
-  async send(to: string, subject: string, message: string): Promise<void> {
-    const mailOptions = {
-      from: MailHugMailDriver.from,
-      to,
-      subject,
-      html: message,
-    };
-
-    await this.transporter.sendMail(mailOptions);
   }
 }

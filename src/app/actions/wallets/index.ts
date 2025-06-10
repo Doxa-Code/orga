@@ -1,7 +1,5 @@
 "use server";
 
-import { WalletFactory } from "@orga/core/factories";
-import { ListWalletsPresentation } from "@orgapresenters";
 import { unstable_cache } from "next/cache";
 import { securityProcedure } from "../security-procedure";
 import {
@@ -14,34 +12,36 @@ import {
   retrieveWalletTransactionsHistoryInputSchema,
   retrieveWalletTransactionsHistoryOutputSchema,
 } from "./schema";
+import { WalletFactory } from "@/core/infra/factories/wallet-factory";
+import { ListWalletsPresentation } from "@/core/presenters/list-wallets-presentation";
 
 export const listWalletsLikeOption = securityProcedure
   .output(listWalletsLikeOptionOutputSchema)
-  .handler(async ({ ctx: { payload } }) => {
+  .handler(async ({ ctx: { user } }) => {
     return unstable_cache(
       async () => {
         const listWallets = WalletFactory.list();
 
-        const wallets = await listWallets.execute(payload.user.id);
+        const wallets = await listWallets.execute(user.id);
 
         return ListWalletsPresentation.likeOption(wallets);
       },
       [],
       {
         revalidate: 180,
-        tags: [`list_wallet_like_option_${payload.user.id}`],
-      },
+        tags: [`list_wallet_like_option_${user.id}`],
+      }
     )();
   });
 
 export const registerWallet = securityProcedure
   .input(registerWalletInputSchema)
-  .handler(async ({ input, ctx: { payload } }) => {
+  .handler(async ({ input, ctx: { user, workspace } }) => {
     const createWallet = WalletFactory.create();
     const editWallet = WalletFactory.edit();
     if (input.walletId) {
       return await editWallet.execute({
-        userId: payload.user.id,
+        userId: user.id,
         walletId: input.walletId,
         agency: input.agency,
         bankCode: input.bankCode,
@@ -55,8 +55,8 @@ export const registerWallet = securityProcedure
       bankCode: input.bankCode,
       name: input.name,
       type: input.type,
-      userId: payload.user.id,
-      workspaceId: payload.workspaces[0]!.id,
+      userId: user.id,
+      workspaceId: workspace.id,
       agency: input.agency,
       number: input.number,
     });
@@ -64,10 +64,10 @@ export const registerWallet = securityProcedure
 
 export const listWallets = securityProcedure
   .output(listWalletsOutputSchema)
-  .handler(async ({ ctx: { payload } }) => {
+  .handler(async ({ ctx: { user } }) => {
     const listWallets = WalletFactory.list();
 
-    const wallets = await listWallets.execute(payload.user.id);
+    const wallets = await listWallets.execute(user.id);
 
     return ListWalletsPresentation.create(wallets);
   });
@@ -75,13 +75,10 @@ export const listWallets = securityProcedure
 export const retrieveWallet = securityProcedure
   .input(retrieveWalletInputSchema)
   .output(retrieveWalletOutputSchema)
-  .handler(async ({ input, ctx: { payload } }) => {
+  .handler(async ({ input, ctx: { user } }) => {
     const retrieveWallet = WalletFactory.retrieve();
 
-    const result = await retrieveWallet.execute(
-      input.walletId,
-      payload.user.id,
-    );
+    const result = await retrieveWallet.execute(input.walletId, user.id);
 
     return result;
   });
@@ -89,14 +86,14 @@ export const retrieveWallet = securityProcedure
 export const retrieveWalletTransactionsHistory = securityProcedure
   .input(retrieveWalletTransactionsHistoryInputSchema)
   .output(retrieveWalletTransactionsHistoryOutputSchema)
-  .handler(async ({ input, ctx: { payload } }) => {
+  .handler(async ({ input, ctx: { user } }) => {
     const retrieveWalletTransactionsHistory =
       WalletFactory.retrieveTransactionHistory();
 
     const result = await retrieveWalletTransactionsHistory.execute({
       from: input.from,
       to: input.to,
-      userId: payload.user.id,
+      userId: user.id,
       walletId: input.walletId,
     });
 
@@ -105,11 +102,11 @@ export const retrieveWalletTransactionsHistory = securityProcedure
 
 export const deleteWallet = securityProcedure
   .input(deleteWalletInputSchema)
-  .handler(async ({ input, ctx: { payload } }) => {
+  .handler(async ({ input, ctx: { user } }) => {
     const deleteWallet = WalletFactory.delete();
 
     await deleteWallet.execute({
-      userId: payload.user.id,
+      userId: user.id,
       walletId: input.walletId,
     });
   });

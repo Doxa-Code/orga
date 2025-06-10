@@ -37,8 +37,8 @@ export const SelectBank: React.FC<Props> = (props) => {
       options={banks}
       label="name"
       value="code"
-      selected={props.value}
-      setSelected={(bankCode) => {
+      selected={props.value as any}
+      onSelect={(bankCode) => {
         props.onChange(bankCode);
       }}
       noAddButton

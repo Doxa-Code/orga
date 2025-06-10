@@ -1,12 +1,11 @@
-import type { WalletRaw } from "@orga/core/application";
-import type { Wallet } from "@orgadomain";
+import { Wallet } from "@/core/domain/entities/wallet";
 import { create } from "zustand";
 
 type Store = {
   walletId: string | null;
   typeToCreate: Wallet.Type;
   isLoading: boolean;
-  wallet: Omit<WalletRaw, "transactionHistory"> | null;
+  wallet: Omit<Wallet, "transactionHistory"> | null;
 };
 
 type Actions = {

@@ -33,7 +33,7 @@ const partnersRepository = new PartnerRepositoryDatabase();
 const verifyPermissionService = UserFactory.verifyPermissionService();
 
 const registerTransactionOnWalletService = new RegisterTransactionOnWallet(
-  walletRepository,
+  walletRepository as any
 );
 
 const imageStorage = new ExternalImageStorageService(new S3StorageDriver());
@@ -43,7 +43,7 @@ export class TransactionFactory {
     return new DeleteTransaction(
       verifyPermissionService,
       transactionRepository,
-      registerTransactionOnWalletService,
+      registerTransactionOnWalletService
     );
   }
 
@@ -53,7 +53,7 @@ export class TransactionFactory {
       costCenterRepository,
       accountPlanRepository,
       registerTransactionOnWalletService,
-      walletRepository,
+      walletRepository
     );
   }
 
@@ -61,10 +61,10 @@ export class TransactionFactory {
     return new SearchTransactions(
       transactionRepository,
       userRepository,
-      workspaceRepository,
+      workspaceRepository as any,
       partnersRepository,
       walletRepository,
-      imageStorage,
+      imageStorage
     );
   }
 
@@ -75,14 +75,14 @@ export class TransactionFactory {
       costCenterRepository,
       transactionRepository,
       verifyPermissionService,
-      registerTransactionOnWalletService,
+      registerTransactionOnWalletService
     );
   }
 
   static retrieve() {
     return new RetrieveTransaction(
       transactionRepository,
-      verifyPermissionService,
+      verifyPermissionService
     );
   }
 
@@ -90,7 +90,7 @@ export class TransactionFactory {
     return new MakePaymentOnTransaction(
       transactionRepository,
       verifyPermissionService,
-      registerTransactionOnWalletService,
+      registerTransactionOnWalletService
     );
   }
 }

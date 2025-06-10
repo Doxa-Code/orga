@@ -17,6 +17,7 @@ import { TextInputForm } from "@/components/inputs/common/text-input.form";
 import { SectionModal } from "@/components/modais/common/section-modal";
 import { SelectPartnerTypeInputForm } from "@/components/selects/partners/select-partner-type-input-form";
 import { FormRegisterPartnerSkeleton } from "@/components/skeletons/partners/form-register-partner-skeleton";
+import { Toast } from "@/components/toast";
 import { REGISTER_PARTNER_MODAL_NAME } from "@/constants";
 import type { PartnerRetrievedOutputDTO } from "@/core/application/DAO/retrieve-partner-by-tax-id";
 import type { Partner } from "@/core/domain/entities/partner";
@@ -25,9 +26,9 @@ import type { FormHandlesRef } from "@/hooks/use-form-ref";
 import { useFormSchema } from "@/hooks/use-form-schema";
 import { useModais } from "@/hooks/use-modais";
 import { usePartner } from "@/hooks/use-partner";
-import { useToast } from "@/hooks/use-toast";
 import { formatPhone, formatTaxId } from "@/lib/utils";
 import { forwardRef, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { z } from "zod";
 
 export const registerPartnerFormSchema = z.object({
@@ -60,7 +61,6 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
   (props, ref) => {
     const [type, setType] = useState<Partner.Type>("COMPANY");
     const { partnerId, roleToCreate } = usePartner();
-    const { toast } = useToast();
     const { closeModal } = useModais();
     const registerPartnerAction = useServerActionMutation(registerPartner, {
       mutationKey: ["register-partner"],
@@ -68,11 +68,7 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
         props.onFinish();
       },
       onError(error) {
-        toast({
-          description: error.name,
-          title: error.message,
-          variant: "destructive",
-        });
+        Toast.error("Erro ao registrar parceiro", error.message);
       },
     });
 

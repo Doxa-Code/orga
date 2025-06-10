@@ -1,4 +1,4 @@
-import { Skeleton } from "@orga/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import type React from "react";
 
 export const FormPaymentTransactionSkeleton: React.FC = () => {

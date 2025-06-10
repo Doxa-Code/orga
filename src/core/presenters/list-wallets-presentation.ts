@@ -1,5 +1,5 @@
 import type { ListWalletsOutputDTO } from "../application/usecases/list-wallets";
-import type { Transaction } from "../domain";
+import { Transaction } from "../domain/entities/transaction";
 
 export class ListWalletsPresentation {
   static create(wallets: InputDTO[]): ListWalletsPresentationOutputDTO[] {

@@ -1,8 +1,8 @@
+import { Workspace } from "@/core/domain/entities/workspace";
 import type { User } from "../../domain/entities/user";
-import type { WorkspaceRaw } from "../mappers/workspace-mapper";
 
 interface WorkspaceRepository {
-  retrieveByOwner(ownerId: string): Promise<WorkspaceRaw[]>;
+  retrieveByOwner(ownerId: string): Promise<Workspace[]>;
 }
 
 interface UserRepository {
@@ -18,7 +18,7 @@ export class DeleteAccountUser {
   constructor(
     private readonly workspaceRepository: WorkspaceRepository,
     private readonly userRepository: UserRepository,
-    private readonly deleteWorkspace: DeleteWorkspace,
+    private readonly deleteWorkspace: DeleteWorkspace
   ) {}
 
   async execute(userId: string) {
@@ -37,7 +37,7 @@ export class DeleteAccountUser {
     await Promise.all(
       workspaces.map(async (workspace) => {
         await this.deleteWorkspace.execute(workspace.id);
-      }),
+      })
     );
 
     await this.userRepository.delete(user.id);

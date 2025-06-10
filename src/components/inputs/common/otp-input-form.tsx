@@ -6,9 +6,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@orga/ui/form";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@orga/ui/input-otp";
-import { cn } from "@orga/utils";
+} from "@/components/ui/form";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 
 type Props = {
@@ -46,5 +50,5 @@ export const OTPInputForm = forwardRef<HTMLInputElement, Props>(
         )}
       />
     );
-  },
+  }
 );

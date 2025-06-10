@@ -1,4 +1,4 @@
-import type { Wallet } from "../../domain";
+import { Wallet } from "@/core/domain/entities/wallet";
 import { EntityNotFound } from "../../domain/errors/entity-not-found";
 import type { WalletTransaction } from "../../domain/valueobjects/wallet-transaction";
 
@@ -23,7 +23,7 @@ export class RetrieveWalletTransactionHistory {
   constructor(
     private readonly verifyPermissionService: VerifyPermissionService,
     private readonly walletRepository: WalletRepository,
-    private readonly imageStorage: ImageStorage,
+    private readonly imageStorage: ImageStorage
   ) {}
 
   async execute(input: InputDTO) {
@@ -34,7 +34,7 @@ export class RetrieveWalletTransactionHistory {
 
     await this.verifyPermissionService.execute(
       input.userId,
-      wallet.workspaceId,
+      wallet.workspaceId
     );
 
     const transactions = await this.walletRepository.retriveTransactionHistory({

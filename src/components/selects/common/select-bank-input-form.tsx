@@ -6,8 +6,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@orga/ui/form";
-import { cn } from "@orga/utils";
+} from "@/components/ui/form";
+import { cn } from "@/lib/utils";
 import { SelectBank } from "./select-bank";
 
 type Props = InputFormDefaultProps;

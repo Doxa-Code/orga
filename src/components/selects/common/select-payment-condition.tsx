@@ -9,10 +9,8 @@ export const SelectPaymentCondition: React.FC<Props> = (props) => {
     <Select
       className="w-32"
       options={PAYMENT_CONDITION}
-      label="label"
-      value="value"
-      selected={Number(props.value)}
-      setSelected={(value) => props.onChange(Number(value))}
+      selected={props.value as any}
+      onSelect={(value) => props.onChange(Number(value))}
       noAddButton
       noSearchInput
       noClearButton

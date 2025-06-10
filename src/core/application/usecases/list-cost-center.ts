@@ -1,12 +1,12 @@
-import type { CostCenterRaw } from "../mappers/cost-center-mapper";
-import type { WorkspaceRaw } from "../mappers/workspace-mapper";
+import { CostCenter } from "@/core/domain/entities/cost-center";
+import { Workspace } from "@/core/domain/entities/workspace";
 
 interface CostCenterRepository {
-  list(workspacesId: string[]): Promise<CostCenterRaw[]>;
+  list(workspacesId: string[]): Promise<CostCenter[]>;
 }
 
 interface WorkspaceRepository {
-  retrieve(id: string): Promise<WorkspaceRaw | null>;
+  retrieve(id: string): Promise<Workspace | null>;
 }
 
 interface VerifyPermissionService {
@@ -17,18 +17,18 @@ export class ListCostCenter {
   constructor(
     private readonly costCenterRepository: CostCenterRepository,
     private readonly workspaceRepository: WorkspaceRepository,
-    private readonly verifyPermissionService: VerifyPermissionService,
+    private readonly verifyPermissionService: VerifyPermissionService
   ) {}
 
   async execute(
     workspacesId: string[],
-    userId: string,
+    userId: string
   ): Promise<ListCostCenterOutputDTO[]> {
     await Promise.all(
       workspacesId.map(
         async (workspaceId) =>
-          await this.verifyPermissionService.execute(userId, workspaceId),
-      ),
+          await this.verifyPermissionService.execute(userId, workspaceId)
+      )
     );
 
     const costCenters = await this.costCenterRepository.list(workspacesId);
@@ -36,7 +36,7 @@ export class ListCostCenter {
     return await Promise.all<ListCostCenterOutputDTO>(
       costCenters.map(async (costCenter) => {
         const workspace = await this.workspaceRepository.retrieve(
-          costCenter.workspaceId,
+          costCenter.workspaceId
         );
         return {
           id: costCenter.id,
@@ -47,7 +47,7 @@ export class ListCostCenter {
             name: workspace?.name || "Não encontrada",
           },
         };
-      }),
+      })
     );
   }
 }

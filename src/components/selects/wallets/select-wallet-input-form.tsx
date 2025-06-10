@@ -1,10 +1,10 @@
 import { FormField } from "@/components/common/form-field";
 import type { InputFormDefaultProps } from "@/components/type";
-import type { TransactionType } from "@orga/core/domain";
 import { SelectWallets } from "./select-wallets";
+import { Transaction } from "@/core/domain/entities/transaction";
 
 type Props = {
-  transactionType?: TransactionType;
+  transactionType?: Transaction.Type;
 } & InputFormDefaultProps;
 
 export const SelectWalletInputForm: React.FC<Props> = (props) => {

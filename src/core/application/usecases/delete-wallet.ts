@@ -1,8 +1,8 @@
+import { Wallet } from "@/core/domain/entities/wallet";
 import { EntityNotFound } from "../../domain/errors/entity-not-found";
-import type { WalletRaw } from "../mappers/wallet-mapper";
 
 interface WalletRepository {
-  retrieve(id: string): Promise<WalletRaw | null>;
+  retrieve(id: string): Promise<Wallet | null>;
   delete(id: string): Promise<void>;
 }
 
@@ -13,7 +13,7 @@ interface VerifyPemissionService {
 export class DeleteWallet {
   constructor(
     private readonly walletRepository: WalletRepository,
-    private readonly verifyPermissionService: VerifyPemissionService,
+    private readonly verifyPermissionService: VerifyPemissionService
   ) {}
   async execute(input: InputDTO) {
     const wallet = await this.walletRepository.retrieve(input.walletId);
@@ -23,7 +23,7 @@ export class DeleteWallet {
 
     await this.verifyPermissionService.execute(
       input.userId,
-      wallet.workspaceId,
+      wallet.workspaceId
     );
 
     await this.walletRepository.delete(input.walletId);

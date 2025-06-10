@@ -1,10 +1,10 @@
-import type { Wallet } from "../../domain";
+import { CostCenter } from "@/core/domain/valueobjects/cost-center";
 import { Payment } from "../../domain/entities/payment";
 import type { Transaction } from "../../domain/entities/transaction";
 import { EntityNotFound } from "../../domain/errors/entity-not-found";
 import { FieldInvalid } from "../../domain/errors/field-invalid";
-import type { AccountPlanRaw } from "../mappers/account-plan-mapper";
-import type { CostCenterRaw } from "../mappers/cost-center-mapper";
+import { AccountPlan } from "@/core/domain/entities/account-plan";
+import { Wallet } from "@/core/domain/entities/wallet";
 
 interface TransactionRepository {
   retrieve(id: string): Promise<Transaction | null>;
@@ -12,11 +12,11 @@ interface TransactionRepository {
 }
 
 interface CostCenterRepository {
-  retrieve(id: string): Promise<CostCenterRaw | null>;
+  retrieve(id: string): Promise<CostCenter | null>;
 }
 
 interface AccountPlanRepository {
-  retrieveBySequence(sequence: number): Promise<AccountPlanRaw | null>;
+  retrieveBySequence(sequence: number): Promise<AccountPlan | null>;
 }
 
 interface RegisterTransactionOnWalletService {
@@ -34,12 +34,12 @@ export class EditTransaction {
     private readonly costCenterRepository: CostCenterRepository,
     private readonly accountPlanRepository: AccountPlanRepository,
     private readonly registerTransactionOnWalletService: RegisterTransactionOnWalletService,
-    private readonly walletRepository: WalletRepository,
+    private readonly walletRepository: WalletRepository
   ) {}
 
   async execute(input: InputDTO) {
     const transaction = await this.transactionRepository.retrieve(
-      input.transactionId,
+      input.transactionId
     );
 
     if (!transaction) {
@@ -48,7 +48,7 @@ export class EditTransaction {
 
     if (input.costCenterId) {
       const costCenter = await this.costCenterRepository.retrieve(
-        input.costCenterId,
+        input.costCenterId
       );
 
       if (!costCenter) {
@@ -73,7 +73,7 @@ export class EditTransaction {
       }
 
       const category = accountPlan.categories.find(
-        (category) => category.sequence === input.categorySequence,
+        (category) => category.sequence === input.categorySequence
       );
 
       if (!category) {
@@ -106,9 +106,9 @@ export class EditTransaction {
               status: input.paided ? "PAID" : "NO_PAID",
               paymentMethod:
                 payment.paymentMethod || input.defaultInstallmentPaymentMethod,
-            }),
+            })
           );
-        }),
+        })
       );
     } else {
       transaction.addPayment(
@@ -120,7 +120,7 @@ export class EditTransaction {
           description: `${transaction.description} 1/1`,
           status: input.paided ? "PAID" : "NO_PAID",
           paymentMethod: input.defaultInstallmentPaymentMethod,
-        }),
+        })
       );
     }
 

@@ -1,9 +1,8 @@
 import { FieldMissing } from "../../domain/errors/field-missing";
 import { NotPermission } from "../../domain/errors/not-permission";
-import type { WorkspaceRaw } from "../mappers/workspace-mapper";
 
 interface WorkspaceRepository {
-  retrieveByOwner(ownerId: string): Promise<WorkspaceRaw[]>;
+  retrieveByOwner(ownerId: string): Promise<any[]>;
 }
 
 export class VerifyPermissionService {

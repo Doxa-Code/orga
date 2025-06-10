@@ -1,6 +1,6 @@
-import { Input } from "@orga/ui/input";
-import { cn } from "@orga/utils";
-import { Label } from "@orgabel";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { type HTMLAttributes, forwardRef } from "react";
 
 export const InputPercent = forwardRef<
@@ -19,7 +19,7 @@ export const InputPercent = forwardRef<
         {...props}
         className={cn(
           "rounded-none !border-none pl-3 text-left",
-          props.className,
+          props.className
         )}
         defaultValue={props.defaultValue || "0,0"}
         onChange={(e) => {

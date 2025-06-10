@@ -1,10 +1,9 @@
-import type { Wallet } from "../../domain";
+import { Wallet } from "@/core/domain/entities/wallet";
+import { Workspace } from "@/core/domain/entities/workspace";
 import type { WalletTransaction } from "../../domain/valueobjects/wallet-transaction";
-import type { WalletRaw } from "../mappers/wallet-mapper";
-import type { WorkspaceRaw } from "../mappers/workspace-mapper";
 
 interface WalletsRepository {
-  list(workspacesId: string[]): Promise<WalletRaw[]>;
+  list(workspacesId: string[]): Promise<Wallet[]>;
 }
 
 interface ImageStorage {
@@ -12,33 +11,33 @@ interface ImageStorage {
 }
 
 interface WorkspaceRepository {
-  retrieveByOwner(ownerId: string): Promise<WorkspaceRaw[]>;
+  retrieveByOwner(ownerId: string): Promise<Workspace[]>;
 }
 
 export class ListWallets {
   constructor(
     private readonly walletsRepository: WalletsRepository,
     private readonly imageStorage: ImageStorage,
-    private readonly workspaceRepository: WorkspaceRepository,
+    private readonly workspaceRepository: WorkspaceRepository
   ) {}
 
   async execute(userId: string): Promise<ListWalletsOutputDTO[]> {
     const workspaces = await this.workspaceRepository.retrieveByOwner(userId);
     const wallets = await this.walletsRepository.list(
-      workspaces.map((wk) => wk.id),
+      workspaces.map((wk) => wk.id)
     );
 
-    return await Promise.all(
+    return (await Promise.all(
       wallets.map(async (wallet) => ({
         ...wallet,
         bank: {
           ...wallet.bank,
           thumbnail: await this.imageStorage.assigneeImage(
-            wallet.bank.thumbnail,
+            wallet.bank.thumbnail
           ),
         },
-      })),
-    );
+      }))
+    )) as ListWalletsOutputDTO[];
   }
 }
 

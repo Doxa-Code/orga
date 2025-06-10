@@ -2,8 +2,6 @@
 import { useServerActionMutation } from "@/app/actions/query-key-factory";
 import { makePaymentOnTransaction } from "@/app/actions/transactions";
 import { paymentTransactionInputSchema } from "@/app/actions/transactions/schema";
-import { Field } from "@/components/common/field";
-import { FooterCalculateRemaningAmount } from "@/components/footers/common/footer-calculate-remaning-amount";
 import { FormDefault } from "@/components/forms/common/form-default";
 import { DateInputForm } from "@/components/inputs/common/date-input.form";
 import { InputMoney } from "@/components/inputs/common/input-money";
@@ -12,13 +10,11 @@ import { SectionModal } from "@/components/modais/common/section-modal";
 import { SelectPaymentMethodInputForm } from "@/components/selects/common/select-payment-method-input-form";
 import { SelectWalletInputForm } from "@/components/selects/wallets/select-wallet-input-form";
 import { FormPaymentTransactionSkeleton } from "@/components/skeletons/transactions/form-payment-transaction-skeleton";
+import { FormItem, FormLabel } from "@/components/ui/form";
 import { PAYMENT_METHOD, PAYMENT_TRANSACTION_MODAL_NAME } from "@/constants";
 import { type FormHandlesRef, useFormHandlesRef } from "@/hooks/use-form-ref";
 import { useFormSchema } from "@/hooks/use-form-schema";
 import { useTransaction } from "@/hooks/use-transaction";
-import { TransactionMapper } from "@orga/core/application";
-import { FormItem, FormLabel } from "@orga/ui/form";
-import { PaymentStatus } from "@orgadomain";
 import { forwardRef, useEffect, useState } from "react";
 
 type Props = {
@@ -27,8 +23,7 @@ type Props = {
 
 export const FormPaymentTransaction = forwardRef<FormHandlesRef, Props>(
   (props, ref) => {
-    const { paymentId, transactionId, transaction, isLoadingTransaction } =
-      useTransaction();
+    const { paymentId, transactionId } = useTransaction();
     const [amountPaided, setAmountPaided] = useState(0);
     const form = useFormSchema({
       schema: paymentTransactionInputSchema,
@@ -50,7 +45,7 @@ export const FormPaymentTransaction = forwardRef<FormHandlesRef, Props>(
       {
         mutationKey: ["make-payment-on-transaction"],
         onSuccess: props.onFinish,
-      },
+      }
     );
 
     useFormHandlesRef({
@@ -58,26 +53,26 @@ export const FormPaymentTransaction = forwardRef<FormHandlesRef, Props>(
       progressStatus: makePaymentOnTransactionAction.status === "pending",
     });
 
-    const payment = transaction?.payments.find(
-      (payment) => payment.id === paymentId,
-    );
+    // const payment = transaction?.payments.find(
+    //   (payment) => payment.id === paymentId
+    // );
 
-    useEffect(() => {
-      if (transaction && payment) {
-        const formDefaultValues = TransactionMapper.toFormPayment(
-          transaction,
-          paymentId!,
-          PAYMENT_METHOD[0]!.name,
-        );
+    // useEffect(() => {
+    //   if (transaction && payment) {
+    //     const formDefaultValues = TransactionMapper.toFormPayment(
+    //       transaction,
+    //       paymentId!,
+    //       PAYMENT_METHOD[0]!.name
+    //     );
 
-        form.reset(formDefaultValues);
-        setAmountPaided(formDefaultValues.amountPaided);
-      }
-    }, [transaction, paymentId]);
+    //     form.reset(formDefaultValues);
+    //     setAmountPaided(formDefaultValues.amountPaided);
+    //   }
+    // }, [transaction, paymentId]);
 
-    if (isLoadingTransaction) {
-      return <FormPaymentTransactionSkeleton />;
-    }
+    // if (isLoadingTransaction) {
+    //   return <FormPaymentTransactionSkeleton />;
+    // }
 
     return (
       <FormDefault
@@ -87,17 +82,17 @@ export const FormPaymentTransaction = forwardRef<FormHandlesRef, Props>(
             ...values,
             paymentId: paymentId!,
             transactionId: transactionId!,
-          }),
+          })
         )}
         id={PAYMENT_TRANSACTION_MODAL_NAME}
       >
         <SectionModal title="Dados do pagamento">
           <div className="flex w-full gap-6">
-            <Field
+            {/* <Field
               label="Vencimento"
               value={payment?.dueDate?.toLocaleDateString("pt-BR")}
-            />
-            <Field
+            /> */}
+            {/* <Field
               label="Status"
               data-negative={payment?.status === PaymentStatus.NO_PAID}
               data-positive={payment?.status === PaymentStatus.PAID}
@@ -105,14 +100,14 @@ export const FormPaymentTransaction = forwardRef<FormHandlesRef, Props>(
                 payment?.status === PaymentStatus.PAID ? "Pago" : "Não Pago"
               }
             />
-            <Field label="Descrição" value={payment?.description} />
+            <Field label="Descrição" value={payment?.description} /> */}
           </div>
         </SectionModal>
 
         <SectionModal title="Informações de pagamento">
           <FormItem>
             <FormLabel>Valor</FormLabel>
-            <InputMoney disabled value={Number(payment?.amount)} />
+            {/* <InputMoney disabled value={Number(payment?.amount)} /> */}
           </FormItem>
 
           <DateInputForm
@@ -129,14 +124,14 @@ export const FormPaymentTransaction = forwardRef<FormHandlesRef, Props>(
           <SelectWalletInputForm
             name="walletId"
             required
-            transactionType={transaction?.type}
+            // transactionType={transaction?.type}
           />
-          <FooterCalculateRemaningAmount
+          {/* <FooterCalculateRemaningAmount
             amount={payment?.amount}
             amountPaided={amountPaided}
-          />
+          /> */}
         </SectionModal>
       </FormDefault>
     );
-  },
+  }
 );

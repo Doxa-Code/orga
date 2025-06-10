@@ -1,4 +1,3 @@
-import type { TableHandles } from "@/components/tables/common/table";
 import { useEffect, useRef } from "react";
 
 type Props = {
@@ -6,7 +5,7 @@ type Props = {
 };
 
 export const useTableRefToManagerSelection = (props: Props) => {
-  const ref = useRef<TableHandles>(null);
+  const ref = useRef<any>(null);
   useEffect(() => {
     if (props.rowsSelected?.length <= 0) {
       ref.current?.clearSelection();

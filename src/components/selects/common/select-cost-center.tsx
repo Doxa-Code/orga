@@ -18,12 +18,12 @@ export const SelectCostCenter: React.FC<InputDefaultProps> = (props) => {
 
   return (
     <Select
+      options={listFinanceEntitiesAction.data?.costCenters.map(
+        (costCenter) => costCenter.name
+      )}
       className="w-full"
-      label="name"
-      value="id"
-      options={listFinanceEntitiesAction.data?.costCenters}
-      setSelected={props.onChange}
-      selected={props.value!}
+      onSelect={props.onChange}
+      selected={props.value as any}
       noAddButton
     />
   );

@@ -5,23 +5,20 @@ import {
   useServerActionMutation,
 } from "@/app/actions/query-key-factory";
 import { searchTransaction } from "@/app/actions/transactions";
-import { SearchTrasactionsHeaderTable } from "@/components/headers/transactions/search-transactions-header-table";
-import { TableSearchTransactions } from "@/components/tables/transactions/table-search-transactions";
-import { SEARCH_TRANSACTION_MODAL_NAME } from "@/constants";
-import { useModais } from "@/hooks/use-modais";
-import { useQueryStateTransactions } from "@/hooks/use-query-state-transactions";
-import { useTransaction } from "@/hooks/use-transaction";
-import type { SearchTransactionsOutputDTO } from "@orga/core/application";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from "@orgaalog";
-import { ScrollArea } from "@orgaroll-area";
-import { Button } from "@orgatton";
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { SEARCH_TRANSACTION_MODAL_NAME } from "@/constants";
+import { SearchTransactionsOutputDTO } from "@/core/application/usecases/search-transactions";
+import { useModais } from "@/hooks/use-modais";
+import { useQueryStateTransactions } from "@/hooks/use-query-state-transactions";
+import { useTransaction } from "@/hooks/use-transaction";
+import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 
 export type FilterSearchTransaction = {
@@ -87,16 +84,16 @@ export function ModalSearchTransaction() {
             extrato.
           </DialogDescription>
         </DialogHeader>
-        <SearchTrasactionsHeaderTable
+        {/* <SearchTrasactionsHeaderTable
           setFilters={setSaveFilters}
           filters={filters}
-        />
+        /> */}
         <ScrollArea className="h-[500px]">
-          <TableSearchTransactions
+          {/* <TableSearchTransactions
             transactions={transactions}
             filters={filters}
             setFilters={setSaveFilters}
-          />
+          /> */}
         </ScrollArea>
         <DialogFooter className="flex !flex-col">
           <div className="flex w-full justify-end">

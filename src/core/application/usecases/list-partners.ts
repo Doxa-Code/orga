@@ -1,9 +1,9 @@
-import type { Partner, Transaction } from "../../domain";
+import { Partner } from "@/core/domain/entities/partner";
 import { FieldMissing } from "../../domain/errors/field-missing";
-import type { PartnerRaw } from "../mappers/partner-mapper";
+import { Transaction } from "@/core/domain/entities/transaction";
 
 interface PartnerRepository {
-  list(workspaceId: string, partnerRole: Partner.Role[]): Promise<PartnerRaw[]>;
+  list(workspaceId: string, partnerRole: Partner.Role[]): Promise<Partner[]>;
 }
 
 export class ListPartners {
@@ -11,8 +11,8 @@ export class ListPartners {
 
   async execute(
     workspaceId: string,
-    type?: Transaction.Type,
-  ): Promise<PartnerRaw[]> {
+    type?: Transaction.Type
+  ): Promise<Partner[]> {
     if (!workspaceId) {
       throw new FieldMissing("workspace ID");
     }

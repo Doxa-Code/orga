@@ -1,7 +1,7 @@
-import type { PartnerRaw } from "../application/mappers/partner-mapper";
+import { Partner } from "../domain/entities/partner";
 
 export class ListPartnerLikeOptionPresentation {
-  static create(partners: PartnerRaw[]) {
+  static create(partners: Partner[]) {
     return partners.map((partner) => ({
       partnerId: partner.id,
       name: partner.name,

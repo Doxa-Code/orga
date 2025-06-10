@@ -9,10 +9,8 @@ export const SelectPaymentMethod: React.FC<Props> = (props) => {
     <Select
       className="w-60"
       options={PAYMENT_METHOD}
-      label="name"
-      value="name"
-      selected={props.value}
-      setSelected={(paymentMethod) => {
+      selected={props.value as any}
+      onSelect={(paymentMethod) => {
         props.onChange(paymentMethod);
       }}
       noAddButton

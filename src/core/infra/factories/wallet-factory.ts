@@ -20,7 +20,11 @@ const verifyPermissionService = UserFactory.verifyPermissionService();
 
 export class WalletFactory {
   static list() {
-    return new ListWallets(walletRepository, imageStorage, workspaceRepository);
+    return new ListWallets(
+      walletRepository,
+      imageStorage,
+      workspaceRepository as any
+    );
   }
 
   static delete() {
@@ -31,8 +35,7 @@ export class WalletFactory {
     return new CreateWallet(
       walletRepository,
       bankRepository,
-      workspaceRepository,
-      verifyPermissionService,
+      workspaceRepository as any
     );
   }
 
@@ -40,7 +43,7 @@ export class WalletFactory {
     return new EditWallet(
       walletRepository,
       bankRepository,
-      verifyPermissionService,
+      verifyPermissionService
     );
   }
 
@@ -52,7 +55,7 @@ export class WalletFactory {
     return new RetrieveWalletTransactionHistory(
       verifyPermissionService,
       walletRepository,
-      imageStorage,
+      imageStorage
     );
   }
 }

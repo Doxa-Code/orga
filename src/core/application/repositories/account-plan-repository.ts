@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { AccountPlan } from "../../domain/entities/account-plan";
 import { AccountPlanCategory } from "../../domain/valueobjects/account-plan-category";
-import { AccountPlanMapper } from "../mappers/account-plan-mapper";
 
 export interface AccountPlanRepository {
   save(accountsPlans: AccountPlan): Promise<void>;
@@ -54,16 +53,25 @@ export class AccountPlanRepositoryDatabase implements AccountPlanRepository {
       },
     });
 
-    return result.map((accountPlan) =>
-      AccountPlan.instance({
-        categories: accountPlan.categories.map(AccountPlanCategory.instance),
-        id: accountPlan.id,
-        name: accountPlan.name,
-        operation: accountPlan.operation,
-        sequence: accountPlan.sequence,
-        type: accountPlan.type,
-        workspaceId: accountPlan.workspaceId,
-      }),
+    return result.map(
+      (accountPlan: {
+        categories: { sequence: string; name: string; amount: number }[];
+        id: any;
+        name: any;
+        operation: any;
+        sequence: any;
+        type: any;
+        workspaceId: any;
+      }) =>
+        AccountPlan.instance({
+          categories: accountPlan.categories.map(AccountPlanCategory.instance),
+          id: accountPlan.id,
+          name: accountPlan.name,
+          operation: accountPlan.operation,
+          sequence: accountPlan.sequence,
+          type: accountPlan.type,
+          workspaceId: accountPlan.workspaceId,
+        })
     );
   }
 

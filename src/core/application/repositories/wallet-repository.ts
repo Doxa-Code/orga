@@ -17,7 +17,7 @@ interface WalletRepository {
   update(wallet: Wallet): Promise<void>;
   deleteByWorkspaceId(workspaceId: string): Promise<void>;
   retriveTransactionHistory(
-    input: RetrieveTransactionHistoryProps,
+    input: RetrieveTransactionHistoryProps
   ): Promise<WalletTransaction[]>;
 }
 
@@ -25,7 +25,7 @@ export class WalletRepositoryDatabase implements WalletRepository {
   private readonly databaseConnection = new PrismaClient();
 
   async retriveTransactionHistory(
-    input: RetrieveTransactionHistoryProps,
+    input: RetrieveTransactionHistoryProps
   ): Promise<WalletTransaction[]> {
     const transactionHistory =
       await this.databaseConnection.walletTransaction.findMany({
@@ -47,7 +47,7 @@ export class WalletRepositoryDatabase implements WalletRepository {
     });
     await this.databaseConnection.$transaction([
       this.databaseConnection.walletTransaction.deleteMany({
-        where: { walletId: { in: wallets.map((wl) => wl.id) } },
+        where: { walletId: { in: wallets.map((wl: { id: any }) => wl.id) } },
       }),
       this.databaseConnection.wallet.deleteMany({ where: { workspaceId } }),
     ]);
@@ -115,7 +115,7 @@ export class WalletRepositoryDatabase implements WalletRepository {
       bank: WalletBank.create(
         wallet.bank?.code,
         wallet.bank?.name,
-        wallet.bank?.thumbnail,
+        wallet.bank?.thumbnail
       ),
       id: wallet.id,
       name: wallet.name,
@@ -146,22 +146,33 @@ export class WalletRepositoryDatabase implements WalletRepository {
       },
     });
 
-    return list.map((wallet) =>
-      Wallet.instance({
-        agency: wallet.agency,
-        balance: wallet.balance,
-        bank: WalletBank.create(
-          wallet.bank?.code,
-          wallet.bank?.name,
-          wallet.bank?.thumbnail,
-        ),
-        id: wallet.id,
-        name: wallet.name,
-        number: wallet.number,
-        transactions: wallet.transactions.map(WalletTransaction.instance),
-        type: wallet.type,
-        workspaceId: wallet.workspaceId,
-      }),
+    return list.map(
+      (wallet: {
+        agency: any;
+        balance: any;
+        bank: any;
+        id: any;
+        name: any;
+        number: any;
+        transactions: any;
+        type: any;
+        workspaceId: any;
+      }) =>
+        Wallet.instance({
+          agency: wallet.agency,
+          balance: wallet.balance,
+          bank: WalletBank.create(
+            wallet.bank?.code,
+            wallet.bank?.name,
+            wallet.bank?.thumbnail
+          ),
+          id: wallet.id,
+          name: wallet.name,
+          number: wallet.number,
+          transactions: wallet.transactions.map(WalletTransaction.instance),
+          type: wallet.type,
+          workspaceId: wallet.workspaceId,
+        })
     );
   }
 

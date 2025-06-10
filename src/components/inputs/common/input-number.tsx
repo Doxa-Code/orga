@@ -1,5 +1,5 @@
-import { Input } from "@orga/ui/input";
-import { cn } from "@orga/utils";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { type HTMLAttributes, forwardRef } from "react";
 
 export const InputNumber = forwardRef<
@@ -16,7 +16,7 @@ export const InputNumber = forwardRef<
       ref={ref}
       className={cn(
         "min-w-[140px] rounded border border-gray-300 pl-3 text-left",
-        props.className,
+        props.className
       )}
       defaultValue={props.defaultValue || 0}
       onChange={(e) => {

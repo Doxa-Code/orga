@@ -1,4 +1,4 @@
-import { TransactionType } from "@orga/core/domain";
+import { TransactionType } from "@/generated/prisma";
 import { z } from "zod";
 
 const COST_CENTER_SCHEMA = z.object({
@@ -25,5 +25,5 @@ export const listBankOutputSchema = z.array(
     color: z.string(),
     thumbnail: z.string(),
     name: z.string(),
-  }),
+  })
 );

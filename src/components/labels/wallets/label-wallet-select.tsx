@@ -1,5 +1,5 @@
-import { FormLabel } from "@orga/ui/form";
-import { cn } from "@orga/utils";
+import { FormLabel } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
 
 type Props = {
   type?: "CREDIT" | string;

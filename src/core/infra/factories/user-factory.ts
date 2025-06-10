@@ -4,8 +4,6 @@ import { WalletRepositoryDatabase } from "../../application/repositories/wallet-
 import { WorkspaceRepositoryDatabase } from "../../application/repositories/workspace-repository";
 import { CreateCodeService } from "../../application/services/create-code-service";
 import { VerifyPermissionService } from "../../application/services/verify-permission-service";
-import { AuthenticateUser } from "../../application/usecases/authenticate-user";
-import { CreateCodeToAuthenticate } from "../../application/usecases/create-code-to-auth";
 import { CreateUser } from "../../application/usecases/create-user";
 import { CreateWallet } from "../../application/usecases/create-wallet";
 import { DeleteAccountUser } from "../../application/usecases/delete-account-user";
@@ -36,9 +34,9 @@ const bankRepository = new BankRepositoryDatabase();
 export class UserFactory {
   static deleteAccountUser() {
     return new DeleteAccountUser(
-      workspaceRepository,
+      workspaceRepository as any,
       userRepository,
-      deleteWorkspace,
+      deleteWorkspace
     );
   }
 
@@ -47,34 +45,12 @@ export class UserFactory {
       userRepository,
       createWorkspace,
       populateAccountPlanService,
-      new CreateWallet(
-        walletRepository,
-        bankRepository,
-        workspaceRepository,
-        UserFactory.verifyPermissionService(),
-      ),
-    );
-  }
-
-  static createCodeToAuthenticate() {
-    return new CreateCodeToAuthenticate(
-      userRepository,
-      sendMailService,
-      new CreateCodeService(cacheDriver),
-    );
-  }
-
-  static authenticateUser() {
-    return new AuthenticateUser(
-      userRepository,
-      cacheDriver,
-      new JWTTokenCreatorDriver(),
-      workspaceRepository,
+      new CreateWallet(walletRepository, bankRepository, workspaceRepository)
     );
   }
 
   static verifyPermissionService() {
-    return new VerifyPermissionService(workspaceRepository);
+    return new VerifyPermissionService(workspaceRepository as any);
   }
 
   static retrieveUser() {

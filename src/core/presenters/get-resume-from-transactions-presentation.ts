@@ -1,8 +1,8 @@
-import type { SearchTransactionsOutputDTO } from "../application";
+import { SearchTransactionsOutputDTO } from "../application/usecases/search-transactions";
 
 export class GetResumeFromTransactionsPresentation {
   static create(
-    transactions: SearchTransactionsOutputDTO[] | null,
+    transactions: SearchTransactionsOutputDTO[] | null
   ): ResumeTransactions {
     const resume = {
       credit: 0,

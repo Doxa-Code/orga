@@ -3,7 +3,6 @@ import { User } from "../../domain/entities/user";
 import type { Workspace } from "../../domain/entities/workspace";
 import { FieldAlreadyExists } from "../../domain/errors/field-already-exists";
 import type { Email } from "../../domain/valueobjects/email";
-import type { UserRaw } from "../mappers/user-mapper";
 import type { CreateWalletInputDTO } from "./create-wallet";
 
 export type CreateUserInputDTO = {
@@ -13,7 +12,7 @@ export type CreateUserInputDTO = {
 
 interface UserRepository {
   save(user: User): Promise<void>;
-  retrieveByEmail(email: Email): Promise<UserRaw | null>;
+  retrieveByEmail(email: Email): Promise<User | null>;
 }
 
 interface CreateWorkspace {
@@ -33,14 +32,14 @@ export class CreateUser {
     private readonly userRepository: UserRepository,
     private readonly createWorkspace: CreateWorkspace,
     private readonly populateAccountPlanService: PopulateAccountPlanService,
-    private readonly createWallet: CreateWallet,
+    private readonly createWallet: CreateWallet
   ) {}
 
   async execute(input: CreateUserInputDTO) {
     const user = User.create(input.name, input.email);
 
     const emailAlreadyExists = await this.userRepository.retrieveByEmail(
-      user.email,
+      user.email
     );
 
     if (emailAlreadyExists) {

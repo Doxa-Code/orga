@@ -1,8 +1,12 @@
 "use client";
 import { Paragraph } from "@/components/common/typograph";
-import { Button } from "@orga/ui/button";
-import { cn } from "@orga/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@orgapover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ChevronDown, X } from "lucide-react";
 import React from "react";
 
@@ -21,7 +25,7 @@ export function SelectPopover<T>(props: Props<T>) {
   const selected = (props.options || []).find(
     (option) =>
       option[props.value] === props.selected ||
-      Number(option[props.value]) === Number(props.selected),
+      Number(option[props.value]) === Number(props.selected)
   );
 
   return (
@@ -63,7 +67,7 @@ export function SelectPopover<T>(props: Props<T>) {
               variant="ghost"
               className={cn(
                 "flex w-full items-center justify-start rounded text-slate-800",
-                option.className,
+                option.className
               )}
               onClick={() => {
                 props.onSelect(option[props.value]);

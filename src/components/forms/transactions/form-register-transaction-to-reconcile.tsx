@@ -14,7 +14,6 @@ import {
   type TransactionFromOFX,
   useTransaction,
 } from "@/hooks/use-transaction";
-import { PartnerRole, TransactionType } from "@orga/core/domain";
 import type React from "react";
 import { useEffect } from "react";
 import { useServerAction } from "zsa-react";
@@ -68,10 +67,7 @@ export const FormRegisterTransactionToReconcile: React.FC<Props> = (props) => {
 
   useEffect(() => {
     set({
-      roleToCreate:
-        typeToCreate === TransactionType.CREDIT
-          ? PartnerRole.CUSTOMER
-          : PartnerRole.SUPPLIER,
+      roleToCreate: typeToCreate === "CREDIT" ? "CUSTOMER" : "SUPPLIER",
     });
   }, [typeToCreate]);
 
@@ -82,7 +78,7 @@ export const FormRegisterTransactionToReconcile: React.FC<Props> = (props) => {
         registerTransactionAction.execute({
           ...values,
           transactionId,
-        }),
+        })
       )}
       id={REGISTER_TRANSACTION_MODAL_NAME}
     >

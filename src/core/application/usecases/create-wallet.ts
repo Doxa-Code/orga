@@ -1,8 +1,8 @@
+import { Workspace } from "@/core/domain/entities/workspace";
 import type { Bank } from "../../domain/entities/bank";
 import { Wallet } from "../../domain/entities/wallet";
 import { EntityNotFound } from "../../domain/errors/entity-not-found";
 import { NotPermission } from "../../domain/errors/not-permission";
-import type { WorkspaceRaw } from "../mappers/workspace-mapper";
 import { getUserPermissions } from "../rbac/get-user-permissions";
 import { walletPermissionSchema } from "../rbac/subjects";
 
@@ -15,13 +15,13 @@ interface BankRepository {
 }
 
 interface WorkpaceRepository {
-  retrieve(userId: string): Promise<WorkspaceRaw | null>;
+  retrieve(userId: string): Promise<Workspace | null>;
 }
 export class CreateWallet {
   constructor(
     private readonly walletRepository: WalletRepository,
     private readonly bankRepository: BankRepository,
-    private readonly workspaceRepository: WorkpaceRepository,
+    private readonly workspaceRepository: WorkpaceRepository
   ) {}
   async execute(input: CreateWalletInputDTO) {
     const permissions = await getUserPermissions(input.userId);
@@ -31,7 +31,7 @@ export class CreateWallet {
     }
 
     const workspace = await this.workspaceRepository.retrieve(
-      input.workspaceId,
+      input.workspaceId
     );
 
     if (!workspace) {

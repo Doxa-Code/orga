@@ -1,18 +1,19 @@
 "use server";
 
-import { BankFactory, FinanceFactory } from "@orga/core/factories";
+import { FinanceFactory } from "@/core/infra/factories/finance-factory";
 import { securityProcedure } from "../security-procedure";
 import {
   listBankOutputSchema,
   listFinanceEntitiesOutputSchema,
 } from "./schema";
+import { BankFactory } from "@/core/infra/factories/bank-factory";
 
 export const listFinanceEntities = securityProcedure
   .output(listFinanceEntitiesOutputSchema)
-  .handler(async ({ ctx: { payload } }) => {
+  .handler(async ({ ctx: { user } }) => {
     const listEntities = FinanceFactory.listEntities();
 
-    const result = await listEntities.execute(payload.user.id);
+    const result = await listEntities.execute(user.id);
 
     return {
       categories: result.categories.map((category) => ({

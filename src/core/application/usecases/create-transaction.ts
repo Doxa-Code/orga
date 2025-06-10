@@ -1,21 +1,21 @@
+import { Workspace } from "@/core/domain/entities/workspace";
 import { Payment } from "../../domain/entities/payment";
 import { Transaction } from "../../domain/entities/transaction";
 import { EntityNotFound } from "../../domain/errors/entity-not-found";
 import { FieldInvalid } from "../../domain/errors/field-invalid";
-import type { AccountPlanRaw } from "../mappers/account-plan-mapper";
-import type { CostCenterRaw } from "../mappers/cost-center-mapper";
-import type { WorkspaceRaw } from "../mappers/workspace-mapper";
+import { AccountPlan } from "@/core/domain/entities/account-plan";
+import { CostCenter } from "@/core/domain/valueobjects/cost-center";
 
 interface WorkspaceRepository {
-  retrieve(id: string): Promise<WorkspaceRaw | null>;
+  retrieve(id: string): Promise<Workspace | null>;
 }
 
 interface AccountPlanRepository {
-  retrieveBySequence(sequence: number): Promise<AccountPlanRaw | null>;
+  retrieveBySequence(sequence: number): Promise<AccountPlan | null>;
 }
 
 interface CostCenterRepository {
-  retrieve(id: string): Promise<CostCenterRaw | null>;
+  retrieve(id: string): Promise<CostCenter | null>;
 }
 
 interface TransactionRepository {
@@ -37,7 +37,7 @@ export class CreateTransaction {
     private readonly costCenterRepository: CostCenterRepository,
     private readonly transactionRepository: TransactionRepository,
     private readonly verifyPermission: VerifyPermissionService,
-    private readonly registerTransactionOnWalletService: RegisterTransactionOnWalletService,
+    private readonly registerTransactionOnWalletService: RegisterTransactionOnWalletService
   ) {}
 
   async execute(input: CreateTransactionInputDTO) {
@@ -52,7 +52,7 @@ export class CreateTransaction {
     });
 
     const workspace = await this.workspaceRepository.retrieve(
-      input.workspaceId,
+      input.workspaceId
     );
 
     if (!workspace) {
@@ -74,7 +74,7 @@ export class CreateTransaction {
       }
 
       const category = accountPlan.categories?.find(
-        (category) => category.sequence === input.categorySequence,
+        (category) => category.sequence === input.categorySequence
       );
 
       if (!category) {
@@ -86,7 +86,7 @@ export class CreateTransaction {
 
     if (input.costCenterId) {
       const costCenter = await this.costCenterRepository.retrieve(
-        input.costCenterId,
+        input.costCenterId
       );
 
       if (!costCenter) {
@@ -111,9 +111,9 @@ export class CreateTransaction {
               status: input.paided ? "PAID" : "NO_PAID",
               paymentMethod:
                 payment.paymentMethod || input.defaultInstallmentPaymentMethod,
-            }),
+            })
           );
-        }),
+        })
       );
     } else {
       transaction.addPayment(
@@ -125,7 +125,7 @@ export class CreateTransaction {
           description: `${transaction.description} 1/1`,
           status: input.paided ? "PAID" : "NO_PAID",
           paymentMethod: input.defaultInstallmentPaymentMethod,
-        }),
+        })
       );
     }
 

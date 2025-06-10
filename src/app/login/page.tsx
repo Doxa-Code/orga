@@ -1,9 +1,9 @@
-import { Logo } from "@/components/typograph";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Metadata } from "next";
 import { login } from "./actions";
+import { Logo } from "@/components/common/typograph";
 
 export const metadata: Metadata = {
   title: "Login | Orga",

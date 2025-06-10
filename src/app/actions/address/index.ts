@@ -22,6 +22,9 @@ export const listCities = securityProcedure
   .output(listCitiesAddressOutputSchema)
   .handler(async ({ input }) => {
     const listAddressEntitiesDAO = ListAddressEntitiesDAOFactory.create();
+    if (!input.acronym) {
+      return [];
+    }
     return await listAddressEntitiesDAO.retrieveCities(input.acronym);
   });
 
@@ -31,7 +34,7 @@ export const loadAddressZipCode = securityProcedure
   .handler(async ({ input }) => {
     const listAddressEntitiesDAO = ListAddressEntitiesDAOFactory.create();
     const response = await listAddressEntitiesDAO.retrieveAddressByZipCode(
-      input.zipCode,
+      input.zipCode
     );
     return response;
   });

@@ -4,14 +4,18 @@ import * as React from "react";
 import type { DateRange } from "react-day-picker";
 
 import { Paragraph } from "@/components/common/typograph";
-import { Button } from "@orga/ui/button";
-import { cn } from "@orga/utils";
-import { Calendar } from "@orgalendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@orgapover";
 import { addDays } from "date-fns";
 import { pt } from "date-fns/locale/pt";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { type Filter, type FilterId, ManagerFilter } from "./filters";
+import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 
 type PropsToSelect = {
   onSelectDate(date?: DateRange, filterId?: FilterId): void;
@@ -27,7 +31,7 @@ export const DatePickerWithRange: React.FC<Props> = ({
 }) => {
   const [open, setOpen] = React.useState(false);
   const [filter, setFilter] = React.useState<Filter | null>(
-    initialFilter ? ManagerFilter.filters.get(initialFilter)! : null,
+    initialFilter ? ManagerFilter.filters.get(initialFilter)! : null
   );
   const [customPeriod, setCustomPeriod] = React.useState(false);
 
@@ -110,12 +114,12 @@ export const DatePickerWithRange: React.FC<Props> = ({
                     {filterOption.description}
                   </Paragraph>
                 </Button>
-              ),
+              )
             )}
           </div>
           {customPeriod && (
             <Calendar
-              initialFocus
+              autoFocus
               mode="range"
               defaultMonth={props.date?.from}
               selected={props.date}
@@ -126,7 +130,7 @@ export const DatePickerWithRange: React.FC<Props> = ({
                     : !date?.to
                       ? { from: date?.from, to: addDays(date?.from!, 1) }
                       : date,
-                  "custom",
+                  "custom"
                 )
               }
               numberOfMonths={2}

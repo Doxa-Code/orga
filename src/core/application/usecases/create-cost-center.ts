@@ -1,13 +1,13 @@
+import { Workspace } from "@/core/domain/entities/workspace";
 import { CostCenter } from "../../domain/entities/cost-center";
 import { FieldInvalid } from "../../domain/errors/field-invalid";
-import type { WorkspaceRaw } from "../mappers/workspace-mapper";
 
 interface CostCenterRepository {
   save(costCenter: CostCenter): Promise<void>;
 }
 
 interface WorkspaceRepository {
-  retrieve(id: string): Promise<WorkspaceRaw | null>;
+  retrieve(id: string): Promise<Workspace | null>;
 }
 
 interface VerifyPermissionService {
@@ -18,17 +18,17 @@ export class CreateCostCenter {
   constructor(
     private readonly costCenterRepository: CostCenterRepository,
     private readonly workspaceRepository: WorkspaceRepository,
-    private readonly verifyPermissionService: VerifyPermissionService,
+    private readonly verifyPermissionService: VerifyPermissionService
   ) {}
   async execute(input: CreateCostCenterInputDTO) {
     const costCenter = CostCenter.create(
       input.name,
       input.workspaceId,
-      input.code,
+      input.code
     );
 
     const workspace = await this.workspaceRepository.retrieve(
-      input.workspaceId,
+      input.workspaceId
     );
 
     if (!workspace) {

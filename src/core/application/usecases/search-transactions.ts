@@ -1,11 +1,11 @@
 import { isAfter, isBefore, isEqual } from "date-fns";
-import type { Payment } from "../../domain";
 import type { Transaction } from "../../domain/entities/transaction";
 import type { User } from "../../domain/entities/user";
-import type { PartnerRaw } from "../mappers/partner-mapper";
-import type { WalletRaw } from "../mappers/wallet-mapper";
-import type { WorkspaceRaw } from "../mappers/workspace-mapper";
 import type { Query } from "../repositories/transaction-repository";
+import { Workspace } from "@/core/domain/entities/workspace";
+import { Partner } from "@/core/domain/entities/partner";
+import { Wallet } from "@/core/domain/entities/wallet";
+import { Payment } from "@/core/domain/entities/payment";
 
 interface TransactionRepository {
   search(query: Query): Promise<Transaction[]>;
@@ -16,15 +16,15 @@ interface UserRepository {
 }
 
 interface WorkspaceRepository {
-  retrieveByOwner(ownerId: string): Promise<WorkspaceRaw[]>;
+  retrieveByOwner(ownerId: string): Promise<Workspace[]>;
 }
 
 interface PartnerRepository {
-  retrieve(id: string): Promise<PartnerRaw | null>;
+  retrieve(id: string): Promise<Partner | null>;
 }
 
 interface WalletRepository {
-  retrieve(id: string): Promise<WalletRaw | null>;
+  retrieve(id: string): Promise<Wallet | null>;
 }
 
 interface ImageStorageService {
@@ -38,7 +38,7 @@ export class SearchTransactions {
     private readonly workspaceRepository: WorkspaceRepository,
     private readonly partnerRepository: PartnerRepository,
     private readonly walletRepository: WalletRepository,
-    private readonly imageStorage: ImageStorageService,
+    private readonly imageStorage: ImageStorageService
   ) {}
 
   async execute(input: InputDTO): Promise<SearchTransactionsOutputDTO[]> {

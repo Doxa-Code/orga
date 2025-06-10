@@ -14,7 +14,7 @@ export class FinanceFactory {
     return new ListFinanceEntities(
       costCenterRepository,
       accountsPlanRepository,
-      workspaceRepository,
+      workspaceRepository as any
     );
   }
 }

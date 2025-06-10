@@ -7,7 +7,7 @@ import {
 import { registerTransactionFormSchema } from "@/app/actions/transactions/schema";
 import { CheckboxInputForm } from "@/components/checkboxes/common/checkbox-input-form";
 import { FormField } from "@/components/common/form-field";
-import { FormFooter } from "@/components/footer/FormFooter";
+import { FormFooter } from "@/components/form-footer";
 import { FormDefault } from "@/components/forms/common/form-default";
 import { DateInputForm } from "@/components/inputs/common/date-input.form";
 import { MoneyInputForm } from "@/components/inputs/common/money-input-form";
@@ -20,18 +20,12 @@ import { SelectPaymentConditionInputForm } from "@/components/selects/common/sel
 import { SelectPaymentMethodInputForm } from "@/components/selects/common/select-payment-method-input-form";
 import { SelectPartner } from "@/components/selects/partners/select-partner";
 import { SelectWalletInputForm } from "@/components/selects/wallets/select-wallet-input-form";
-import { PaymentSessionInputForm } from "@/components/sessions/common/payment-session-input-form";
 import { FormRegisterTransactionSkeleton } from "@/components/skeletons/transactions/form-register-transaction-skeleton";
-import { TextAreaInputForm } from "@/components/textarea/common/text-area-input-form";
+import { CreatePaymentByConditionPresentation } from "@/core/presenters/create-payment-by-condition-presentation";
+import { EditPaymentsValuesPresentation } from "@/core/presenters/edit-payments-values-presentation";
 import { useFormSchema } from "@/hooks/use-form-schema";
 import { usePartner } from "@/hooks/use-partner";
 import { useTransaction } from "@/hooks/use-transaction";
-import { TransactionMapper } from "@orga/core/application";
-import { PartnerRole, TransactionType } from "@orgadomain";
-import {
-  CreatePaymentByConditionPresentation,
-  EditPaymentsValuesPresentation,
-} from "@orgapresenters";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { useServerAction } from "zsa-react";
 
@@ -49,13 +43,13 @@ export const FormRegisterTransaction: React.FC<Props> = (props) => {
       input: { transactionId: transactionId! },
       queryKey: ["retrieveTransaction"],
       enabled: Boolean(transactionId),
-    },
+    }
   );
 
   const { set: setPartner } = usePartner();
   const form = useFormSchema({
     schema: registerTransactionFormSchema,
-    defaultValues: TransactionMapper.toFormRegister(typeToCreate),
+    // defaultValues: TransactionMapper.toFormRegister(typeToCreate),
   });
 
   form.watch((values, event) => {
@@ -68,7 +62,7 @@ export const FormRegisterTransaction: React.FC<Props> = (props) => {
         EditPaymentsValuesPresentation.changePaymentMethod({
           payments: form.getValues().payments,
           paymentMethod: values.defaultInstallmentPaymentMethod,
-        }),
+        })
       );
     }
     if (event.name === "amount") {
@@ -77,7 +71,7 @@ export const FormRegisterTransaction: React.FC<Props> = (props) => {
         EditPaymentsValuesPresentation.changeTotalAmount({
           payments: form.getValues().payments,
           total: Number(values.amount),
-        }),
+        })
       );
     }
     if (event.name === "installmentCount") {
@@ -90,7 +84,7 @@ export const FormRegisterTransaction: React.FC<Props> = (props) => {
           payments: form.getValues().payments,
           interval: form.getValues().installmentInterval,
           dueDate: values.defaultInstallmentDueDate!,
-        }),
+        })
       );
     }
     if (event.name === "installmentInterval") {
@@ -99,7 +93,7 @@ export const FormRegisterTransaction: React.FC<Props> = (props) => {
         EditPaymentsValuesPresentation.changeInterval({
           payments: form.getValues().payments,
           interval: Number(values.installmentInterval),
-        }),
+        })
       );
     }
   });
@@ -109,7 +103,7 @@ export const FormRegisterTransaction: React.FC<Props> = (props) => {
       typeToCreate === "CREDIT"
         ? "border-t-2 border-t-green-500"
         : "border-t-2 border-t-red-500",
-    [typeToCreate],
+    [typeToCreate]
   );
 
   const onFinish = async () => {
@@ -126,20 +120,17 @@ export const FormRegisterTransaction: React.FC<Props> = (props) => {
 
   useEffect(() => {
     setPartner({
-      roleToCreate:
-        typeToCreate === TransactionType.CREDIT
-          ? PartnerRole.CUSTOMER
-          : PartnerRole.SUPPLIER,
+      roleToCreate: typeToCreate === "CREDIT" ? "CUSTOMER" : "SUPPLIER",
     });
   }, [typeToCreate]);
 
   useEffect(() => {
     if (transactionId && transaction) {
-      form.reset(
-        TransactionMapper.toFormRegister(transaction.type, transaction),
-      );
+      // form.reset(
+      //   TransactionMapper.toFormRegister(transaction.type, transaction)
+      // );
     } else {
-      form.reset(TransactionMapper.toFormRegister(typeToCreate));
+      // form.reset(TransactionMapper.toFormRegister(typeToCreate));
     }
   }, [transactionId, transaction]);
 
@@ -165,7 +156,7 @@ export const FormRegisterTransaction: React.FC<Props> = (props) => {
         installmentCount: installmentCount,
         installmentInterval: installmentInterval || 30,
         description,
-      }),
+      })
     );
   }
 
@@ -180,7 +171,7 @@ export const FormRegisterTransaction: React.FC<Props> = (props) => {
         registerTransactionAction.execute({
           ...values,
           transactionId,
-        }),
+        })
       )}
     >
       <SectionModal
@@ -262,16 +253,16 @@ export const FormRegisterTransaction: React.FC<Props> = (props) => {
           name="paided"
           hidden={form.getValues().amount === 0}
         />
-        <PaymentSessionInputForm
+        {/* <PaymentSessionInputForm
           hidden={Number(form.getValues().installmentCount) <= 1}
           name="payments"
-        />
-        <TextAreaInputForm
+        /> */}
+        {/* <TextAreaInputForm
           className="w-full"
           name="note"
           label="Observações"
           description="Tudo o que for relevante em relação a esse lançamento."
-        />
+        /> */}
       </SectionModal>
       <FormFooter
         onCancel={() => props?.onFinish?.()}

@@ -30,11 +30,11 @@ export class WorkspaceFactory {
       walletRepository,
       costCenterRepository,
       transactionsRepository,
-      partnerRepository,
+      partnerRepository
     );
   }
 
   static create() {
-    return new CreateWorkspace(workspaceRepository, userRepository);
+    return new CreateWorkspace(workspaceRepository as any);
   }
 }
