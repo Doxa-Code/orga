@@ -1,4 +1,11 @@
 "use client";
+import {
+  deleteBucket,
+  deleteProposal,
+  upsertBucket,
+  upsertProposals,
+} from "@/app/actions/crm";
+import { useServerActionMutation } from "@/app/actions/query-key-factory";
 import { Input } from "@/components/ui/input";
 import { Bucket } from "@/core/domain/entities/bucket";
 import { Proposal } from "@/core/domain/entities/proposal";
@@ -16,16 +23,14 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import type React from "react";
 import { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { useThrottledCallback } from "use-debounce";
+import { useDebouncedCallback, useThrottledCallback } from "use-debounce";
 import { InputSearch } from "../inputs/common/input-search";
+import { Toast } from "../toast";
 import { Button } from "../ui/button";
 import { KanbanBucket } from "./kanban-bucket";
 import { KanbanCard } from "./kanban-card";
 import { ModalCreateProposal } from "./modal-create-proposal";
 import { ModalProposalFollowUp } from "./modal-proposal-follow-up";
-import { useServerActionMutation } from "@/app/actions/query-key-factory";
-import { deleteBucket, upsertBucket } from "@/app/actions/crm";
-import { Toast } from "../toast";
 
 type Props = {
   initialBuckets: Bucket.Props[];
@@ -41,9 +46,24 @@ export const CRMKanban: React.FC<Props> = (props) => {
   });
   const upsertBucketAction = useServerActionMutation(upsertBucket, {
     onError(error) {
-      Toast.error("Erro ao atualizar bucket", error.message);
+      Toast.error("Erro no registro do bucket", error.message);
     },
   });
+  const upsertProposalsAction = useServerActionMutation(upsertProposals, {
+    onError(error) {
+      Toast.error("Erro no registro da proposta", error.message);
+    },
+  });
+  const upsertProposalsActionDebounced = useDebouncedCallback(
+    upsertProposalsAction.mutate,
+    700
+  );
+  const deleteProposalAction = useServerActionMutation(deleteProposal, {
+    onError(error) {
+      Toast.error("Erro ao deletar proposta", error.message);
+    },
+  });
+
   const [buckets, setBuckets] = useState<Bucket[]>([]);
   const [cards, setCards] = useState<Map<string, Proposal[]>>(new Map());
   const [selectedCard, setSelectedCard] = useState<Proposal | null>(null);
@@ -52,6 +72,7 @@ export const CRMKanban: React.FC<Props> = (props) => {
   const [activeBucket, setActiveBucket] = useState<Bucket | null>(null);
   const [filter, setFilter] = useState<string>("");
   const [activeCard, setActiveCard] = useState<Proposal | null>(null);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -91,30 +112,54 @@ export const CRMKanban: React.FC<Props> = (props) => {
     return result;
   }, [cards, filter]);
 
-  const handleUpdateClient = (updatedCard: Proposal) => {
-    setCards((prev) => {
-      const newCards = new Map(prev);
-      for (const bucket of buckets) {
-        const cards = newCards.get(bucket.name) ?? [];
-        const oldCards = cards.filter((c) => c.id !== updatedCard.id);
-        if (bucket.name === updatedCard.stage) {
-          newCards.set(bucket.name, [...oldCards, updatedCard]);
-          continue;
-        }
-        newCards.set(bucket.name, oldCards);
-      }
-
-      return newCards;
-    });
+  const handleDeleteProposal = (bucketName: string, proposalId: string) => {
+    const newCards = new Map(cards);
+    const list = newCards.get(bucketName) ?? [];
+    newCards.set(
+      bucketName,
+      list.filter((c) => c.id !== proposalId)
+    );
+    setCards(newCards);
+    deleteProposalAction.mutate({ id: proposalId });
   };
 
-  const handleAddClient = (card: Proposal) => {
-    setCards((prev) => {
-      const newCards = new Map(prev);
-      const oldCards = newCards.get(card.stage) ?? [];
-      newCards.set(card.stage, [...oldCards, card]);
-      return newCards;
-    });
+  const handleUpsertProposal = (proposal: Proposal) => {
+    const newCards = new Map(cards);
+
+    for (const bucket of buckets) {
+      const cards = newCards.get(bucket.name) ?? [];
+      const onThisBucket = cards.some((c) => c.id === proposal.id);
+      const sameBucket = bucket.name === proposal.stage;
+      if (onThisBucket && sameBucket) {
+        const newList = cards.map((c) => (c.id === proposal.id ? proposal : c));
+        upsertProposalsActionDebounced(newList.map((p) => p.raw()));
+        newCards.set(bucket.name, newList);
+        continue;
+      }
+      if (sameBucket && !onThisBucket) {
+        const newList = [...cards, proposal].map((p, i) => p.setPosition(i));
+        upsertProposalsActionDebounced(newList.map((p) => p.raw()));
+        newCards.set(bucket.name, newList);
+        continue;
+      }
+      newCards.set(
+        bucket.name,
+        cards.filter((c) => c.id !== proposal.id)
+      );
+    }
+
+    setCards(newCards);
+  };
+
+  const handleAddProposal = (proposal: Proposal) => {
+    const newCards = new Map(cards);
+    const bucket = buckets.find((b) => b.name === proposal.stage);
+    if (!bucket) return;
+    const oldCards = newCards.get(bucket.name) ?? [];
+    const newList = [...oldCards, proposal].map((p, i) => p.setPosition(i));
+    upsertProposalsActionDebounced(newList.map((p) => p.raw()));
+    newCards.set(bucket.name, newList);
+    setCards(newCards);
   };
 
   const handleDeleteBucket = (bucketId: string) => {
@@ -192,14 +237,14 @@ export const CRMKanban: React.FC<Props> = (props) => {
 
       if (activeIndex === -1 || overIndex === -1 || activeIndex === overIndex)
         return;
-      console.log("active card stage eq over card stage");
 
-      newCards.set(
-        activeCard.stage,
-        arrayMove(bucketList, activeIndex, overIndex).map((c, i) =>
-          c.setPosition(i)
-        )
+      const newList = arrayMove(bucketList, activeIndex, overIndex).map(
+        (p, i) => p.setPosition(i)
       );
+
+      upsertProposalsActionDebounced(newList.map((p) => p.raw()));
+
+      newCards.set(activeCard.stage, newList);
 
       setCards(newCards);
       return;
@@ -212,14 +257,24 @@ export const CRMKanban: React.FC<Props> = (props) => {
 
       if (targetBucketList.some((c) => c.id === activeCard.id)) return;
 
-      newBoard.set(
-        activeCard.stage,
-        oldBucketList.filter((c) => c.id !== activeCard.id)
-      );
+      const oldList = oldBucketList
+        .filter((c) => c.id !== activeCard.id)
+        .map((p, i) => p.setPosition(i));
+
+      newBoard.set(activeCard.stage, oldList);
+
+      upsertProposalsActionDebounced(oldList.map((p) => p.raw()));
 
       activeCard.changeStage(overBucket.name);
 
-      newBoard.set(overBucket.name, [...targetBucketList, activeCard]);
+      const newList = [...targetBucketList, activeCard].map((p, i) =>
+        p.setPosition(i)
+      );
+
+      newBoard.set(overBucket.name, newList);
+
+      upsertProposalsActionDebounced(newList.map((p) => p.raw()));
+
       setCards(newBoard);
       return;
     }
@@ -230,24 +285,31 @@ export const CRMKanban: React.FC<Props> = (props) => {
     const activeBucketList = newCards.get(activeCard.stage) ?? [];
     const overBucketList = newCards.get(overCard?.stage) ?? [];
 
-    newCards.set(
-      activeCard.stage,
-      activeBucketList.filter((c) => c.id !== activeCard.id)
-    );
+    const activeList = activeBucketList
+      .filter((c) => c.id !== activeCard.id)
+      .map((p, i) => p.setPosition(i));
+
+    newCards.set(activeCard.stage, activeList);
+
+    upsertProposalsActionDebounced(activeList.map((p) => p.raw()));
 
     activeCard.changeStage(overCard?.stage);
+
     const targetBucketList = [...overBucketList, activeCard];
+
     const activeIndex = targetBucketList.findIndex(
       (c) => c.id === activeCard.id
     );
+
     const overIndex = targetBucketList.findIndex((c) => c.id === overCard.id);
 
-    newCards.set(
-      activeCard.stage,
-      arrayMove(targetBucketList, activeIndex, overIndex).map((c, i) =>
-        c.setPosition(i)
-      )
+    const newList = arrayMove(targetBucketList, activeIndex, overIndex).map(
+      (p, i) => p.setPosition(i)
     );
+
+    newCards.set(activeCard.stage, newList);
+
+    upsertProposalsActionDebounced(newList.map((p) => p.raw()));
 
     setCards(newCards);
   }, 100);
@@ -358,20 +420,13 @@ export const CRMKanban: React.FC<Props> = (props) => {
               createPortal(
                 <DragOverlay>
                   {activeBucket && (
-                    <KanbanBucket example bucket={activeBucket}>
-                      {(filteredCards?.get(activeBucket.name) ?? [])
-                        .sort((a, b) => a.position - b.position)
-                        .map((card) => (
-                          <KanbanCard example key={card.id} card={card} />
-                        ))}
-                    </KanbanBucket>
+                    <KanbanBucket example bucket={activeBucket} />
                   )}
                   {activeCard && <KanbanCard example card={activeCard} />}
                 </DragOverlay>,
                 document.body
               )}
 
-            {/* Add New Bucket */}
             <div className="min-w-80 p-4">
               <header className="border-b border-gray-100">
                 <div className="flex items-center justify-between mb-2">
@@ -420,15 +475,16 @@ export const CRMKanban: React.FC<Props> = (props) => {
           proposal={selectedCard}
           isOpen={!!selectedCard}
           onClose={() => setSelectedCard(null)}
-          onUpdateClient={handleUpdateClient}
+          onUpsertProposal={handleUpsertProposal}
           stages={buckets.map((b) => b.name)}
+          onDelete={handleDeleteProposal}
         />
       )}
 
       <ModalCreateProposal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onAdd={handleAddClient}
+        onAdd={handleAddProposal}
       />
     </div>
   );

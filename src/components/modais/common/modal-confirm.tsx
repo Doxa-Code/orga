@@ -24,13 +24,13 @@ export function ModalConfirm(props: Props) {
   return (
     <AlertDialog open={props?.open} onOpenChange={props?.setOpen}>
       <AlertDialogTrigger asChild>{props.children}</AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="z-[9999]">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex gap-2">
-            <AlertTriangle className="text-red-500" /> Você tem certeza
-            absoluta?
+            <AlertTriangle className="text-red-500 !font-normal" /> Você tem
+            certeza absoluta?
           </AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="font-light">
             Esta ação não pode ser desfeita e será permanentemente nos nossos
             servidores.
           </AlertDialogDescription>

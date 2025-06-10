@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -29,11 +30,14 @@ import {
   MessageCircle,
   Phone,
   PhoneCall,
+  Trash,
   User as UserIcon,
+  X,
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { InputMoney } from "../inputs/common/input-money";
+import { ModalConfirm } from "../modais/common/modal-confirm";
 import { Select } from "../selects/common/select";
 import { Label } from "../ui/label";
 
@@ -41,8 +45,9 @@ interface Props {
   proposal: Proposal;
   isOpen: boolean;
   onClose: () => void;
-  onUpdateClient: (updatedClient: Proposal) => void;
+  onUpsertProposal: (proposal: Proposal) => void;
   stages: string[];
+  onDelete: (bucketName: string, proposalId: string) => void;
 }
 
 export const ModalProposalFollowUp: React.FC<Props> = (props) => {
@@ -113,7 +118,7 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
     proposal.addFollowUp(
       FollowUp.create({
         content: followUpNotes.trim(),
-        createdBy: user.user_metadata.name,
+        createdBy: user.email ?? "",
         type: selectedFollowUpType,
       })
     );
@@ -122,7 +127,7 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
     setProposal(newProposal);
     setSelectedFollowUpType("call");
     setFollowUpNotes("");
-    props.onUpdateClient(newProposal);
+    props.onUpsertProposal(newProposal);
     setTimeout(() => {
       timelineRef.current?.scrollTo({
         top: timelineRef.current?.scrollHeight,
@@ -139,9 +144,28 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
     <Dialog open={props.isOpen} onOpenChange={props.onClose}>
       <DialogContent className="max-w-[70vw] flex flex-col max-h-[80vh] h-screen bg-white shadow-lg rounded-xl p-0 border border-gray-200">
         <DialogHeader className="pt-8 h-screen max-h-[100px] px-8">
-          <DialogTitle className="text-xl flex items-center gap-3">
-            {proposal.title}
-          </DialogTitle>
+          <div className="w-full flex items-center justify-between">
+            <DialogTitle className="text-xl flex items-center gap-3">
+              {proposal.title}
+            </DialogTitle>
+            <div className="flex items-center justify-center gap-2">
+              <ModalConfirm
+                onContinue={() => {
+                  props.onDelete(proposal.stage, proposal.id);
+                  props.onClose();
+                }}
+              >
+                <Button variant="ghost" size="icon">
+                  <Trash className="size-4 stroke-muted-foreground stroke-1" />
+                </Button>
+              </ModalConfirm>
+              <DialogClose asChild>
+                <Button variant="ghost" size="icon">
+                  <X className="w-4 h-4" />
+                </Button>
+              </DialogClose>
+            </div>
+          </div>
           <div className="flex gap-2 flex-wrap">
             {proposal.tags.map((tag) => (
               <Badge
@@ -297,7 +321,7 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
                     onChange={(value) => {
                       proposal.setAmount(Number(value));
                       setProposal(Proposal.instance(proposal));
-                      props.onUpdateClient(proposal);
+                      props.onUpsertProposal(proposal);
                     }}
                   />
                 </div>
@@ -325,16 +349,15 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
                     value="value"
                     selected={proposal.tags[0] ?? null}
                     onSelect={(selected) => {
-                      console.log(selected);
                       proposal.clearTag();
                       if (!selected) {
                         setProposal(Proposal.instance(proposal));
-                        props.onUpdateClient(proposal);
+                        props.onUpsertProposal(proposal);
                         return;
                       }
                       proposal.addTags(selected);
                       setProposal(Proposal.instance(proposal));
-                      props.onUpdateClient(proposal);
+                      props.onUpsertProposal(proposal);
                     }}
                   />
                 </div>
@@ -361,7 +384,7 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
                     onSelect={(selected) => {
                       proposal.setStage(selected?.value ?? "");
                       setProposal(Proposal.instance(proposal));
-                      props.onUpdateClient(proposal);
+                      props.onUpsertProposal(proposal);
                     }}
                   />
                 </div>

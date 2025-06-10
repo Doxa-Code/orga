@@ -88,6 +88,12 @@ export const KanbanCard: React.FC<Props> = (props) => {
         <h4 className="font-semibold text-[#323232] transition-colors">
           {props.card.title}
         </h4>
+        <p className="text-teal-500">
+          {props.card.amount.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </p>
         <div className="flex items-center gap-2">
           <User2 className="stroke-[0.9px]" size={14} />
           <p className="font-light text-sm text-muted-foreground">

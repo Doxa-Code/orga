@@ -55,9 +55,14 @@ export const ModalCreateProposal: React.FC<Props> = (props) => {
     if (!partner) {
       return;
     }
+
     const proposal = Proposal.create({
       amount: Number(
-        formData.get("amount")?.toString().replace(".", "").replace(",", ".")
+        formData
+          .get("amount")
+          ?.toString()
+          .replace(/\./gim, "")
+          .replace(",", ".")
       ),
       title: formData.get("title")?.toString() ?? "",
       description: formData.get("description")?.toString() ?? "",

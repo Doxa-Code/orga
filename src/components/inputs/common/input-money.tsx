@@ -27,6 +27,7 @@ export const InputMoney = forwardRef<
       </div>
       <Input
         {...props}
+        name={props.name}
         className={cn(
           "rounded-none !border-none font-light pl-2 text-left",
           props.className

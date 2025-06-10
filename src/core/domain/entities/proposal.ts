@@ -64,7 +64,7 @@ export class Proposal {
   public description: string;
   public partner: Partner;
   public owner: string;
-  public amount: number;
+  private _amount: number;
   public position: number;
   public stage: string;
   public source: Proposal.Source;
@@ -93,6 +93,14 @@ export class Proposal {
     this.closedAt = props.closedAt;
     this.workspaceId = props.workspaceId;
     this.followUps = props.followUps;
+  }
+
+  get amount() {
+    return this._amount * 100;
+  }
+
+  set amount(amount: number) {
+    this._amount = amount / 100;
   }
 
   get tags() {

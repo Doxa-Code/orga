@@ -4,12 +4,139 @@ import { Bucket } from "@/core/domain/entities/bucket";
 import { PrismaClient } from "@/generated/prisma";
 import {
   deleteBucketInputSchema,
+  deleteProposalInputSchema,
   listBucketsOutputSchema,
   listProposalsOutputSchema,
   upsertBucketInputSchema,
+  upsertProposalInputSchema,
 } from "./schemas";
 
 const prisma = new PrismaClient();
+
+export const deleteProposal = securityProcedure
+  .input(deleteProposalInputSchema)
+  .handler(async ({ ctx: { workspace }, input }) => {
+    await prisma.proposal.delete({
+      where: {
+        id: input.id,
+        workspaceId: workspace.id,
+      },
+      include: {
+        tags: true,
+        followUps: true,
+      },
+    });
+  });
+
+export const upsertProposals = securityProcedure
+  .input(upsertProposalInputSchema)
+  .handler(async ({ ctx: { workspace }, input }) => {
+    await Promise.all(
+      input.map(async (proposal) => {
+        const exists = await prisma.proposal.findUnique({
+          where: {
+            id: proposal.id,
+          },
+        });
+
+        if (!exists) {
+          const response = await prisma.proposal.findFirst({
+            where: {
+              workspaceId: workspace.id,
+            },
+            orderBy: {
+              position: "desc",
+            },
+          });
+
+          const lastPosition = response?.position ?? 0;
+          await prisma.proposal.create({
+            data: {
+              amount: proposal.amount,
+              closedAt: proposal.closedAt,
+              createdAt: proposal.createdAt,
+              description: proposal.description,
+              partnerId: proposal.partner.id,
+              owner: proposal.owner,
+              position: lastPosition + 1,
+              stage: proposal.stage,
+              source: proposal.source,
+              segment: proposal.segment,
+              title: proposal.title,
+              workspaceId: workspace.id,
+              tags: {
+                create: proposal.tags.map((tag) => ({
+                  color: tag.color,
+                  value: tag.value,
+                })),
+              },
+              followUps: {
+                create: proposal.followUps.map((followUp) => ({
+                  content: followUp.content,
+                  createdAt: followUp.createdAt,
+                  createdBy: followUp.createdBy,
+                  type: followUp.type,
+                })),
+              },
+              id: proposal.id,
+              updatedAt: proposal.updatedAt,
+            },
+          });
+          return;
+        }
+
+        await prisma.$transaction([
+          prisma.tag.deleteMany({
+            where: {
+              proposals: {
+                some: {
+                  id: proposal.id,
+                },
+              },
+            },
+          }),
+          prisma.followUp.deleteMany({
+            where: {
+              proposalId: proposal.id,
+            },
+          }),
+          prisma.proposal.update({
+            where: { id: proposal.id },
+            data: {
+              amount: proposal.amount,
+              closedAt: proposal.closedAt,
+              createdAt: proposal.createdAt,
+              description: proposal.description,
+              partnerId: proposal.partner.id,
+              owner: proposal.owner,
+              position: proposal.position,
+              stage: proposal.stage,
+              source: proposal.source,
+              segment: proposal.segment,
+              title: proposal.title,
+              updatedAt: proposal.updatedAt,
+              tags: {
+                create: proposal.tags.map((tag) => ({
+                  color: tag.color,
+                  value: tag.value,
+                })),
+              },
+              followUps: {
+                create: proposal.followUps.map((followUp) => ({
+                  content: followUp.content,
+                  createdAt: followUp.createdAt,
+                  createdBy: followUp.createdBy,
+                  type: followUp.type,
+                })),
+              },
+              id: proposal.id,
+              workspaceId: workspace.id,
+            },
+          }),
+        ]);
+      })
+    );
+  });
 
 export const deleteBucket = securityProcedure
   .input(deleteBucketInputSchema)

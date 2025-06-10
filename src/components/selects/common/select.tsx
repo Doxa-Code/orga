@@ -55,7 +55,9 @@ export function Select<T>(props: SelectProps<T>) {
   }, [open]);
 
   useEffect(() => {
-    props.onSelect?.(value);
+    if (value !== props.selected) {
+      props.onSelect?.(value);
+    }
   }, [value]);
 
   return (
