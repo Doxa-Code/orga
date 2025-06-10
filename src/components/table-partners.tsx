@@ -1,10 +1,5 @@
 "use client";
 
-import {
-  removePartner,
-  toggleStatusPartner,
-} from "@/app/(private)/partners/actions";
-import type { partnerSchema } from "@/app/(private)/partners/schemas";
 import { useServerActionMutation } from "@/app/actions/query-key-factory";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,6 +42,8 @@ import type { z } from "zod";
 import { ModalDelete } from "./modais/common/modal-delete";
 import { FooterPagination } from "./pagination";
 import { TableFilterPartners } from "./table-filter-partners";
+import { partnerSchema } from "@/app/actions/partners/schemas";
+import { removePartner, toggleStatusPartner } from "@/app/actions/partners";
 
 type Item = z.infer<typeof partnerSchema>;
 
@@ -123,7 +120,7 @@ const columns: ColumnDef<Item>[] = [
       <Badge
         className={cn(
           row.getValue("status") === "INACTIVE" &&
-            "bg-muted-foreground/60 text-primary-foreground",
+            "bg-muted-foreground/60 text-primary-foreground"
         )}
       >
         {row.getValue("status") === "ACTIVE" ? "Ativo" : "Inativo"}
@@ -236,7 +233,7 @@ export default function TablePartners(props: Props) {
                         <div
                           className={cn(
                             header.column.getCanSort() &&
-                              "flex h-full cursor-pointer select-none items-center justify-between gap-2",
+                              "flex h-full cursor-pointer select-none items-center justify-between gap-2"
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                           onKeyDown={(e) => {
@@ -252,7 +249,7 @@ export default function TablePartners(props: Props) {
                         >
                           {flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                           {{
                             asc: (
@@ -276,7 +273,7 @@ export default function TablePartners(props: Props) {
                       ) : (
                         flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )
                       )}
                     </TableHead>
@@ -297,7 +294,7 @@ export default function TablePartners(props: Props) {
                     <TableCell key={cell.id} className="last:py-0">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}

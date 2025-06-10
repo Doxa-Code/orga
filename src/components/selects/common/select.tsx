@@ -68,7 +68,7 @@ export function Select<T>(props: SelectProps<T>) {
           props.className
         )}
       >
-        <PopoverTrigger className="h-10 px-0 rounded border-none shadow-none cursor-pointer w-full">
+        <PopoverTrigger className="h-10 px-2 rounded text-ellipsis border-none text-left text-nowrap truncate font-light max-w-[300px] shadow-none cursor-pointer w-full">
           <input
             type="hidden"
             name={props.name}
@@ -80,14 +80,12 @@ export function Select<T>(props: SelectProps<T>) {
                   : ""
             }
           />
-          <div className="flex px-2 overflow-hidden w-full font-light justify-start items-start hover:bg-transparent">
-            {value &&
-              (props.render
-                ? props.render(value)
-                : typeof value === "string"
-                  ? value
-                  : props.label && String(value[props.label]))}
-          </div>
+          {value &&
+            (props.render
+              ? props.render(value)
+              : typeof value === "string"
+                ? value
+                : props.label && String(value[props.label]))}
         </PopoverTrigger>
         <div className="flex absolute right-0 items-center gap-2 pr-3">
           <Button

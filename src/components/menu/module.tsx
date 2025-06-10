@@ -46,14 +46,14 @@ export class Module {
 
   static create(
     title: string,
-    icon: keyof typeof AllIcons,
+    icon: keyof typeof AllIcons | React.ReactNode,
     href?: string,
-    description?: string,
+    description?: string
   ) {
     return new Module({
       title: title || "",
       description: description || "",
-      icon: icon || "Dashboard",
+      icon: icon as keyof typeof AllIcons,
       href: href || "",
       submodules: [],
     });

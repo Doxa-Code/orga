@@ -10,7 +10,10 @@ import { usePathname } from "next/navigation";
 import type { Module } from "./module";
 
 export const SidebarItem = ({ module }: { module: Module }) => {
-  const Icon = (AllIcons as any)[module.icon];
+  const Icon =
+    typeof module.icon === "string"
+      ? (AllIcons as any)[module.icon]
+      : module.icon;
   const pathname = usePathname();
 
   if (module.href) {

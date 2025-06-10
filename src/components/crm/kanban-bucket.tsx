@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import type { Bucket } from "@/core/domain/entities/bucket";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { MoreVertical, Plus } from "lucide-react";
+import { Edit, MoreVertical, Plus, Trash } from "lucide-react";
 import type React from "react";
 import { type ReactNode, useState } from "react";
+import { ModalConfirm } from "../modais/common/modal-confirm";
 
 interface KanbanBucketProps {
   example?: false;
@@ -124,7 +125,14 @@ export const KanbanBucket: React.FC<Props> = (props) => {
                 ({props.ids?.length})
               </span>
             </div>
-            <div className="flex">
+
+            <div className="flex items-center gap-2">
+              <p className="text-lime-600 font-normal">
+                {props.totalAmount.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </p>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className="flex justify-end">
@@ -147,20 +155,24 @@ export const KanbanBucket: React.FC<Props> = (props) => {
                   >
                     <span className="font-light">Renomear</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      props.onDelete?.(props.bucket?.id ?? "");
-                    }}
-                    className="px-4"
-                  >
-                    <span className="font-light">Excluir</span>
+                  <DropdownMenuItem asChild className="px-4">
+                    <ModalConfirm
+                      onContinue={() => {
+                        props.onDelete?.(props.bucket?.id ?? "");
+                      }}
+                    >
+                      <div className="flex hover:bg-muted rounded items-center px-4 py-2 cursor-pointer gap-2">
+                        <span className="text-xs text-rose-500 font-light">
+                          Excluir
+                        </span>
+                      </div>
+                    </ModalConfirm>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           </div>
         )}
-        {}
       </header>
 
       {/* Content */}
