@@ -77,7 +77,7 @@ export const KanbanCard: React.FC<Props> = (props) => {
         isDragging && "bg-red-500"
       )}
     >
-      <div className="flex gap-2">
+      <div data-hidden={props.card.tags.length === 0} className="flex gap-2">
         {props.card.tags.map((tag) => (
           <Badge key={tag.value} className={cn("bg-muted", tag.color)}>
             {tag.value}
@@ -88,12 +88,6 @@ export const KanbanCard: React.FC<Props> = (props) => {
         <h4 className="font-semibold text-[#323232] transition-colors">
           {props.card.title}
         </h4>
-        <p className="text-teal-500">
-          {props.card.amount.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
-        </p>
         <div className="flex items-center gap-2">
           <User2 className="stroke-[0.9px]" size={14} />
           <p className="font-light text-sm text-muted-foreground">
@@ -104,16 +98,14 @@ export const KanbanCard: React.FC<Props> = (props) => {
 
       <hr />
       <div className="flex items-center pt-2 justify-between border-muted-foreground">
-        <Avatar className="p-1 bg-muted">
-          <AvatarFallback>
-            <User
-              size={16}
-              className="stroke-muted-foreground size-[20px] stroke-1"
-            />
-          </AvatarFallback>
-        </Avatar>
+        <p className="text-lime-600">
+          {props.card.amount.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </p>
         <div className="flex items-center justify-end gap-4 text-xs">
-          <div className="flex gap-2 items-center border-r pr-4">
+          <div className="flex gap-2 items-center pr-4">
             <MessageCircleMore size={16} className="stroke-muted-foreground" />
             <span className="text-muted-foreground font-light text-sm">
               {props.card.followUps.length}

@@ -18,6 +18,7 @@ interface KanbanBucketProps {
   bucket: Bucket;
   children?: ReactNode;
   ids?: string[];
+  totalAmount: number;
   onCreateCard: (bucketId: string) => void;
   onDelete: (bucketId: string) => void;
   onRename: (newName: string) => void;
@@ -29,6 +30,7 @@ type Props =
       example: true;
       bucket?: Bucket;
       children?: ReactNode;
+      totalAmount?: number;
       ids?: string[];
       onCreateCard?: (bucketId: string) => void;
       onDelete?: (bucketId: string) => void;
@@ -68,7 +70,7 @@ export const KanbanBucket: React.FC<Props> = (props) => {
   if (isDragging || props.example) {
     return (
       <div
-        className="min-w-96 max-w-96 bg-background opacity-70 rounded-md border border-dashed border-[#efefef] flex flex-col gap-4 p-4 flex-1"
+        className="min-w-96 h-full max-w-96 bg-background opacity-70 rounded-md border border-dashed border-[#efefef] flex flex-col gap-4 p-4 flex-1"
         ref={setNodeRef}
         style={style}
       />
@@ -158,6 +160,7 @@ export const KanbanBucket: React.FC<Props> = (props) => {
             </div>
           </div>
         )}
+        {}
       </header>
 
       {/* Content */}

@@ -26,12 +26,13 @@ import { pt } from "date-fns/locale/pt";
 import {
   Calendar,
   File,
+  HandshakeIcon,
   Mail,
   MessageCircle,
   Phone,
   PhoneCall,
   Trash,
-  User as UserIcon,
+  User,
   X,
 } from "lucide-react";
 import type React from "react";
@@ -39,6 +40,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { InputMoney } from "../inputs/common/input-money";
 import { ModalConfirm } from "../modais/common/modal-confirm";
 import { Select } from "../selects/common/select";
+import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
 interface Props {
@@ -51,6 +53,8 @@ interface Props {
 }
 
 export const ModalProposalFollowUp: React.FC<Props> = (props) => {
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [proposal, setProposal] = useState<Proposal>(props.proposal);
   const timelineRef = useRef<HTMLUListElement>(null);
   const [selectedFollowUpType, setSelectedFollowUpType] =
@@ -143,11 +147,38 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
   return (
     <Dialog open={props.isOpen} onOpenChange={props.onClose}>
       <DialogContent className="max-w-[70vw] flex flex-col max-h-[80vh] h-screen bg-white shadow-lg rounded-xl p-0 border border-gray-200">
-        <DialogHeader className="pt-8 h-screen max-h-[100px] px-8">
+        <DialogHeader className="pt-8 max-h-[120px] px-8">
           <div className="w-full flex items-center justify-between">
-            <DialogTitle className="text-xl flex items-center gap-3">
-              {proposal.title}
-            </DialogTitle>
+            <div>
+              {isEditingTitle ? (
+                <Input
+                  autoFocus
+                  className="max-w-[200px] bg-muted border-none shadow-none !text-xl font-semibold !h-9 py-0 px-2"
+                  value={proposal.title}
+                  onChange={(e) => {
+                    proposal.setTitle(e.target.value);
+                    setProposal(Proposal.instance(proposal));
+                  }}
+                  onBlur={() => {
+                    setIsEditingTitle(false);
+                    props.onUpsertProposal(proposal);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      setIsEditingTitle(false);
+                      props.onUpsertProposal(proposal);
+                    }
+                  }}
+                />
+              ) : (
+                <DialogTitle
+                  onDoubleClick={() => setIsEditingTitle(true)}
+                  className="text-xl flex min-w-[200px] min-h-10 cursor-pointer items-center gap-3"
+                >
+                  {proposal.title}
+                </DialogTitle>
+              )}
+            </div>
             <div className="flex items-center justify-center gap-2">
               <ModalConfirm
                 onContinue={() => {
@@ -273,15 +304,46 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
           <div className="max-w-[20vw] w-full rounded-r-2xl p-6 space-y-5 border-l border-gray-100">
             <h3 className="text-lg font-medium text-[#595A5A]">Visão Geral</h3>
 
+            <div className="space-y-2">
+              <Label>Descrição</Label>
+              {isEditingDescription ? (
+                <Textarea
+                  className="max-h-[100px] h-screen text-xs bg-muted shadow-none border-none resize-none"
+                  value={proposal.description}
+                  onChange={(e) => {
+                    proposal.setDescription(e.target.value);
+                    setProposal(Proposal.instance(proposal));
+                  }}
+                  onBlur={() => {
+                    setIsEditingDescription(false);
+                    props.onUpsertProposal(proposal);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      setIsEditingDescription(false);
+                      props.onUpsertProposal(proposal);
+                    }
+                  }}
+                />
+              ) : (
+                <p
+                  onDoubleClick={() => setIsEditingDescription(true)}
+                  className="font-light h-screen text-xs leading-6 overflow-y-auto max-h-[100px] bg-muted px-4 py-2 rounded text-muted-foreground"
+                >
+                  {proposal.description}
+                </p>
+              )}
+            </div>
+
             <div className="space-y-4">
               <h4 className="text-sm font-normal text-primary uppercase tracking-wide">
                 Informações de Contato
               </h4>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <Mail className="w-4 h-4 text-gray-400" />
+                  <User className="w-4 h-4 text-gray-400" />
                   <span className="text-sm font-light text-gray-700">
-                    {proposal.partner?.email?.value || "Não informado"}
+                    {proposal.partner?.name || "Não informado"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -291,7 +353,13 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <UserIcon className="w-4 h-4 text-gray-400" />
+                  <Mail className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm font-light text-gray-700">
+                    {proposal.partner?.email?.value || "Não informado"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <HandshakeIcon className="w-4 h-4 text-gray-400" />
                   <span className="text-sm font-light text-gray-700">
                     Desde de {formatDate(proposal.partner.createdAt)}
                   </span>
@@ -330,9 +398,9 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
                   <Select
                     className="max-w-[217px]"
                     options={[
-                      Tag.create("Lead quente", "bg-green-500 text-white"),
-                      Tag.create("Lead morno", "bg-yellow-500 text-white"),
-                      Tag.create("Lead frio", "bg-primary text-white"),
+                      Tag.create("Lead quente", "bg-rose-500 text-white"),
+                      Tag.create("Lead morno", "bg-yellow-400 text-white"),
+                      Tag.create("Lead frio", "bg-sky-500 text-white"),
                     ]}
                     render={(option) => (
                       <Badge

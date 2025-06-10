@@ -146,6 +146,14 @@ export class Proposal {
     return this;
   }
 
+  setDescription(description: string) {
+    this.description = description;
+  }
+
+  setTitle(title: string) {
+    this.title = title;
+  }
+
   raw(): Proposal.Raw {
     return {
       id: this.id,

@@ -148,22 +148,25 @@ export const deleteBucket = securityProcedure
 export const upsertBucket = securityProcedure
   .input(upsertBucketInputSchema)
   .handler(async ({ ctx: { workspace }, input }) => {
-    const { id, position, name, color } = input;
-
-    await prisma.bucket.upsert({
-      where: { id },
-      create: {
-        name,
-        color,
-        workspaceId: workspace.id,
-        position,
-      },
-      update: {
-        name,
-        color,
-        position,
-      },
-    });
+    await Promise.all(
+      input.map(async (bucket) => {
+        const { id, position, name, color } = bucket;
+        await prisma.bucket.upsert({
+          where: { id },
+          create: {
+            name,
+            color,
+            workspaceId: workspace.id,
+            position,
+          },
+          update: {
+            name,
+            color,
+            position,
+          },
+        });
+      })
+    );
   });
 
 export const createBucketDefault = securityProcedure

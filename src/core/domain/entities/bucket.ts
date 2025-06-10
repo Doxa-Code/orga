@@ -26,6 +26,7 @@ export class Bucket<T extends string = string> {
 
   setPosition(position: number) {
     this.position = position;
+    return this;
   }
 
   static instance(props: Bucket.Props) {

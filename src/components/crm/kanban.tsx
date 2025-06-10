@@ -49,6 +49,10 @@ export const CRMKanban: React.FC<Props> = (props) => {
       Toast.error("Erro no registro do bucket", error.message);
     },
   });
+  const upsertBucketActionDebounced = useDebouncedCallback(
+    upsertBucketAction.mutate,
+    1000
+  );
   const upsertProposalsAction = useServerActionMutation(upsertProposals, {
     onError(error) {
       Toast.error("Erro no registro da proposta", error.message);
@@ -184,24 +188,22 @@ export const CRMKanban: React.FC<Props> = (props) => {
     setCards(newCards);
     bucket.setName(newName);
     setBuckets(buckets.map((b) => (b.id === bucketId ? bucket : b)));
-    upsertBucketAction.mutate({
-      id: bucket.id,
-      name: newName,
-      color: bucket.color,
-      position: bucket.position,
-    });
+    upsertBucketActionDebounced([
+      {
+        id: bucket.id,
+        name: newName,
+        color: bucket.color,
+        position: bucket.position,
+      },
+    ]);
   };
 
   const handleAddBucket = (bucketName: string) => {
     if (bucketName.trim()) {
       const newBucket = Bucket.create(bucketName);
-      setBuckets((buckets) => [...buckets, newBucket]);
-      upsertBucketAction.mutate({
-        id: newBucket.id,
-        name: newBucket.name,
-        color: newBucket.color,
-        position: newBucket.position,
-      });
+      const newList = [...buckets, newBucket].map((b, i) => b.setPosition(i));
+      setBuckets(newList);
+      upsertBucketActionDebounced(newList.map((b) => b.raw()));
       setIsAddingBucket(false);
     }
   };
@@ -330,32 +332,13 @@ export const CRMKanban: React.FC<Props> = (props) => {
       const activeIndex = buckets.findIndex((b) => b.id === activeBucket.id);
       const overIndex = buckets.findIndex((b) => b.id === overBucket.id);
 
-      const bucketActive = buckets[activeIndex];
-      const diff = overIndex - activeIndex;
-
       const newBuckets = arrayMove(buckets, activeIndex, overIndex).map(
-        (bucket) => {
-          if (bucket.id === bucketActive.id) {
-            bucket.setPosition(
-              diff > 0 ? overBucket.position + 500 : overBucket.position - 500
-            );
-          }
-          return bucket;
-        }
+        (bucket, i) => bucket.setPosition(i)
       );
-
-      const bucketToUpdate = newBuckets.find(
-        (b) => b.id === bucketActive.id
-      ) as Bucket;
 
       setBuckets(newBuckets);
 
-      upsertBucketAction.mutate({
-        id: bucketToUpdate.id,
-        name: bucketToUpdate.name,
-        color: bucketToUpdate.color,
-        position: bucketToUpdate.position,
-      });
+      upsertBucketActionDebounced(newBuckets.map((b) => b.raw()));
     },
     [buckets]
   );
@@ -393,6 +376,10 @@ export const CRMKanban: React.FC<Props> = (props) => {
                   );
                   return (
                     <KanbanBucket
+                      totalAmount={cards.reduce(
+                        (acc, card) => acc + card.amount,
+                        0
+                      )}
                       key={bucket.id}
                       bucket={bucket}
                       onCreateCard={() => setIsCreateModalOpen(true)}

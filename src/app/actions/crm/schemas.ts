@@ -48,12 +48,14 @@ export const listProposalsOutputSchema = z.array(
   })
 );
 
-export const upsertBucketInputSchema = z.object({
-  id: z.string(),
-  position: z.number(),
-  name: z.string(),
-  color: z.string(),
-});
+export const upsertBucketInputSchema = z.array(
+  z.object({
+    id: z.string(),
+    position: z.number(),
+    name: z.string(),
+    color: z.string(),
+  })
+);
 
 export const upsertProposalInputSchema = z.array(
   z.object({
