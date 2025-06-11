@@ -108,8 +108,20 @@ export const CRMKanban: React.FC<Props> = (props) => {
     const result = new Map<string, Proposal[]>();
 
     for (const [stage, proposals] of cards.entries()) {
-      const filtered = proposals.filter((c) =>
-        c.title.toLowerCase().includes(filter.toLowerCase())
+      const filtered = proposals.filter(
+        (c) =>
+          c?.partner?.name?.toLowerCase()?.includes(filter.toLowerCase()) ||
+          c?.partner?.taxId?.value
+            ?.toLowerCase()
+            ?.includes(filter.toLowerCase()) ||
+          c?.partner?.email?.value
+            ?.toLowerCase()
+            ?.includes(filter.toLowerCase()) ||
+          c?.partner?.phone?.value
+            ?.toLowerCase()
+            ?.includes(filter.toLowerCase()) ||
+          c?.title?.toLowerCase()?.includes(filter.toLowerCase()) ||
+          c?.description?.toLowerCase()?.includes(filter.toLowerCase())
       );
       if (filtered.length > 0) {
         result.set(stage, filtered);
@@ -358,7 +370,7 @@ export const CRMKanban: React.FC<Props> = (props) => {
           Nova proposta
         </Button>
       </div>
-      <div className="w-full bg-white shadow rounded py-6 px-0 gap-4 flex flex-col flex-1 justify-center items-start">
+      <div className="w-full bg-white shadow rounded py-6 px-0 gap-4 flex flex-col flex-1 justify-center items-start overflow-hidden">
         <div className="px-6 w-full">
           <InputSearch onSearch={setFilter} />
         </div>

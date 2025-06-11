@@ -6,8 +6,10 @@ import {
 import { CRMKanban } from "@/components/crm/kanban";
 
 export default async function CRMPage() {
-  const [proposals] = await listProposals();
-  let [buckets] = await listBuckets();
+  let [[proposals], [buckets]] = await Promise.all([
+    listProposals(),
+    listBuckets(),
+  ]);
 
   if (!buckets?.length) {
     [buckets] = await createBucketDefault();

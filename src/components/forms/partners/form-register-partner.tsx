@@ -229,6 +229,7 @@ export const FormRegisterPartner = forwardRef<FormHandlesRef, Props>(
           form={form}
         />
         <FormFooter
+          isLoading={registerPartnerAction.isPending}
           onCancel={() => {
             closeModal(REGISTER_PARTNER_MODAL_NAME);
           }}

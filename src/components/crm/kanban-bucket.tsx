@@ -84,7 +84,7 @@ export const KanbanBucket: React.FC<Props> = (props) => {
       style={style}
       {...attributes}
       {...listeners}
-      className="min-w-96 max-w-96 h-full !select-none flex flex-col flex-1 py-3 px-2 gap-4"
+      className="min-w-96 max-w-96 overflow-hidden !select-none flex flex-col flex-1 py-3 px-2 gap-4"
     >
       {/* Header */}
       <header className="flex items-center justify-between">
@@ -176,7 +176,7 @@ export const KanbanBucket: React.FC<Props> = (props) => {
       </header>
 
       {/* Content */}
-      <div className="space-y-3 bg-background p-4 rounded-md flex-1">
+      <div className="space-y-3 overflow-y-auto bg-background p-4 rounded-md flex-1">
         <SortableContext items={props.ids ?? []}>
           {props.children}
         </SortableContext>
