@@ -13,6 +13,8 @@ export const QueryKeyFactory = createServerActionsKeyFactory({
   listBank: (reference?: string) => ["listBank", reference || ""],
   listStates: () => ["listStates"],
   listPartnersLikeOption: () => ["listPartnersLikeOption"],
+  listBuckets: () => ["listBuckets"],
+  listProposals: () => ["listProposals"],
 });
 
 const {

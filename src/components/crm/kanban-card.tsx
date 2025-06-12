@@ -77,18 +77,18 @@ export const KanbanCard: React.FC<Props> = (props) => {
         isDragging && "bg-red-500"
       )}
     >
-      <div data-hidden={props.card.tags.length === 0} className="flex gap-2">
+      <div data-hidden={!props.card.tags.length} className="flex pb-3 gap-2">
         {props.card.tags.map((tag) => (
           <Badge key={tag.value} className={cn("bg-muted", tag.color)}>
             {tag.value}
           </Badge>
         ))}
       </div>
-      <div className="flex flex-col py-3 flex-1 gap-2">
+      <div className="flex flex-col pb-3 flex-1 gap-2">
         <h4 className="font-semibold text-[#323232] transition-colors">
           {props.card.title}
         </h4>
-        <div className="flex items-center gap-2">
+        <div className="flex items-start justify-start gap-2">
           <User2 className="stroke-[0.9px]" size={14} />
           <p className="font-light text-sm text-muted-foreground">
             {props.card.partner.name}

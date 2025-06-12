@@ -234,10 +234,13 @@ export const ModalProposalFollowUp: React.FC<Props> = (props) => {
                     <TimelineHeading className="font-normal text-base">
                       {followUpTypes.get(followUp.type) ?? "Outro"}
                     </TimelineHeading>
-                    <span className="text-sm">
-                      {formatDate(followUp.createdAt)}
+                    <span className="text-xs font-light text-gray-400">
+                      {formatRelative(followUp.createdAt, new Date(), {
+                        locale: pt,
+                      })}{" "}
+                      por {followUp.createdBy}
                     </span>
-                    <p className="text-sm font-light py-2 flex-1 text-gray-700">
+                    <p className="text-base font-light py-2 flex-1 text-gray-700">
                       {followUp.content}
                     </p>
                   </TimelineContent>
