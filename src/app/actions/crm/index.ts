@@ -229,6 +229,7 @@ export const listProposals = securityProcedure
         partner: {
           include: {
             address: true,
+            contacts: true,
           },
         },
         tags: true,

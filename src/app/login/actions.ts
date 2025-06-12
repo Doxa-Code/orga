@@ -13,13 +13,16 @@ export const login = createServerAction()
     }),
     {
       type: "formData",
-    },
+    }
   )
   .handler(async ({ input }) => {
     const supabase = await createClient();
-    await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: input.email,
       password: input.password,
     });
+    if (error) {
+      throw new Error(error.message);
+    }
     redirect("/");
   });

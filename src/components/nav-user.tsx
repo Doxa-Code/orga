@@ -10,6 +10,8 @@ import {
 import { ChevronDown, LogOut, User } from "lucide-react";
 import { useMemo } from "react";
 import { Button } from "./ui/button";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -21,6 +23,8 @@ export function NavUser({
   };
 }) {
   const name = useMemo(() => user.name || "Usuário", [user.name]);
+  const supabase = createClient();
+  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -47,7 +51,12 @@ export function NavUser({
         align="start"
         sideOffset={4}
       >
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={async () => {
+            await supabase.auth.signOut();
+            router.replace("/");
+          }}
+        >
           <LogOut className="stroke-primary" />
           Sair
         </DropdownMenuItem>

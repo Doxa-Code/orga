@@ -1,7 +1,7 @@
-import "./globals.css";
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import localFont from "next/font/local";
+import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
