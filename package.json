@@ -9,7 +9,7 @@
     "lint": "next lint",
     "db:migrate": "pnpx prisma migrate dev",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && cp node_modules/.prisma/client/libquery_engine-rhel-openssl-3.0.x.so.node public/ && next build"
+    "vercel-build": "prisma generate && cp ./src/generated/prisma/libquery_engine-rhel-openssl-3.0.x.so.node public/ && next build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.826.0",
