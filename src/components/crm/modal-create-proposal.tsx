@@ -25,6 +25,7 @@ import { Select } from "../selects/common/select";
 import { Textarea } from "../ui/textarea";
 import { listPartnersOutputSchema } from "@/app/actions/partners/schemas";
 import { searchPartners } from "@/app/actions/partners";
+import { Contact } from "@/core/domain/entities/contact";
 
 interface Props {
   isOpen: boolean;
@@ -88,6 +89,12 @@ export const ModalCreateProposal: React.FC<Props> = (props) => {
         status: partner.status as Partner.Status,
         createdAt: partner.createdAt,
         workspaceId: partner.workspaceId,
+        contacts: partner.contacts.map((c) =>
+          Contact.instance({
+            ...c,
+            phone: Phone.create(c.phone ?? ""),
+          })
+        ),
       }),
     });
     props.onAdd(proposal);

@@ -104,7 +104,18 @@ export default function CRMPage() {
 
     initialCards?.map((card) => {
       const list = result.get(card.stage) ?? [];
-      list.push(Proposal.fromRaw(card));
+      list.push(
+        Proposal.fromRaw({
+          ...card,
+          partner: {
+            ...card.partner,
+            contacts: card.partner.contacts.map((c) => ({
+              ...c,
+              phone: c.phone ?? "",
+            })),
+          },
+        })
+      );
       result.set(card.stage, list);
     });
 
