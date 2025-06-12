@@ -1,6 +1,6 @@
 import { Address } from "@/core/domain/valueobjects/address";
 import { Email } from "@/core/domain/valueobjects/email";
-import { PrismaClient } from "@/generated/prisma";
+import { prisma } from "@/lib/prisma";
 import { Workspace } from "../../domain/entities/workspace";
 import { Phone } from "../../domain/valueobjects/phone";
 import { TaxId } from "../../domain/valueobjects/taxid";
@@ -12,7 +12,7 @@ export interface WorkspaceRepository {
 }
 
 export class WorkspaceRepositoryDatabase implements WorkspaceRepository {
-  private readonly databaseConnection = new PrismaClient();
+  private readonly databaseConnection = prisma;
 
   async retrieve(workspaceId: string): Promise<Workspace | null> {
     const result = await this.databaseConnection.workspace.findUnique({

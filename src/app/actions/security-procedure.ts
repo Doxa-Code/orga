@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/generated/prisma";
+import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { createServerActionProcedure } from "zsa";
@@ -11,7 +11,6 @@ export const securityProcedure = createServerActionProcedure()
     } = await supabase.auth.getUser();
 
     if (!user) redirect("/");
-    const prisma = new PrismaClient();
     let workspace = await prisma.workspace.findFirst({
       where: {
         memberships: {

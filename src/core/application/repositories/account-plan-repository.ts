@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { AccountPlan } from "../../domain/entities/account-plan";
 import { AccountPlanCategory } from "../../domain/valueobjects/account-plan-category";
 
@@ -11,7 +11,7 @@ export interface AccountPlanRepository {
 }
 
 export class AccountPlanRepositoryDatabase implements AccountPlanRepository {
-  private readonly databaseConnection = new PrismaClient();
+  private readonly databaseConnection = prisma;
 
   async retrieveBySequence(sequence: number): Promise<AccountPlan | null> {
     const accountPlan = await this.databaseConnection.accountPlan.findFirst({

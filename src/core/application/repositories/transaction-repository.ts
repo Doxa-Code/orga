@@ -1,5 +1,5 @@
 import { Payment } from "@/core/domain/entities/payment";
-import { PrismaClient } from "@/generated/prisma";
+import { prisma } from "@/lib/prisma";
 import { endOfDay, startOfDay } from "date-fns";
 import { Transaction } from "../../domain/entities/transaction";
 import { CostCenter } from "../../domain/valueobjects/cost-center";
@@ -34,7 +34,7 @@ interface TransactionRepository {
 }
 
 export class TransactionRepositoryDatabase implements TransactionRepository {
-  private readonly databaseConnection = new PrismaClient().transaction;
+  private readonly databaseConnection = prisma.transaction;
 
   async update(transaction: Transaction): Promise<void> {
     await this.databaseConnection.update({
@@ -97,11 +97,11 @@ export class TransactionRepositoryDatabase implements TransactionRepository {
       amount: transaction.amount,
       category: TransactionCategory.create(
         transaction.category?.sequence,
-        transaction.category?.name,
+        transaction.category?.name
       ),
       costCenter: CostCenter.create(
         transaction.costCenter?.id,
-        transaction.costCenter?.name,
+        transaction.costCenter?.name
       ),
       description: transaction.description,
       dueDate: transaction.dueDate,
@@ -197,11 +197,11 @@ export class TransactionRepositoryDatabase implements TransactionRepository {
         amount: transaction.amount,
         category: TransactionCategory.create(
           transaction.category?.sequence,
-          transaction.category?.name,
+          transaction.category?.name
         ),
         costCenter: CostCenter.create(
           transaction.costCenter?.id,
-          transaction.costCenter?.name,
+          transaction.costCenter?.name
         ),
         description: transaction.description,
         dueDate: transaction.dueDate,
@@ -212,12 +212,12 @@ export class TransactionRepositoryDatabase implements TransactionRepository {
         type: transaction.type,
         workspaceId: transaction.workspaceId,
         partnerId: transaction.partner,
-      }),
+      })
     );
   }
 
   async searchTransactionToReconcile(
-    input: SearchTransactionToReconcileProps,
+    input: SearchTransactionToReconcileProps
   ): Promise<Transaction | null> {
     const transaction = await this.databaseConnection.findFirst({
       where: {
@@ -257,11 +257,11 @@ export class TransactionRepositoryDatabase implements TransactionRepository {
       amount: transaction.amount,
       category: TransactionCategory.create(
         transaction.category?.sequence,
-        transaction.category?.name,
+        transaction.category?.name
       ),
       costCenter: CostCenter.create(
         transaction.costCenter?.id,
-        transaction.costCenter?.name,
+        transaction.costCenter?.name
       ),
       description: transaction.description,
       dueDate: transaction.dueDate,

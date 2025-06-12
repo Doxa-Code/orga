@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { Membership } from "../../domain/entities/membership";
 import { User } from "../../domain/entities/user";
 import { Email } from "../../domain/valueobjects/email";
@@ -12,7 +12,7 @@ export interface UserRepository {
 }
 
 export class UserRepositoryDatabase implements UserRepository {
-  private readonly databaseConnection = new PrismaClient();
+  private readonly databaseConnection = prisma as any;
 
   async update(user: User) {
     await this.databaseConnection.user.update({

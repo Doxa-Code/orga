@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { CostCenter } from "../../domain/entities/cost-center";
 
 interface CostCenterRepository {
@@ -10,7 +10,7 @@ interface CostCenterRepository {
 }
 
 export class CostCenterRepositoryDatabase implements CostCenterRepository {
-  private readonly databaseConnection = new PrismaClient().costCenter;
+  private readonly databaseConnection = prisma.costCenter as any;
 
   async retrieve(id: string): Promise<CostCenter | null> {
     const costCenter = await this.databaseConnection.findUnique({

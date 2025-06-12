@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { Wallet } from "../../domain/entities/wallet";
 import { WalletBank } from "../../domain/valueobjects/wallet-bank";
 import { WalletTransaction } from "../../domain/valueobjects/wallet-transaction";
@@ -22,7 +22,7 @@ interface WalletRepository {
 }
 
 export class WalletRepositoryDatabase implements WalletRepository {
-  private readonly databaseConnection = new PrismaClient();
+  private readonly databaseConnection = prisma;
 
   async retriveTransactionHistory(
     input: RetrieveTransactionHistoryProps

@@ -1,7 +1,6 @@
 "use server";
 import { securityProcedure } from "@/app/actions/security-procedure";
 import { Bucket } from "@/core/domain/entities/bucket";
-import { PrismaClient } from "@/generated/prisma";
 import {
   deleteBucketInputSchema,
   deleteProposalInputSchema,
@@ -10,8 +9,7 @@ import {
   upsertBucketInputSchema,
   upsertProposalInputSchema,
 } from "./schemas";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export const deleteProposal = securityProcedure
   .input(deleteProposalInputSchema)

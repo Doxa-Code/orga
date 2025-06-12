@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import type { Bank } from "../../domain/entities/bank";
 
 interface BankRepository {
@@ -9,7 +9,7 @@ interface BankRepository {
 }
 
 export class BankRepositoryDatabase implements BankRepository {
-  private readonly databaseConnection = new PrismaClient().bank;
+  private readonly databaseConnection = prisma.bank;
 
   async delete(code: string): Promise<void> {
     await this.databaseConnection.delete({ where: { code } });

@@ -4,7 +4,6 @@ import { securityProcedure } from "@/app/actions/security-procedure";
 import { PartnerFactory } from "@/core/infra/factories/partner-factory";
 import { RetrievePartnerByTaxIdDAOFactory } from "@/core/infra/factories/retrieve-partner-by-tax-id-dao-factory";
 import { ListPartnerLikeOptionPresentation } from "@/core/presenters/list-partner-like-option-presentation";
-import { PrismaClient } from "@/generated/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
@@ -18,10 +17,7 @@ import {
   retrievePartnerInputSchema,
   searchPartnersInputSchema,
 } from "./schemas";
-
-// 56.134.651/0001-29
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export const listPartnersLikeOption = securityProcedure
   .input(listPartnersLikeOptionInputSchema)

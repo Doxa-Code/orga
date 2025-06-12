@@ -1,10 +1,10 @@
+import { Contact } from "@/core/domain/entities/contact";
 import { Address } from "@/core/domain/valueobjects/address";
 import { Email } from "@/core/domain/valueobjects/email";
-import { PrismaClient } from "@/generated/prisma";
+import { prisma } from "@/lib/prisma";
 import { Partner } from "../../domain/entities/partner";
 import { Phone } from "../../domain/valueobjects/phone";
 import { TaxId } from "../../domain/valueobjects/taxid";
-import { Contact } from "@/core/domain/entities/contact";
 
 interface PartnerRepository {
   save(partner: Partner): Promise<void>;
@@ -15,7 +15,7 @@ interface PartnerRepository {
 }
 
 export class PartnerRepositoryDatabase implements PartnerRepository {
-  private readonly databaseConnection = new PrismaClient();
+  private readonly databaseConnection = prisma;
 
   static instance() {
     return new PartnerRepositoryDatabase();
