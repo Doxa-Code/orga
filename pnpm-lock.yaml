@@ -140,6 +140,9 @@ importers:
       nuqs:
         specifier: ^2.4.3
         version: 2.4.3(next@15.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+      prisma:
+        specifier: ^6.9.0
+        version: 6.9.0(typescript@5.8.3)
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -231,9 +234,6 @@ importers:
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
-      prisma:
-        specifier: 6.9.0
-        version: 6.9.0(typescript@5.8.3)
       tailwindcss:
         specifier: ^4.1.8
         version: 4.1.8
