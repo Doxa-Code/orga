@@ -5,7 +5,8 @@ import { type HTMLAttributes, forwardRef } from "react";
 
 export const InputPhone = forwardRef<
   HTMLInputElement,
-  HTMLAttributes<HTMLInputElement> & {
+  Omit<HTMLAttributes<HTMLInputElement>, "onChange"> & {
+    name?: string;
     value?: string;
     disabled?: boolean;
     onChange?: (phone: string) => void;
@@ -18,7 +19,7 @@ export const InputPhone = forwardRef<
       value={formatPhone(props.value)}
       className={cn(
         "min-w-[140px] rounded border border-gray-300 pl-3 text-left",
-        props.className,
+        props.className
       )}
       maxLength={14}
       onChange={(e) => {

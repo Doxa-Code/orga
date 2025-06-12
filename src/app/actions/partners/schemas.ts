@@ -10,6 +10,13 @@ export const registerPartnerFormSchema = z.object({
   taxId: z.string().optional(),
   email: z.string().optional(),
   phone: z.string().optional(),
+  contacts: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      phone: z.string().optional(),
+    })
+  ),
   address: z.object({
     street: z
       .string()
@@ -101,6 +108,13 @@ export const partnerSchema = z.object({
   taxId: z.string(),
   email: z.string(),
   phone: z.string(),
+  contacts: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      phone: z.string().optional(),
+    })
+  ),
   address: z.object({
     street: z.string().nullish(),
     number: z.string().nullish(),

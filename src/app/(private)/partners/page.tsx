@@ -1,14 +1,11 @@
 import { HeaderPartners } from "@/components/header-partners";
 import TablePartners from "@/components/table-partners";
-import { listPartners } from "@/app/actions/partners";
 
 export default async function ClientsPage() {
-  const [partners] = await listPartners();
-
   return (
-    <main className="flex flex-col gap-4 p-10">
+    <main className="flex flex-col w-full gap-4 p-10">
       <HeaderPartners />
-      <TablePartners partners={partners ?? []} />
+      <TablePartners />
     </main>
   );
 }

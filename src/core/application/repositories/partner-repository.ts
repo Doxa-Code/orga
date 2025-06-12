@@ -4,6 +4,7 @@ import { PrismaClient } from "@/generated/prisma";
 import { Partner } from "../../domain/entities/partner";
 import { Phone } from "../../domain/valueobjects/phone";
 import { TaxId } from "../../domain/valueobjects/taxid";
+import { Contact } from "@/core/domain/entities/contact";
 
 interface PartnerRepository {
   save(partner: Partner): Promise<void>;
@@ -25,6 +26,7 @@ export class PartnerRepositoryDatabase implements PartnerRepository {
       where: { id },
       include: {
         address: true,
+        contacts: true,
       },
     });
 
@@ -44,12 +46,19 @@ export class PartnerRepositoryDatabase implements PartnerRepository {
       taxId: TaxId.create(partner.taxId),
       type: partner.type,
       workspaceId: partner.workspaceId,
+      contacts: partner.contacts.map((contact) =>
+        Contact.instance({
+          id: contact.id,
+          name: contact.name,
+          phone: Phone.create(contact.phone),
+        })
+      ),
     });
   }
 
   async list(
     workspaceId: string,
-    partnerRole: Partner.Role[],
+    partnerRole: Partner.Role[]
   ): Promise<Partner[]> {
     const partners = await this.databaseConnection.partner.findMany({
       where: {
@@ -58,6 +67,7 @@ export class PartnerRepositoryDatabase implements PartnerRepository {
       },
       include: {
         address: true,
+        contacts: true,
       },
     });
     return partners.map((partner) =>
@@ -73,7 +83,14 @@ export class PartnerRepositoryDatabase implements PartnerRepository {
         taxId: TaxId.create(partner.taxId),
         type: partner.type,
         workspaceId: partner.workspaceId,
-      }),
+        contacts: partner.contacts.map((contact) =>
+          Contact.instance({
+            id: contact.id,
+            name: contact.name,
+            phone: Phone.create(contact.phone),
+          })
+        ),
+      })
     );
   }
 
@@ -82,6 +99,7 @@ export class PartnerRepositoryDatabase implements PartnerRepository {
       where: { taxId },
       include: {
         address: true,
+        contacts: true,
       },
     });
 
@@ -101,6 +119,13 @@ export class PartnerRepositoryDatabase implements PartnerRepository {
       taxId: TaxId.create(partner.taxId),
       type: partner.type,
       workspaceId: partner.workspaceId,
+      contacts: partner.contacts.map((contact) =>
+        Contact.instance({
+          id: contact.id,
+          name: contact.name,
+          phone: Phone.create(contact.phone),
+        })
+      ),
     });
   }
 
@@ -129,6 +154,13 @@ export class PartnerRepositoryDatabase implements PartnerRepository {
           connect: {
             id: partner.workspaceId,
           },
+        },
+        contacts: {
+          create: partner.contacts.map((contact) => ({
+            id: contact.id,
+            name: contact.name,
+            phone: contact.phone.value,
+          })),
         },
       },
     });

@@ -125,7 +125,7 @@ model CostCenter {
 }
 
 model Partner {
-  id          String        @id @default(uuid())
+  id          String           @id @default(uuid())
   type        PartnerType
   roles       PartnerRole[]
   name        String
@@ -133,14 +133,25 @@ model Partner {
   email       String
   phone       String
   addressId   String
-  address     Address       @relation(fields: [addressId], references: [id])
+  address     Address          @relation(fields: [addressId], references: [id])
   status      PartnerStatus
-  createdAt   DateTime      @default(now())
-  workspace   Workspace     @relation(fields: [workspaceId], references: [id])
+  createdAt   DateTime         @default(now())
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id])
   workspaceId String
   Proposal    Proposal[]
+  contacts    PartnerContact[]
 
   @@map("partners")
+}
+
+model PartnerContact {
+  id        String  @id @default(uuid())
+  name      String
+  phone     String
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@map("partner_contacts")
 }
 
 enum PartnerStatus {

@@ -15,6 +15,7 @@ export const QueryKeyFactory = createServerActionsKeyFactory({
   listPartnersLikeOption: () => ["listPartnersLikeOption"],
   listBuckets: () => ["listBuckets"],
   listProposals: () => ["listProposals"],
+  listPartners: () => ["listPartners"],
 });
 
 const {

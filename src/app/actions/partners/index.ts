@@ -46,6 +46,10 @@ export const registerPartner = securityProcedure
         email: input.email,
         phone: input.phone,
         taxId: input.taxId,
+        contacts: input.contacts.map((contact) => ({
+          ...contact,
+          phone: contact.phone ?? "",
+        })),
       });
       return revalidatePath("/partners", "page");
     }
@@ -64,6 +68,22 @@ export const registerPartner = securityProcedure
         roles: input.roles,
         taxId: input.taxId,
         type: input.type,
+        contacts: {
+          upsert: input.contacts.map((contact) => ({
+            create: {
+              id: contact.id,
+              name: contact.name,
+              phone: contact.phone ?? "",
+            },
+            update: {
+              name: contact.name,
+              phone: contact.phone ?? "",
+            },
+            where: {
+              id: contact.id,
+            },
+          })),
+        },
       },
       where: {
         id: input.id,
@@ -104,6 +124,7 @@ export const retrievePartner = securityProcedure
       },
       include: {
         address: true,
+        contacts: true,
       },
     });
     if (!partner) return null;
@@ -119,6 +140,7 @@ export const listPartners = securityProcedure
       },
       include: {
         address: true,
+        contacts: true,
       },
     });
     return response;
@@ -189,6 +211,7 @@ export const searchPartners = securityProcedure
       },
       include: {
         address: true,
+        contacts: true,
       },
       take: 10,
     });

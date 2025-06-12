@@ -11,11 +11,15 @@ import { Pagination, PaginationContent, PaginationItem } from "./ui/pagination";
 
 type Props = {
   table: Table<any>;
+  hidden?: boolean;
 };
 
-export const FooterPagination: React.FC<Props> = ({ table }) => {
+export const FooterPagination: React.FC<Props> = ({ table, hidden }) => {
   return (
-    <div className="flex items-center justify-between gap-8">
+    <div
+      data-hidden={hidden}
+      className="flex items-center justify-between gap-8"
+    >
       {/* Page number information */}
       <div className="flex grow justify-end whitespace-nowrap text-sm text-muted-foreground">
         <p
@@ -32,9 +36,9 @@ export const FooterPagination: React.FC<Props> = ({ table }) => {
                 table.getState().pagination.pageIndex *
                   table.getState().pagination.pageSize +
                   table.getState().pagination.pageSize,
-                0,
+                0
               ),
-              table.getRowCount(),
+              table.getRowCount()
             )}
           </span>{" "}
           de{" "}

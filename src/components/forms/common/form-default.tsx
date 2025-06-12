@@ -16,7 +16,7 @@ type Props = {
 export const FormDefault = forwardRef<
   HTMLFormElement,
   HTMLAttributes<HTMLFormElement> & Props
->((props, ref) => {
+>(({ form, ...props }, ref) => {
   const passPropsToChildrenRecursively = (children: ReactNode): ReactNode => {
     return React.Children.map(children, (child) => {
       if ((child as any).type === Button) {
@@ -24,7 +24,7 @@ export const FormDefault = forwardRef<
       }
       if (React.isValidElement(child)) {
         return React.cloneElement(child as ReactElement<any>, {
-          form: props.form,
+          form,
           children:
             typeof (child.props as any)?.children === "function"
               ? (child.props as any)?.children
@@ -36,7 +36,7 @@ export const FormDefault = forwardRef<
   };
 
   return (
-    <Form {...props.form}>
+    <Form {...form}>
       <form
         {...props}
         ref={ref}

@@ -4,6 +4,7 @@ import { Address } from "../valueobjects/address";
 import { Email } from "../valueobjects/email";
 import { Phone } from "../valueobjects/phone";
 import { TaxId } from "../valueobjects/taxid";
+import { Contact } from "./contact";
 
 export namespace Partner {
   export type Type = "INDIVIDUAL" | "COMPANY";
@@ -23,6 +24,7 @@ export namespace Partner {
     status: Status;
     createdAt: Date;
     workspaceId: string;
+    contacts: Contact[];
   }
 
   export interface Raw {
@@ -46,6 +48,11 @@ export namespace Partner {
     status: Status;
     createdAt: Date;
     workspaceId: string;
+    contacts: {
+      id: string;
+      name: string;
+      phone: string;
+    }[];
   }
 }
 
@@ -81,6 +88,7 @@ export class Partner {
   public status: Partner.Status;
   public createdAt: Date;
   public workspaceId: string;
+  public contacts: Contact[];
 
   constructor(props: Partner.Props) {
     this.id = props.id;
@@ -94,6 +102,7 @@ export class Partner {
     this.status = props.status;
     this.createdAt = props.createdAt;
     this.workspaceId = props.workspaceId;
+    this.contacts = props.contacts;
   }
 
   raw(): Partner.Raw {
@@ -109,6 +118,7 @@ export class Partner {
       status: this.status,
       createdAt: this.createdAt,
       workspaceId: this.workspaceId,
+      contacts: this.contacts.map((contact) => contact.raw()),
     };
   }
 
@@ -134,7 +144,14 @@ export class Partner {
       status: props.status,
       type: props.type,
       workspaceId: props.workspaceId,
+      contacts: props.contacts.map((contact) =>
+        Contact.create(contact.name, contact.phone)
+      ),
     });
+  }
+
+  setContacts(contacts: Contact[]) {
+    this.contacts = contacts;
   }
 
   static instance(props: Partner.Props) {
@@ -170,6 +187,7 @@ export class Partner {
       taxId: TaxId.create(input.taxId),
       type: input.type,
       workspaceId: input.workspaceId,
+      contacts: [],
     });
   }
 }

@@ -1,8 +1,16 @@
 "use client";
 
-import { removePartner, toggleStatusPartner } from "@/app/actions/partners";
+import {
+  listPartners,
+  removePartner,
+  toggleStatusPartner,
+} from "@/app/actions/partners";
 import { partnerSchema } from "@/app/actions/partners/schemas";
-import { useServerActionMutation } from "@/app/actions/query-key-factory";
+import {
+  QueryKeyFactory,
+  useServerActionMutation,
+  useServerActionQuery,
+} from "@/app/actions/query-key-factory";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -44,6 +52,7 @@ import type { z } from "zod";
 import { ModalConfirm } from "./modais/common/modal-confirm";
 import { FooterPagination } from "./pagination";
 import { TableFilterPartners } from "./table-filter-partners";
+import { Skeleton } from "./ui/skeleton";
 
 type Item = z.infer<typeof partnerSchema>;
 
@@ -157,11 +166,11 @@ const columns: ColumnDef<Item>[] = [
   },
 ];
 
-type Props = {
-  partners: Item[];
-};
-
-export default function TablePartners(props: Props) {
+export default function TablePartners() {
+  const { data: partners, isPending } = useServerActionQuery(listPartners, {
+    queryKey: QueryKeyFactory.listPartners(),
+    input: undefined,
+  });
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -174,7 +183,7 @@ export default function TablePartners(props: Props) {
   ]);
 
   const table = useReactTable({
-    data: props.partners ?? [],
+    data: partners ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -195,12 +204,18 @@ export default function TablePartners(props: Props) {
       table.resetRowSelection();
     },
   });
-
   return (
-    <div className="space-y-4 bg-white p-4 rounded shadow">
+    <div className="space-y-4 bg-white w-full flex-1 flex flex-col p-4 rounded shadow">
       <TableFilterPartners table={table} />
       {/* Table */}
-      <div className="overflow-hidden border-y border-border">
+      <Skeleton
+        className="w-full h-full bg-background"
+        data-hidden={!isPending}
+      />
+      <div
+        data-hidden={isPending}
+        className="overflow-hidden border-y border-border"
+      >
         <header
           data-hidden={!table.getSelectedRowModel().rows.length}
           className="bg-[#F1F4F9] flex items-center gap-2 py-1.5 border-b"
@@ -322,7 +337,7 @@ export default function TablePartners(props: Props) {
         </Table>
       </div>
 
-      <FooterPagination table={table} />
+      <FooterPagination table={table} hidden={isPending} />
     </div>
   );
 }
