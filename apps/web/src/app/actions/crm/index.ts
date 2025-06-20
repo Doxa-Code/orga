@@ -10,6 +10,8 @@ import {
   upsertProposalInputSchema,
 } from "./schemas";
 import { prisma } from "@/lib/prisma";
+import { retrieveProposalsFollowUpInputSchema } from "@orga/schemas/crm";
+import { createServerAction } from "zsa";
 
 export const deleteProposal = securityProcedure
   .input(deleteProposalInputSchema)
@@ -253,4 +255,37 @@ export const listProposals = securityProcedure
       workspaceId: proposal.workspaceId,
       followUps: proposal.followUps,
     }));
+  });
+
+export const retrieveProposalsFollowUps = createServerAction()
+  .input(retrieveProposalsFollowUpInputSchema)
+  .handler(async ({ input }) => {
+    const response = await prisma.followUp.findMany({
+      where: {
+        OR: [
+          {
+            createdAt: {
+              gte: new Date(input.start),
+              lt: new Date(input.end),
+            },
+          },
+          {
+            proposal: {
+              stage: input.stage,
+            },
+          },
+        ],
+      },
+      include: {
+        proposal: {
+          include: {
+            partner: true,
+            tags: true,
+            workspace: true,
+          },
+        },
+      },
+    });
+
+    return response;
   });

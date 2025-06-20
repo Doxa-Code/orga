@@ -1,0 +1,25 @@
+{
+  "name": "@orga/schemas",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    "./appointments": {
+      "types": "./src/appointments.ts",
+      "default": "./dist/appointments.js"
+    },
+    "./crm": {
+      "types": "./src/crm.ts",
+      "default": "./dist/crm.js"
+    }
+  },
+  "devDependencies": {
+    "@orga/typescript-config": "workspace:*",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "zod": "^3.25.67"
+  }
+}

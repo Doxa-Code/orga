@@ -1,4 +1,10 @@
-import { createAppointment } from "@/app/actions/appointments";
+import {
+  createAppointment,
+  removeAppointment,
+  retrieveAppointment,
+  updateAppointment,
+} from "@/app/actions/appointments";
+import { retrieveProposalsFollowUps } from "@/app/actions/crm";
 import {
   createOpenApiServerActionRouter,
   createRouteHandlers,
@@ -6,6 +12,11 @@ import {
 
 const router = createOpenApiServerActionRouter({
   pathPrefix: "/api",
-}).post("/appointments", createAppointment);
+})
+  .post("/appointments", createAppointment)
+  .get("/appointments", retrieveAppointment)
+  .put("/appointments", updateAppointment)
+  .delete("/appointments/:id", removeAppointment)
+  .get("/proposals/follow-ups", retrieveProposalsFollowUps);
 
-export const { GET, POST, PUT } = createRouteHandlers(router);
+export const { GET, POST, PUT, DELETE } = createRouteHandlers(router);

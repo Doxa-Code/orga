@@ -1,4 +1,4 @@
-import { Mastra } from "@mastra/core/mastra";
+import { Mastra } from "@mastra/core";
 import { PinoLogger } from "@mastra/loggers";
 import { guideAgent } from "./agents/guide-agent";
 import { pineconeVector } from "./vectors/pinecone-vector";
