@@ -1,0 +1,369 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "linux-musl", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Membership {
+  id          String    @id @default(uuid())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  userId      String
+  isOwner     Boolean   @default(false)
+
+  @@map("memberships")
+}
+
+model Address {
+  id           String      @id @default(uuid())
+  street       String      @default("")
+  neighborhood String      @default("")
+  number       String      @default("")
+  city         String      @default("")
+  state        String      @default("")
+  zipCode      String      @default("")
+  country      String      @default("")
+  note         String      @default("")
+  workspaces   Workspace[]
+  partners     Partner[]
+
+  @@map("addresses")
+}
+
+model Workspace {
+  id           String        @id @default(uuid())
+  name         String?
+  cnpj         String?       @unique
+  phone        String?       @unique
+  email        String?       @unique
+  addressId    String?
+  address      Address?      @relation(fields: [addressId], references: [id])
+  memberships  Membership[]
+  accountPlans AccountPlan[]
+  costCenters  CostCenter[]
+  partners     Partner[]
+  transactions Transaction[]
+  wallets      Wallet[]
+  buckets      Bucket[]
+  proposals    Proposal[]
+
+  @@map("workspaces")
+}
+
+model Bank {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String   @unique
+  thumbnail String
+  color     String
+  wallets   Wallet[]
+
+  @@map("banks")
+}
+
+model AccountPlan {
+  id          String                @id @default(uuid())
+  name        String                @unique
+  sequence    Int                   @unique
+  type        AccountPlanType
+  operation   AccountPlanOperation
+  categories  AccountPlanCategory[]
+  workspace   Workspace             @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  @@map("account_plans")
+}
+
+model AccountPlanCategory {
+  id       String      @id @default(uuid())
+  sequence String
+  name     String
+  amount   Int
+  plan     AccountPlan @relation(fields: [planId], references: [id])
+  planId   String
+
+  @@map("account_plans_category")
+}
+
+enum AccountPlanType {
+  OPERATIONAL_REVENUE
+  NON_OPERATIONAL_REVENUE
+  OTHER_REVENUE
+  FINANCIAL_REVENUE
+  PARTNERSHIP_REVENUE
+  MISCELLANEOUS_REVENUE
+  FIXED_EXPENSE
+  VARIABLE_EXPENSE
+  COST
+  DEBT
+}
+
+enum AccountPlanOperation {
+  REVENUE
+  EXPENSE
+}
+
+model CostCenter {
+  id           String        @id @default(uuid())
+  name         String
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id])
+  workspaceId  String
+  transactions Transaction[]
+
+  @@map("cost_centers")
+}
+
+model Partner {
+  id          String           @id @default(uuid())
+  type        PartnerType
+  roles       PartnerRole[]
+  name        String
+  taxId       String
+  email       String
+  phone       String
+  addressId   String
+  address     Address          @relation(fields: [addressId], references: [id])
+  status      PartnerStatus
+  createdAt   DateTime         @default(now())
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  Proposal    Proposal[]
+  contacts    PartnerContact[]
+
+  @@map("partners")
+}
+
+model PartnerContact {
+  id        String  @id @default(uuid())
+  name      String
+  phone     String
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@map("partner_contacts")
+}
+
+enum PartnerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PartnerType {
+  INDIVIDUAL
+  COMPANY
+}
+
+enum PartnerRole {
+  CUSTOMER
+  SUPPLIER
+}
+
+model Transaction {
+  id               String               @id @default(uuid())
+  description      String
+  amount           Float
+  dueDate          DateTime
+  type             TransactionType
+  status           TransactionStatus
+  costCenterId     String?
+  costCenter       CostCenter?          @relation(fields: [costCenterId], references: [id])
+  categorySequence String?
+  categoryName     String?
+  category         TransactionCategory? @relation(fields: [categorySequence, categoryName], references: [sequence, name])
+
+  payments    Payment[]
+  note        String
+  partner     String?
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  @@map("transactions")
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum TransactionStatus {
+  PAID
+  NO_PAID
+  OVERDUE
+  PAID_TODAY
+}
+
+model TransactionCategory {
+  sequence     String
+  name         String
+  transactions Transaction[]
+
+  @@id([sequence, name])
+  @@map("transaction_category")
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  dueDate       DateTime
+  amount        Float
+  percentage    Float
+  paymentMethod PaymentMethod
+  walletId      String
+  wallet        Wallet        @relation(fields: [walletId], references: [id])
+  description   String
+  fees          Float
+  fine          Float
+  createdAt     DateTime
+  status        PaymentStatus
+  paidedDate    DateTime?
+  amountPaided  Float
+  transactionId String
+  transactions  Transaction   @relation(fields: [transactionId], references: [id])
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PAID
+  NO_PAID
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+  BANK_TRANSFER
+  CASH
+  BANK_CHECK
+  BANK_SLIP
+  OTHERS
+}
+
+model WalletTransaction {
+  id          String          @id @default(uuid())
+  amount      Float
+  type        TransactionType
+  description String
+  date        DateTime
+  wallet      Wallet          @relation(fields: [walletId], references: [id])
+  walletId    String
+
+  @@map("wallet_transactions")
+}
+
+model Wallet {
+  id           String              @id @default(uuid())
+  bankId       String?
+  bank         Bank?               @relation(fields: [bankId], references: [id])
+  name         String
+  balance      Float
+  type         WalletType
+  number       String
+  agency       String
+  transactions WalletTransaction[]
+  workspace    Workspace           @relation(fields: [workspaceId], references: [id])
+  workspaceId  String
+  payments     Payment[]
+
+  @@map("wallets")
+}
+
+enum WalletType {
+  CHECKING_ACCOUNT
+  BANK_CASH_BOX
+  SAVINGS_ACCOUNT
+  INVESTMENT_ACCOUNT
+  OTHERS
+}
+
+model Bucket {
+  id          String    @id @default(uuid())
+  name        String
+  color       String
+  position    Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  @@map("buckets")
+}
+
+model Proposal {
+  id          String     @id @default(uuid())
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  title       String
+  description String
+  partner     Partner    @relation(fields: [partnerId], references: [id])
+  partnerId   String
+  owner       String
+  amount      Int
+  position    Int
+  stage       String
+  source      Source
+  segment     String
+  tags        Tag[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  closedAt    DateTime?
+  followUps   FollowUp[]
+
+  @@map("proposals")
+}
+
+model FollowUp {
+  id         String       @id @default(uuid())
+  proposal   Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposalId String
+  content    String
+  createdAt  DateTime
+  createdBy  String
+  type       FollowUpType
+
+  @@map("follow_ups")
+}
+
+enum FollowUpType {
+  call
+  email
+  meeting
+  message
+  other
+}
+
+model Tag {
+  id        String     @id @default(uuid())
+  value     String
+  color     String
+  proposals Proposal[]
+
+  @@map("tags")
+}
+
+enum Source {
+  organic
+  referral
+  ads
+  outbound
+  other
+}
+
+model Appointment {
+  id          String   @id @default(uuid())
+  description String
+  createdBy   String
+  scheduledAt DateTime
+  createdAt   DateTime @default(now())
+
+  @@map("appointments")
+}
